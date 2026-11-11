@@ -49,6 +49,10 @@
       <circle cx="12" cy="8" r="3.8" stroke="currentColor" stroke-width="2" />
       <path d="M4.8 20.2C4.8 16.5 7.9 14.2 12 14.2C16.1 14.2 19.2 16.5 19.2 20.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
     </symbol>
+    <symbol id="icon-award" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="9" r="5.5" stroke="currentColor" stroke-width="2" />
+      <path d="M9 13.8L7.5 21L12 18.6L16.5 21L15 13.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </symbol>
   </svg>
 
   <div class="app-shell" id="app-shell">
@@ -213,7 +217,41 @@
                 <dt>Mulai Bermain</dt>
                 <dd id="stat-start-date">-</dd>
               </div>
+              <div class="profile-stats__item">
+                <dt>Pencapaian Terbuka</dt>
+                <dd id="stat-milestones">0 / 6</dd>
+              </div>
             </dl>
+
+            <div class="profile-settings" aria-label="Pengaturan Suara dan Getar">
+              <div class="profile-settings__row">
+                <span class="profile-settings__label" id="label-toggle-sound">Suara Koin</span>
+                <button
+                  type="button"
+                  class="toggle-switch"
+                  id="toggle-sound-btn"
+                  role="switch"
+                  aria-checked="true"
+                  aria-labelledby="label-toggle-sound"
+                >
+                  <span class="toggle-switch__text" id="toggle-sound-text">AKTIF</span>
+                </button>
+              </div>
+              <div class="profile-settings__row">
+                <span class="profile-settings__label" id="label-toggle-haptic">Getar Sentuh</span>
+                <button
+                  type="button"
+                  class="toggle-switch"
+                  id="toggle-haptic-btn"
+                  role="switch"
+                  aria-checked="true"
+                  aria-labelledby="label-toggle-haptic"
+                >
+                  <span class="toggle-switch__text" id="toggle-haptic-text">AKTIF</span>
+                </button>
+              </div>
+            </div>
+
             <button type="button" class="danger-btn" id="open-reset-modal-btn">
               Reset Semua Data
             </button>
@@ -278,6 +316,19 @@
         <div class="modal-dialog__actions">
           <button type="button" class="preview-card__btn" id="close-offline-modal-btn">Lanjutkan</button>
         </div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFIKASI PENCAPAIAN (MILESTONE) -->
+    <div class="milestone-toast" id="milestone-toast" role="status" aria-live="polite" hidden>
+      <span class="milestone-toast__icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <use href="#icon-award"></use>
+        </svg>
+      </span>
+      <div class="milestone-toast__content">
+        <span class="milestone-toast__label">Pencapaian Baru</span>
+        <strong class="milestone-toast__title" id="milestone-toast-title">-</strong>
       </div>
     </div>
 

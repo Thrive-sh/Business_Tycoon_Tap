@@ -90,6 +90,16 @@
     }
   };
 
+  // Daftar target pencapaian (milestone) yang hanya muncul sekali
+  const MILESTONES = [
+    { id: 'taps_100', type: 'taps', threshold: 100, title: '100 Ketukan Pertama' },
+    { id: 'taps_500', type: 'taps', threshold: 500, title: '500 Ketukan Aktif' },
+    { id: 'taps_1000', type: 'taps', threshold: 1000, title: '1.000 Ketukan Tekun' },
+    { id: 'earned_100', type: 'earned', threshold: 100, title: 'Total Pendapatan $100' },
+    { id: 'earned_1000', type: 'earned', threshold: 1000, title: 'Total Pendapatan $1 rb' },
+    { id: 'earned_10000', type: 'earned', threshold: 10000, title: 'Total Pendapatan $10 rb' }
+  ];
+
   // State utama permainan (Save Schema v2)
   const state = {
     version: SAVE_SCHEMA_VERSION,
@@ -103,6 +113,11 @@
       tap_machine: 0,
       auto_team: 0
     },
+    settings: {
+      sound: true,
+      haptic: true
+    },
+    milestones: {},
     startDate: Date.now(),
     lastSeen: Date.now(),
     activeTab: 'Earnings'
@@ -135,6 +150,11 @@
   const statTotalTaps = document.getElementById('stat-total-taps');
   const statTotalEarned = document.getElementById('stat-total-earned');
   const statStartDate = document.getElementById('stat-start-date');
+  const statMilestones = document.getElementById('stat-milestones');
+  const toggleSoundBtn = document.getElementById('toggle-sound-btn');
+  const toggleSoundText = document.getElementById('toggle-sound-text');
+  const toggleHapticBtn = document.getElementById('toggle-haptic-btn');
+  const toggleHapticText = document.getElementById('toggle-haptic-text');
   const openResetModalBtn = document.getElementById('open-reset-modal-btn');
   const resetModal = document.getElementById('reset-modal');
   const resetConfirmCheckbox = document.getElementById('reset-confirm-checkbox');
@@ -144,6 +164,8 @@
   const offlineModalTitle = document.getElementById('offline-modal-title');
   const offlineModalDesc = document.getElementById('offline-modal-desc');
   const closeOfflineModalBtn = document.getElementById('close-offline-modal-btn');
+  const milestoneToast = document.getElementById('milestone-toast');
+  const milestoneToastTitle = document.getElementById('milestone-toast-title');
   const srAnnouncer = document.getElementById('sr-announcer');
   const navTabs = Array.from(document.querySelectorAll('.nav-tab'));
   const navBadges = {
@@ -155,9 +177,109 @@
   let pulseCleanupTimer = null;
   let saveThrottleTimer = null;
   let srAnnounceTimer = null;
+  let toastHideTimer = null;
   let passiveIntervalId = null;
+  let audioCtx = null;
   let hasPendingSave = false;
   let acknowledgedAffordableCount = 0;
+  let unseenMilestonesCount = 0;
+
+  /**
+   * Memicu umpan balik getar singkat (10ms) pada perangkat yang mendukung.
+   */
+  function triggerHaptic() {
+    if (!state.settings.haptic) return;
+    try {
+      if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+        navigator.vibrate(10);
+      }
+    } catch (error) {
+      // Abaikan jika perangkat tidak mendukung getar
+    }
+  }
+
+  /**
+   * Memainkan bunyi blip koin sintetis (800Hz -> 1200Hz, 60ms, gain 0.08) via Web Audio API.
+   */
+  function playCoinBlip() {
+    if (!state.settings.sound || typeof window === 'undefined') return;
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+
+    try {
+      if (!audioCtx) {
+        audioCtx = new AudioContextClass();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(function () {});
+      }
+      const nowTime = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(800, nowTime);
+      osc.frequency.exponentialRampToValueAtTime(1200, nowTime + 0.06);
+
+      gain.gain.setValueAtTime(0.08, nowTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, nowTime + 0.06);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(nowTime);
+      osc.stop(nowTime + 0.06);
+    } catch (error) {
+      // Abaikan jika konteks audio diblokir peramban
+    }
+  }
+
+  /**
+   * Menampilkan toast pencapaian baru selama beberapa detik.
+   */
+  function showMilestoneToast(title) {
+    if (!milestoneToast || !milestoneToastTitle) return;
+    milestoneToastTitle.textContent = title;
+    milestoneToast.hidden = false;
+    announceScreenReader('Pencapaian baru terbuka: ' + title, true);
+
+    if (toastHideTimer) {
+      window.clearTimeout(toastHideTimer);
+    }
+    toastHideTimer = window.setTimeout(function () {
+      milestoneToast.hidden = true;
+      toastHideTimer = null;
+    }, 3200);
+  }
+
+  /**
+   * Mengecek dan mencatat pencapaian baru agar hanya muncul satu kali.
+   */
+  function checkMilestones() {
+    let newlyUnlocked = null;
+    MILESTONES.forEach(function (m) {
+      if (state.milestones[m.id]) return;
+      const reached =
+        m.type === 'taps'
+          ? state.totalTaps >= m.threshold
+          : Math.max(state.totalEarned, state.balance) >= m.threshold;
+      if (reached) {
+        state.milestones[m.id] = true;
+        newlyUnlocked = m;
+        if (state.activeTab !== 'Profile') {
+          unseenMilestonesCount += 1;
+          setTabBadge('Profile', unseenMilestonesCount);
+        }
+      }
+    });
+
+    if (newlyUnlocked) {
+      writeSaveImmediate();
+      showMilestoneToast(newlyUnlocked.title);
+      if (state.activeTab === 'Profile') {
+        renderProfileStats();
+      }
+    }
+  }
 
   /**
    * Mengecek apakah pengguna mengaktifkan preferensi pengurangan gerak.
@@ -378,6 +500,23 @@
         }
         state.perSecond = recalculatePerSecond();
 
+        if (parsed.settings && typeof parsed.settings === 'object') {
+          state.settings.sound = parsed.settings.sound !== false;
+          state.settings.haptic = parsed.settings.haptic !== false;
+        } else {
+          state.settings.sound = true;
+          state.settings.haptic = true;
+        }
+
+        state.milestones = {};
+        if (parsed.milestones && typeof parsed.milestones === 'object') {
+          MILESTONES.forEach(function (m) {
+            if (parsed.milestones[m.id]) {
+              state.milestones[m.id] = true;
+            }
+          });
+        }
+
         if (isV2) {
           const taps = Number(parsed.totalTaps);
           const earned = Number(parsed.totalEarned);
@@ -436,6 +575,8 @@
         totalTaps: state.totalTaps,
         totalEarned: state.totalEarned,
         upgrades: Object.assign({}, state.upgrades),
+        settings: Object.assign({}, state.settings),
+        milestones: Object.assign({}, state.milestones),
         startDate: state.startDate,
         lastSeen: state.lastSeen
       });
@@ -474,7 +615,7 @@
   }
 
   /**
-   * Merender statistik dasar pemain pada tab Profile.
+   * Merender statistik dasar & pengaturan preferensi pemain pada tab Profile.
    */
   function renderProfileStats() {
     if (statTotalTaps) {
@@ -488,6 +629,21 @@
     }
     if (statStartDate) {
       statStartDate.textContent = formatDateShort(state.startDate);
+    }
+    if (statMilestones) {
+      let unlockedCount = 0;
+      MILESTONES.forEach(function (m) {
+        if (state.milestones[m.id]) unlockedCount += 1;
+      });
+      statMilestones.textContent = unlockedCount + ' / ' + MILESTONES.length;
+    }
+    if (toggleSoundBtn && toggleSoundText) {
+      toggleSoundBtn.setAttribute('aria-checked', String(Boolean(state.settings.sound)));
+      toggleSoundText.textContent = state.settings.sound ? 'AKTIF' : 'MATI';
+    }
+    if (toggleHapticBtn && toggleHapticText) {
+      toggleHapticBtn.setAttribute('aria-checked', String(Boolean(state.settings.haptic)));
+      toggleHapticText.textContent = state.settings.haptic ? 'AKTIF' : 'MATI';
     }
   }
 
@@ -505,11 +661,17 @@
     UPGRADE_TIERS.forEach(function (tier) {
       state.upgrades[tier.id] = 0;
     });
+    state.settings = { sound: true, haptic: true };
+    state.milestones = {};
     state.startDate = now;
     state.lastSeen = now;
     acknowledgedAffordableCount = 0;
+    unseenMilestonesCount = 0;
     if (offlineModal) {
       offlineModal.hidden = true;
+    }
+    if (milestoneToast) {
+      milestoneToast.hidden = true;
     }
 
     try {
@@ -809,8 +971,11 @@
     if (state.activeTab === 'Profile') {
       renderProfileStats();
     }
+    triggerHaptic();
+    playCoinBlip();
     triggerHandPulse();
     spawnFloatingFeedback(clientX, clientY, state.perClick);
+    checkMilestones();
     announceScreenReader('', false);
   }
 
@@ -822,6 +987,8 @@
     setTabBadge(tabName, 0);
     if (tabName === 'Earnings') {
       acknowledgedAffordableCount = countAffordableUpgrades();
+    } else if (tabName === 'Profile') {
+      unseenMilestonesCount = 0;
     }
 
     navTabs.forEach(function (tabBtn) {
@@ -995,6 +1162,28 @@
       });
     }
 
+    // Toggle Suara & Getar pada tab Profile
+    if (toggleSoundBtn) {
+      toggleSoundBtn.addEventListener('click', function () {
+        state.settings.sound = !state.settings.sound;
+        renderProfileStats();
+        writeSaveImmediate();
+        if (state.settings.sound) {
+          playCoinBlip();
+        }
+      });
+    }
+    if (toggleHapticBtn) {
+      toggleHapticBtn.addEventListener('click', function () {
+        state.settings.haptic = !state.settings.haptic;
+        renderProfileStats();
+        writeSaveImmediate();
+        if (state.settings.haptic) {
+          triggerHaptic();
+        }
+      });
+    }
+
     // Modal Reset Semua Data (Konfirmasi Dua Langkah)
     if (openResetModalBtn && resetModal && resetConfirmCheckbox && confirmResetBtn) {
       openResetModalBtn.addEventListener('click', function () {
@@ -1082,6 +1271,7 @@
       if (state.activeTab === 'Profile') {
         renderProfileStats();
       }
+      checkMilestones();
     }
   }
 
