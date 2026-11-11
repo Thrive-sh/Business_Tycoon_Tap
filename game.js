@@ -170,16 +170,64 @@
   let hasPendingSave = false;
   let acknowledgedAffordableCount = 0;
 
+  const COMPACT_UNITS = [
+    { threshold: 1e12, suffix: 'T' },
+    { threshold: 1e9, suffix: 'M' },
+    { threshold: 1e6, suffix: 'jt' },
+    { threshold: 1e3, suffix: 'rb' }
+  ];
+
   /**
-   * Memformat angka ke format pemisah ribuan titik (.) dan desimal koma (,).
-   * Contoh: 0 -> "0,00" | 1250.5 -> "1.250,50"
+   * Memformat angka penuh ke pemisah ribuan titik (.) dan desimal koma (,).
+   * Contoh: 0 -> "0,00" | 2500000 -> "2.500.000,00"
    */
-  function formatCurrencyValue(amount) {
+  function formatFullCurrencyValue(amount) {
     const safeNumber = Number.isFinite(amount) && amount >= 0 ? amount : 0;
     const fixed = safeNumber.toFixed(2);
     const parts = fixed.split('.');
     const integerWithDots = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     return integerWithDots + ',' + parts[1];
+  }
+
+  /**
+   * Memformat angka besar secara ringkas bergaya Indonesia (rb, jt, M, T).
+   * Contoh: 1500 -> "1,5 rb" | 2500000 -> "2,5 jt" | < 1000 -> "0,00"
+   */
+  function formatCompact(amount) {
+    const safeNumber = Number.isFinite(amount) && amount >= 0 ? amount : 0;
+    if (safeNumber < 1000) {
+      return formatFullCurrencyValue(safeNumber);
+    }
+
+    for (let i = 0; i < COMPACT_UNITS.length; i += 1) {
+      const unit = COMPACT_UNITS[i];
+      if (safeNumber >= unit.threshold) {
+        const scaled = Math.round((safeNumber / unit.threshold) * 100) / 100;
+        if (scaled >= 1000 && i > 0) {
+          const higher = COMPACT_UNITS[i - 1];
+          const higherScaled = Math.round((safeNumber / higher.threshold) * 100) / 100;
+          const higherStr = higherScaled
+            .toFixed(2)
+            .replace(/\.?0+$/, '')
+            .replace('.', ',');
+          return higherStr + ' ' + higher.suffix;
+        }
+        const formattedScaled = scaled
+          .toFixed(2)
+          .replace(/\.?0+$/, '')
+          .replace('.', ',');
+        return formattedScaled + ' ' + unit.suffix;
+      }
+    }
+
+    return formatFullCurrencyValue(safeNumber);
+  }
+
+  /**
+   * Memformat nominal mata uang untuk tampilan UI (ringkas >= 1.000).
+   */
+  function formatCurrencyValue(amount) {
+    return formatCompact(amount);
   }
 
   /**
@@ -354,7 +402,10 @@
       statTotalTaps.textContent = formatIntegerID(state.totalTaps);
     }
     if (statTotalEarned) {
+      const fullEarned = '$ ' + formatFullCurrencyValue(state.totalEarned);
       statTotalEarned.textContent = '$ ' + formatCurrencyValue(state.totalEarned);
+      statTotalEarned.title = fullEarned;
+      statTotalEarned.setAttribute('aria-label', fullEarned);
     }
     if (statStartDate) {
       statStartDate.textContent = formatDateShort(state.startDate);
@@ -455,6 +506,7 @@
       }
       if (btn) {
         btn.textContent = 'Beli $ ' + formatCurrencyValue(cost);
+        btn.title = 'Biaya: $ ' + formatFullCurrencyValue(cost);
         btn.disabled = !canAfford;
       }
     });
@@ -540,13 +592,23 @@
    */
   function renderStats() {
     const formattedBalance = '$ ' + formatCurrencyValue(state.balance);
+    const fullBalance = '$ ' + formatFullCurrencyValue(state.balance);
     const formattedPerClick = '$ ' + formatCurrencyValue(state.perClick) + ' per click';
+    const fullPerClick = '$ ' + formatFullCurrencyValue(state.perClick) + ' per click';
 
     balanceDisplay.textContent = formattedBalance;
-    previewBalanceDisplay.textContent = formattedBalance;
-    perClickDisplay.textContent = formattedPerClick;
+    balanceDisplay.title = fullBalance;
+    balanceDisplay.setAttribute('aria-label', 'Saldo: ' + fullBalance);
 
-    // Sesuaikan ukuran huruf bila saldo sudah mencapai digit puluhan juta/miliar
+    previewBalanceDisplay.textContent = formattedBalance;
+    previewBalanceDisplay.title = fullBalance;
+    previewBalanceDisplay.setAttribute('aria-label', 'Saldo tersimpan: ' + fullBalance);
+
+    perClickDisplay.textContent = formattedPerClick;
+    perClickDisplay.title = fullPerClick;
+    perClickDisplay.setAttribute('aria-label', fullPerClick);
+
+    // Sesuaikan ukuran huruf bila saldo panjang
     balanceDisplay.classList.remove(
       'bank-card__balance--compact',
       'bank-card__balance--ultra-compact'
