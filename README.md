@@ -9,12 +9,12 @@ Simulasi bisnis ketuk layar (*mobile-first*) berbasis web murni (**HTML5, CSS3, 
 
 ## Fitur Utama
 
-- **Siklus Ekonomi Ketukan & 3 Tingkat Peningkatan:** Sarung Tangan (`+$1/ketuk`), Mesin Ketuk (`+$5/ketuk`), dan Tim Otomatis (`+$25/ketuk` & `+$10/dtk`) dengan eskalasi biaya `baseCost * 1.15^level`.
+- **Tema Putih-Orange & Format Rupiah (`Rp`):** Antarmuka bersih kontras tinggi WCAG AA (`>= 4.5:1`) dengan format angka penuh (`Rp1.234.567,89`) dan ringkas (`rb`, `jt`, `M`, `T`).
+- **Bursa Investasi Live (Saham, Properti, Kripto, Forex):** 18 aset dengan simulasi pergerakan harga `random walk` setiap 3 detik, grafik garis Canvas 2D mulus (60 titik, DPR-scaled), transaksi atomik `[1][10][100][Maks]`, kalkulasi rata-rata beli (`avgEntry`) & P&L *real-time*, serta dividen saham dan pendapatan sewa properti pasif.
+- **Siklus Ekonomi Ketukan & 3 Tingkat Peningkatan:** Sarung Tangan (`+Rp1,00/ketuk`), Mesin Ketuk (`+Rp5,00/ketuk`), dan Tim Otomatis (`+Rp25,00/ketuk` & `+Rp10,00/dtk`) dengan eskalasi biaya `baseCost * 1.15^level`.
 - **Pendapatan Pasif & Penghasilan Luring:** Dihitung otomatis dari `lastSeen` (efisiensi `50%`, batas maksimal `2 jam`) dan hanya merender DOM saat tab aktif terlihat.
-- **Format Angka Ringkas Indonesia:** Mendukung singkatan `rb`, `jt`, `M`, dan `T` dengan nominal penuh pada `title` dan `aria-label`.
-- **Save Schema v2 & Throttle 500ms:** Migrasi otomatis dari format simpanan v1, pencatatan statistik profil, konfirmasi reset dua langkah, serta penyimpanan seketika saat tab disembunyikan/ditutup.
-- **Umpan Balik & Pencapaian:** Bunyi blip koin sintetis (*Web Audio API*), getar sentuh (`navigator.vibrate`), preferensi ON/OFF tersimpan, dan notifikasi pencapaian satu kali.
-- **Aksesibilitas WCAG AA & PWA:** Kontras teks terverifikasi, `:focus-visible`, dukungan `prefers-reduced-motion`, satu sumber ikon vektor SVG `<symbol>`, serta `Service Worker` *cache-first*.
+- **Save Schema v2 & Dual Throttle (500ms / 5 dtk):** Menyimpan `holdings` dan `lastPrices` tanpa membebani ruang `localStorage`, migrasi otomatis dari format simpanan v1, statistik profil, konfirmasi reset dua langkah, serta *flush* seketika saat tab disembunyikan/ditutup.
+- **Umpan Balik, Aksesibilitas & PWA:** Bunyi blip koin sintetis (*Web Audio API*), getar sentuh (`navigator.vibrate`), navigasi *keyboard* penuh, dukungan `prefers-reduced-motion`, ikon vektor SVG `<symbol>`, serta `Service Worker` *cache-first*.
 
 ## Struktur Proyek
 

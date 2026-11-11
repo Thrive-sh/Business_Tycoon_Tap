@@ -9,7 +9,7 @@
   const ASSETS = Object.freeze([
     // 1. Saham (yield dividen per jam)
     {
-      id: 'teknonusa',
+      id: 'saham_teknonusa',
       name: 'TeknoNusa',
       category: 'Saham',
       initialPrice: 25000,
@@ -17,10 +17,10 @@
       yieldRate: 0.004,
       color: '#EA580C',
       symbol: 'TN',
-      unitLabel: 'pcs.'
+      unitLabel: 'lembar'
     },
     {
-      id: 'bankartha',
+      id: 'saham_bankartha',
       name: 'BankArtha',
       category: 'Saham',
       initialPrice: 8500,
@@ -28,10 +28,10 @@
       yieldRate: 0.003,
       color: '#D97706',
       symbol: 'BA',
-      unitLabel: 'pcs.'
+      unitLabel: 'lembar'
     },
     {
-      id: 'energiku',
+      id: 'saham_energiku',
       name: 'EnergiKu',
       category: 'Saham',
       initialPrice: 12000,
@@ -39,10 +39,10 @@
       yieldRate: 0.005,
       color: '#16A34A',
       symbol: 'EK',
-      unitLabel: 'pcs.'
+      unitLabel: 'lembar'
     },
     {
-      id: 'pangansehat',
+      id: 'saham_pangansehat',
       name: 'PanganSehat',
       category: 'Saham',
       initialPrice: 5200,
@@ -50,10 +50,10 @@
       yieldRate: 0.003,
       color: '#65A30D',
       symbol: 'PS',
-      unitLabel: 'pcs.'
+      unitLabel: 'lembar'
     },
     {
-      id: 'mediakita',
+      id: 'saham_mediakita',
       name: 'MediaKita',
       category: 'Saham',
       initialPrice: 3800,
@@ -61,12 +61,12 @@
       yieldRate: 0.006,
       color: '#DB2777',
       symbol: 'MK',
-      unitLabel: 'pcs.'
+      unitLabel: 'lembar'
     },
 
     // 2. Properti (yield sewa per jam)
     {
-      id: 'apt_sudirman',
+      id: 'properti_apartemen_sudirman',
       name: 'Apartemen Sudirman',
       category: 'Properti',
       initialPrice: 850000000,
@@ -77,7 +77,7 @@
       unitLabel: 'unit'
     },
     {
-      id: 'ruko_kemang',
+      id: 'properti_ruko_kemang',
       name: 'Ruko Kemang',
       category: 'Properti',
       initialPrice: 1200000000,
@@ -88,7 +88,7 @@
       unitLabel: 'unit'
     },
     {
-      id: 'villa_bali',
+      id: 'properti_villa_bali',
       name: 'Villa Bali',
       category: 'Properti',
       initialPrice: 2500000000,
@@ -99,7 +99,7 @@
       unitLabel: 'unit'
     },
     {
-      id: 'tanah_ikn',
+      id: 'properti_tanah_ikn',
       name: 'Tanah IKN',
       category: 'Properti',
       initialPrice: 500000000,
@@ -112,7 +112,7 @@
 
     // 3. Kripto (tanpa yield, volatilitas tinggi)
     {
-      id: 'bitcoin',
+      id: 'kripto_bitcoin',
       name: 'Bitcoin',
       category: 'Kripto',
       initialPrice: 1600000000,
@@ -123,7 +123,7 @@
       unitLabel: 'koin'
     },
     {
-      id: 'ethereum',
+      id: 'kripto_ethereum',
       name: 'Ethereum',
       category: 'Kripto',
       initialPrice: 55000000,
@@ -134,7 +134,7 @@
       unitLabel: 'koin'
     },
     {
-      id: 'solana',
+      id: 'kripto_solana',
       name: 'Solana',
       category: 'Kripto',
       initialPrice: 2800000,
@@ -145,7 +145,7 @@
       unitLabel: 'koin'
     },
     {
-      id: 'dogecoin',
+      id: 'kripto_dogecoin',
       name: 'DogeCoin',
       category: 'Kripto',
       initialPrice: 2500,
@@ -156,7 +156,7 @@
       unitLabel: 'koin'
     },
     {
-      id: 'ripplex',
+      id: 'kripto_ripplex',
       name: 'RippleX',
       category: 'Kripto',
       initialPrice: 9800,
@@ -169,7 +169,7 @@
 
     // 4. Forex (tanpa yield, volatilitas rendah)
     {
-      id: 'usd_idr',
+      id: 'forex_usd_idr',
       name: 'USD/IDR',
       category: 'Forex',
       initialPrice: 16200,
@@ -177,10 +177,10 @@
       yieldRate: 0,
       color: '#15803D',
       symbol: 'USD',
-      unitLabel: 'unit'
+      unitLabel: 'lot'
     },
     {
-      id: 'eur_usd',
+      id: 'forex_eur_usd',
       name: 'EUR/USD',
       category: 'Forex',
       initialPrice: 17500,
@@ -188,10 +188,10 @@
       yieldRate: 0,
       color: '#B91C1C',
       symbol: 'EUR',
-      unitLabel: 'unit'
+      unitLabel: 'lot'
     },
     {
-      id: 'gbp_usd',
+      id: 'forex_gbp_usd',
       name: 'GBP/USD',
       category: 'Forex',
       initialPrice: 20600,
@@ -199,10 +199,10 @@
       yieldRate: 0,
       color: '#9A3412',
       symbol: 'GBP',
-      unitLabel: 'unit'
+      unitLabel: 'lot'
     },
     {
-      id: 'jpy_usd',
+      id: 'forex_jpy_usd',
       name: 'JPY/USD',
       category: 'Forex',
       initialPrice: 105,
@@ -210,7 +210,7 @@
       yieldRate: 0,
       color: '#DC2626',
       symbol: 'JPY',
-      unitLabel: 'unit'
+      unitLabel: 'lot'
     }
   ]);
 
@@ -1351,7 +1351,7 @@
     if (detailTradeNotice) {
       if (!canBuy) {
         detailTradeNotice.textContent = 'Saldo tidak cukup';
-        detailTradeNotice.classList.add('detail-trade-card__notice--error');
+        detailTradeNotice.classList.add('detail-trade-notice--error');
       } else if (state.selectedQtyMode === 'max') {
         detailTradeNotice.textContent =
           'Maks beli: ' +
@@ -1361,7 +1361,7 @@
           ' (' +
           formatRupiahCompact(estBuyCost) +
           ')';
-        detailTradeNotice.classList.remove('detail-trade-card__notice--error');
+        detailTradeNotice.classList.remove('detail-trade-notice--error');
       } else {
         detailTradeNotice.textContent =
           formatIntegerID(trade.buyQty) +
@@ -1369,7 +1369,7 @@
           asset.unitLabel +
           ' · ' +
           formatRupiahCompact(estBuyCost);
-        detailTradeNotice.classList.remove('detail-trade-card__notice--error');
+        detailTradeNotice.classList.remove('detail-trade-notice--error');
       }
     }
 
@@ -1584,11 +1584,11 @@
   function showOfflineWelcomeModal(bonus, seconds) {
     if (!offlineModal || !offlineModalTitle || bonus <= 0) return;
     offlineModalTitle.textContent =
-      'Selamat datang kembali, +$' + formatCurrencyValue(bonus);
+      'Selamat datang kembali, +' + formatRupiahCompact(bonus);
     if (offlineModalDesc) {
       const minutes = Math.max(1, Math.round(seconds / CONFIG.SECONDS_PER_MINUTE));
       offlineModalDesc.textContent =
-        'Tim Otomatis mengumpulkan penghasilan selama ' +
+        'Penghasilan pasif dikumpulkan selama ' +
         (seconds < CONFIG.SECONDS_PER_MINUTE ? seconds + ' detik' : minutes + ' menit') +
         ' Anda tidak aktif (efisiensi 50%, batas maksimal 2 jam).';
     }
@@ -1887,8 +1887,8 @@
       statTotalTaps.textContent = formatIntegerID(state.totalTaps);
     }
     if (statTotalEarned) {
-      const fullEarned = '$ ' + formatFullCurrencyValue(state.totalEarned);
-      statTotalEarned.textContent = '$ ' + formatCurrencyValue(state.totalEarned);
+      const fullEarned = formatRupiahFull(state.totalEarned);
+      statTotalEarned.textContent = formatRupiahCompact(state.totalEarned);
       statTotalEarned.title = fullEarned;
       statTotalEarned.setAttribute('aria-label', fullEarned);
     }
@@ -2025,14 +2025,14 @@
       if (effectEl) {
         const passivePart =
           tier.passiveBonus > 0
-            ? ' • +$' + formatCurrencyValue(tier.passiveBonus) + '/dtk'
+            ? ' • +' + formatRupiahCompact(tier.passiveBonus) + '/dtk'
             : '';
         effectEl.textContent =
-          '+$' + formatCurrencyValue(tier.clickBonus) + ' per ketuk' + passivePart;
+          '+' + formatRupiahCompact(tier.clickBonus) + ' per ketuk' + passivePart;
       }
       if (btn) {
-        btn.textContent = 'Beli $ ' + formatCurrencyValue(cost);
-        btn.title = 'Biaya: $ ' + formatFullCurrencyValue(cost);
+        btn.textContent = 'Beli ' + formatRupiahCompact(cost);
+        btn.title = 'Biaya: ' + formatRupiahFull(cost);
         btn.disabled = !canAfford;
       }
     });
@@ -2115,8 +2115,8 @@
       tier.name +
         ' naik ke tingkat ' +
         state.upgrades[tier.id] +
-        '. Saldo $ ' +
-        formatCurrencyValue(state.balance),
+        '. Saldo ' +
+        formatRupiahCompact(state.balance),
       true
     );
     return true;
@@ -2128,14 +2128,14 @@
   function renderStats() {
     if (!balanceDisplay || !previewBalanceDisplay || !perClickDisplay) return;
 
-    const formattedBalance = '$ ' + formatCurrencyValue(state.balance);
-    const fullBalance = '$ ' + formatFullCurrencyValue(state.balance);
+    const formattedBalance = formatRupiahCompact(state.balance);
+    const fullBalance = formatRupiahFull(state.balance);
     const passiveLabel =
-      state.perSecond > 0 ? ' • +$ ' + formatCurrencyValue(state.perSecond) + '/dtk' : '';
+      state.perSecond > 0 ? ' • +' + formatRupiahCompact(state.perSecond) + '/dtk' : '';
     const passiveFull =
-      state.perSecond > 0 ? ' dan +$ ' + formatFullCurrencyValue(state.perSecond) + ' per detik' : '';
-    const formattedPerClick = '$ ' + formatCurrencyValue(state.perClick) + ' per ketuk' + passiveLabel;
-    const fullPerClick = '$ ' + formatFullCurrencyValue(state.perClick) + ' per ketuk' + passiveFull;
+      state.perSecond > 0 ? ' dan +' + formatRupiahFull(state.perSecond) + ' per detik' : '';
+    const formattedPerClick = formatRupiahCompact(state.perClick) + ' per ketuk' + passiveLabel;
+    const fullPerClick = formatRupiahFull(state.perClick) + ' per ketuk' + passiveFull;
 
     balanceDisplay.textContent = formattedBalance;
     balanceDisplay.title = fullBalance;
@@ -2229,7 +2229,7 @@
 
     const floatEl = document.createElement('span');
     floatEl.className = 'floating-earning';
-    floatEl.textContent = '+$' + formatCurrencyValue(amount);
+    floatEl.textContent = '+' + formatRupiahCompact(amount);
     floatEl.style.left = (clampedX + jitterX) + 'px';
     floatEl.style.top = clampedY + 'px';
     floatEl.addEventListener('animationend', function () {
@@ -2335,7 +2335,7 @@
           '"></use></svg>';
       }
       if (previewBalanceDisplay) {
-        previewBalanceDisplay.textContent = '$ ' + formatCurrencyValue(state.balance);
+        previewBalanceDisplay.textContent = formatRupiahCompact(state.balance);
       }
 
       if (previewProgressLabel && previewProgressFill && previewProgressbar) {

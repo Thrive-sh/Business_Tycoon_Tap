@@ -79,13 +79,13 @@
           <!-- Bagian Bawah Kartu: Label Saldo & Angka Saldo Utama -->
           <div class="bank-card__bottom">
             <span class="bank-card__label">Saldo:</span>
-            <div class="bank-card__balance" id="balance-display">$ 0,00</div>
+            <div class="bank-card__balance" id="balance-display">Rp0,00</div>
           </div>
         </div>
 
         <!-- Kotak Pendapatan Per Ketukan -->
         <div class="per-click-box" aria-label="Pendapatan per ketukan">
-          <span class="per-click-box__value" id="per-click-display">$ 1,00 per ketuk</span>
+          <span class="per-click-box__value" id="per-click-display">Rp1,00 per ketuk</span>
         </div>
       </header>
 
@@ -228,7 +228,10 @@
 
       <div class="detail-body" id="detail-body">
         <div class="detail-price-box">
-          <div class="detail-price-box__current" id="detail-market-price-hero">Rp0,00</div>
+          <div class="detail-price-box__main">
+            <div class="detail-price-box__current" id="detail-market-price-hero">Rp0,00</div>
+            <span class="detail-price-box__live">Live · update 3 dtk</span>
+          </div>
           <div class="detail-price-box__change pnl--positive" id="detail-price-change">+0,00%</div>
         </div>
 
@@ -238,15 +241,15 @@
 
         <div class="detail-trade-card" id="detail-trade-card">
           <div class="detail-qty-row" role="group" aria-label="Pilih jumlah unit transaksi">
-            <button type="button" class="qty-chip qty-chip--active" data-qty-mode="1" aria-pressed="true">1</button>
-            <button type="button" class="qty-chip" data-qty-mode="10" aria-pressed="false">10</button>
-            <button type="button" class="qty-chip" data-qty-mode="100" aria-pressed="false">100</button>
-            <button type="button" class="qty-chip" data-qty-mode="max" aria-pressed="false">Maks</button>
+            <button type="button" class="qty-chip qty-chip--active" data-trade-qty="1" aria-pressed="true">1</button>
+            <button type="button" class="qty-chip" data-trade-qty="10" aria-pressed="false">10</button>
+            <button type="button" class="qty-chip" data-trade-qty="100" aria-pressed="false">100</button>
+            <button type="button" class="qty-chip" data-trade-qty="max" aria-pressed="false">Maks</button>
           </div>
           <div class="detail-trade-notice" id="detail-trade-notice" aria-live="polite"></div>
           <div class="detail-trade-actions">
-            <button type="button" class="trade-btn trade-btn--sell" id="btn-sell-asset" disabled>JUAL</button>
-            <button type="button" class="trade-btn trade-btn--buy" id="btn-buy-asset">Beli lebih banyak</button>
+            <button type="button" class="trade-btn trade-btn--sell" id="detail-sell-btn" disabled>JUAL</button>
+            <button type="button" class="trade-btn trade-btn--buy" id="detail-buy-btn">BELI</button>
           </div>
         </div>
 
@@ -291,7 +294,7 @@
       <div class="preview-header">
         <div class="preview-header__meta">
           <span class="preview-header__label">Saldo Tersimpan</span>
-          <span class="preview-header__balance" id="preview-balance-display">$ 0,00</span>
+          <span class="preview-header__balance" id="preview-balance-display">Rp0,00</span>
         </div>
       </div>
 
@@ -299,7 +302,7 @@
         <div class="preview-card">
           <div class="preview-card__icon-wrap" id="preview-icon-container" aria-hidden="true"></div>
           <span class="preview-card__tag">Dalam Pengembangan</span>
-          <h1 class="preview-card__title" id="preview-title"><span lang="en">Investing</span> — Dalam Pengembangan</h1>
+          <h1 class="preview-card__title" id="preview-title">Usaha — Dalam Pengembangan</h1>
           <p class="preview-card__desc" id="preview-description">
             Modul ini sedang dikerjakan secara bertahap. Berikut rencana fitur yang disiapkan:
           </p>
@@ -334,7 +337,7 @@
               </div>
               <div class="profile-stats__item">
                 <dt>Total Pendapatan</dt>
-                <dd id="stat-total-earned">$ 0,00</dd>
+                <dd id="stat-total-earned">Rp0,00</dd>
               </div>
               <div class="profile-stats__item">
                 <dt>Mulai Bermain</dt>
@@ -432,7 +435,7 @@
     <!-- MODAL SAMBUTAN PENDAPATAN LURING (OFFLINE EARNINGS) -->
     <div class="modal-backdrop" id="offline-modal" role="dialog" aria-modal="true" aria-labelledby="offline-modal-title" hidden>
       <div class="modal-dialog">
-        <h2 class="modal-dialog__title" id="offline-modal-title">Selamat datang kembali, +$ 0,00</h2>
+        <h2 class="modal-dialog__title" id="offline-modal-title">Selamat datang kembali, +Rp0,00</h2>
         <p class="modal-dialog__body" id="offline-modal-desc">
           Tim Otomatis Anda tetap bekerja selama Anda tidak aktif (efisiensi 50%, maksimal 2 jam).
         </p>

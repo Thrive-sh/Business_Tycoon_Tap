@@ -9,9 +9,11 @@
   --text-muted: #78716C;
   --orange: #F97316;
   --orange-dark: #EA580C;
+  --orange-contrast: #C2410C;
   --orange-light: #FFEDD5;
   --orange-50: #FFF7ED;
   --green: #16A34A;
+  --green-text: #15803D;
   --red: #DC2626;
   --border: #FED7AA;
 }
@@ -1172,10 +1174,10 @@ input:focus-visible,
 }
 
 .invest-subtab--active {
-  background-color: var(--orange);
-  color: #FFFFFF;
-  font-weight: 700;
-  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.25);
+  background-color: var(--orange-light);
+  color: #9A3412;
+  font-weight: 800;
+  box-shadow: inset 0 0 0 1.5px var(--orange);
 }
 
 .invest-body {
@@ -1225,7 +1227,7 @@ input:focus-visible,
 }
 
 .pnl--positive {
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .pnl--negative {
@@ -1438,10 +1440,17 @@ input:focus-visible,
 
 .detail-price-box {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 8px;
   padding: 2px 2px 0;
+}
+
+.detail-price-box__main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
 .detail-price-box__current {
@@ -1451,10 +1460,17 @@ input:focus-visible,
   font-variant-numeric: tabular-nums;
 }
 
+.detail-price-box__live {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
 .detail-price-box__change {
   font-size: 13.5px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
 }
 
 .detail-chart-card {
@@ -1469,7 +1485,7 @@ input:focus-visible,
 .detail-chart-canvas {
   display: block;
   width: 100%;
-  height: 176px;
+  height: 160px;
 }
 
 .detail-trade-card {
@@ -1513,13 +1529,18 @@ input:focus-visible,
   min-height: 16px;
   font-size: 12px;
   font-weight: 600;
-  color: var(--red);
+  color: var(--text-muted);
   text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.detail-trade-notice--error {
+  color: var(--red);
 }
 
 .detail-trade-actions {
   display: grid;
-  grid-template-columns: 1fr 1.35fr;
+  grid-template-columns: 1fr 1.25fr;
   gap: 10px;
 }
 
@@ -1553,10 +1574,10 @@ input:focus-visible,
 }
 
 .trade-btn--buy {
-  background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
-  border: 1.5px solid var(--orange-dark);
+  background: linear-gradient(135deg, var(--orange-dark) 0%, var(--orange-contrast) 100%);
+  border: 1.5px solid var(--orange-contrast);
   color: #FFFFFF;
-  box-shadow: 0 5px 14px rgba(234, 88, 12, 0.22);
+  box-shadow: 0 5px 14px rgba(194, 65, 12, 0.22);
 }
 
 .trade-btn--buy:disabled {
