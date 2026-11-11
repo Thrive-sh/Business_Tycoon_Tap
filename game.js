@@ -9,6 +9,7 @@
   const STORAGE_KEY = 'business_simulator_save_v1';
   const SAVE_SCHEMA_VERSION = 2;
   const SAVE_THROTTLE_MS = 500;
+  const SR_ANNOUNCE_THROTTLE_MS = 4000;
   const PASSIVE_TICK_MS = 1000;
   const MAX_OFFLINE_SECONDS = 7200;
   const OFFLINE_EFFICIENCY = 0.5;
@@ -143,6 +144,7 @@
   const offlineModalTitle = document.getElementById('offline-modal-title');
   const offlineModalDesc = document.getElementById('offline-modal-desc');
   const closeOfflineModalBtn = document.getElementById('close-offline-modal-btn');
+  const srAnnouncer = document.getElementById('sr-announcer');
   const navTabs = Array.from(document.querySelectorAll('.nav-tab'));
   const navBadges = {
     Earnings: document.querySelector('[data-nav-badge="Earnings"]'),
@@ -152,9 +154,41 @@
   let lastTouchTimestamp = 0;
   let pulseCleanupTimer = null;
   let saveThrottleTimer = null;
+  let srAnnounceTimer = null;
   let passiveIntervalId = null;
   let hasPendingSave = false;
   let acknowledgedAffordableCount = 0;
+
+  /**
+   * Mengecek apakah pengguna mengaktifkan preferensi pengurangan gerak.
+   */
+  function prefersReducedMotion() {
+    return Boolean(
+      typeof window !== 'undefined' &&
+        window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    );
+  }
+
+  /**
+   * Mengumumkan pesan ke pembaca layar secara ter-throttle atau seketika saat peristiwa penting.
+   */
+  function announceScreenReader(message, immediate) {
+    if (!srAnnouncer) return;
+    if (immediate) {
+      if (srAnnounceTimer) {
+        window.clearTimeout(srAnnounceTimer);
+        srAnnounceTimer = null;
+      }
+      srAnnouncer.textContent = message;
+      return;
+    }
+    if (srAnnounceTimer) return;
+    srAnnounceTimer = window.setTimeout(function () {
+      srAnnounceTimer = null;
+      srAnnouncer.textContent = 'Saldo saat ini $ ' + formatCurrencyValue(state.balance);
+    }, SR_ANNOUNCE_THROTTLE_MS);
+  }
 
   const COMPACT_UNITS = [
     { threshold: 1e12, suffix: 'T' },
@@ -639,6 +673,14 @@
     writeSaveImmediate();
     renderStats();
     renderUpgrades();
+    announceScreenReader(
+      tier.name +
+        ' naik ke tingkat ' +
+        state.upgrades[tier.id] +
+        '. Saldo $ ' +
+        formatCurrencyValue(state.balance),
+      true
+    );
     return true;
   }
 
@@ -683,6 +725,7 @@
    * Memberikan animasi memantul halus (scale pulse) pada ikon tangan SVG.
    */
   function triggerHandPulse() {
+    if (prefersReducedMotion()) return;
     tapHandIcon.classList.remove('is-pulsing');
     // Paksa reflow ringan agar animasi langsung diulang pada ketukan cepat beruntun
     void tapHandIcon.offsetWidth;
@@ -700,6 +743,7 @@
    * Memunculkan efek riak sentuh & teks angka melayang ("+$1,00") di titik sentuhan jari.
    */
   function spawnFloatingFeedback(clientX, clientY, amount) {
+    if (prefersReducedMotion()) return;
     const rect = tapArea.getBoundingClientRect();
 
     // Tentukan titik relatif di dalam tapArea (fallback ke tengah jika dipicu keyboard)
@@ -767,6 +811,7 @@
     }
     triggerHandPulse();
     spawnFloatingFeedback(clientX, clientY, state.perClick);
+    announceScreenReader('', false);
   }
 
   /**

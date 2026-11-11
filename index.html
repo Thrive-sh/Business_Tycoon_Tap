@@ -52,6 +52,8 @@
   </svg>
 
   <div class="app-shell" id="app-shell">
+    <!-- Pengumuman pembaca layar ter-throttle agar tidak spam saat ketuk cepat -->
+    <div id="sr-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
     <!-- ==================== LAYAR UTAMA: TAB EARNINGS ==================== -->
     <main class="screen screen--active" id="earnings-screen" aria-label="Dasbor Pendapatan">
@@ -101,7 +103,7 @@
           <!-- Bagian Bawah Kartu: Label Saldo & Angka Saldo Utama -->
           <div class="bank-card__bottom">
             <span class="bank-card__label">Saldo:</span>
-            <div class="bank-card__balance" id="balance-display" aria-live="polite">$ 0,00</div>
+            <div class="bank-card__balance" id="balance-display">$ 0,00</div>
           </div>
         </div>
 
