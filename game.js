@@ -125,6 +125,7 @@
 
   // Referensi elemen DOM
   const balanceDisplay = document.getElementById('balance-display');
+  const playerCardId = document.getElementById('player-card-id');
   const previewBalanceDisplay = document.getElementById('preview-balance-display');
   const perClickDisplay = document.getElementById('per-click-display');
   const tapArea = document.getElementById('tap-area');
@@ -459,6 +460,26 @@
   }
 
   /**
+   * Menurunkan ID pemain netral (#BT-YYYY-XXXX) secara deterministik dari startDate.
+   */
+  function derivePlayerCardId(timestamp) {
+    const safeTs = Number.isFinite(timestamp) && timestamp > 0 ? Math.floor(timestamp) : Date.now();
+    const year = new Date(safeTs).getFullYear();
+    const hash = ((safeTs * 2654435761) >>> 0) % 10000;
+    const digits = String(hash).padStart(4, '0');
+    return '#BT-' + year + '-' + digits;
+  }
+
+  /**
+   * Memperbarui label ID pemain pada Kartu Utama.
+   */
+  function renderBankCardIdentity() {
+    if (playerCardId) {
+      playerCardId.textContent = derivePlayerCardId(state.startDate);
+    }
+  }
+
+  /**
    * Memuat data dari localStorage dengan migrasi otomatis dari Save Schema v1 ke v2.
    */
   function loadState() {
@@ -682,6 +703,7 @@
     writeSaveImmediate();
     setTabBadge('Earnings', 0);
     setTabBadge('Profile', 0);
+    renderBankCardIdentity();
     renderStats();
     renderUpgrades();
     renderProfileStats();
@@ -1303,6 +1325,7 @@
     setTabBadge('Earnings', 0);
     setTabBadge('Profile', 0);
     loadState();
+    renderBankCardIdentity();
     renderStats();
     renderUpgrades();
     renderProfileStats();
