@@ -128,17 +128,62 @@
       <div class="preview-body">
         <div class="preview-card">
           <div class="preview-card__icon-wrap" id="preview-icon-container" aria-hidden="true"></div>
-          <span class="preview-card__tag">Tahap Pengembangan</span>
-          <h1 class="preview-card__title" id="preview-title">Modul Investing - Segera Hadir</h1>
+          <span class="preview-card__tag">Dalam Pengembangan</span>
+          <h1 class="preview-card__title" id="preview-title">Investing — Dalam Pengembangan</h1>
           <p class="preview-card__desc" id="preview-description">
-            Fitur ini sedang disiapkan untuk memperluas kerajaan bisnis Anda. Kembali ke tab Earnings untuk terus mengumpulkan modal.
+            Modul ini sedang dikerjakan secara bertahap. Berikut rencana fitur yang disiapkan:
           </p>
-          <button type="button" class="preview-card__btn" id="back-to-earnings-btn">
-            Kembali ke Earnings
-          </button>
+
+          <div class="preview-progress">
+            <div class="preview-progress__top">
+              <span>Progres Modul</span>
+              <span id="preview-progress-label">15%</span>
+            </div>
+            <div
+              class="preview-progress__track"
+              id="preview-progressbar"
+              role="progressbar"
+              aria-label="Progres pengembangan modul"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="15"
+            >
+              <div class="preview-progress__bar" id="preview-progress-fill" style="width: 15%;"></div>
+            </div>
+          </div>
+
+          <ul class="preview-features" id="preview-features-list"></ul>
+
+          <div class="preview-actions">
+            <button type="button" class="preview-card__btn" id="back-to-earnings-btn">
+              Kembali ke Earnings
+            </button>
+            <button type="button" class="preview-card__btn preview-card__btn--secondary" id="open-roadmap-btn">
+              Lihat Roadmap
+            </button>
+          </div>
         </div>
       </div>
     </section>
+
+    <!-- MODAL ROADMAP RENCANA PENGEMBANGAN -->
+    <div class="modal-backdrop" id="roadmap-modal" role="dialog" aria-modal="true" aria-labelledby="roadmap-modal-title" hidden>
+      <div class="modal-dialog">
+        <h2 class="modal-dialog__title" id="roadmap-modal-title">Peta Jalan Pengembangan</h2>
+        <p class="modal-dialog__body">
+          Urutan rilis fitur Business Tycoon Tap yang sedang dikerjakan:
+        </p>
+        <ul class="roadmap-list">
+          <li><strong>Tahap 1 (Aktif):</strong> Loop ekonomi ketukan, 3 tier upgrade, dan pendapatan pasif dasar.</li>
+          <li><strong>Tahap 2:</strong> Statistik profil pemain, penghasilan offline terukur, dan dukungan instalasi PWA.</li>
+          <li><strong>Tahap 3:</strong> Pembukaan unit usaha ritel &amp; korporasi pada modul Business.</li>
+          <li><strong>Tahap 4:</strong> Simulasi instrumen saham &amp; properti pada modul Investing serta koleksi aset Items.</li>
+        </ul>
+        <div class="modal-dialog__actions">
+          <button type="button" class="preview-card__btn" id="close-roadmap-btn">Tutup</button>
+        </div>
+      </div>
+    </div>
 
     <!-- ==================== 3. BAGIAN BAWAH: BOTTOM NAVIGATION BAR ==================== -->
     <nav class="bottom-nav" aria-label="Navigasi Utama">

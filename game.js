@@ -33,11 +33,17 @@
     }
   ];
 
-  // Data deskripsi & ikon SVG vektor untuk layar pratinjau modul lain
+  // Data status pengembangan, progres, rencana fitur, & ikon SVG untuk tab non-Earnings
   const MODULE_PREVIEWS = {
     Investing: {
+      progress: 15,
       description:
-        'Bangun portofolio saham perusahaan teknologi, obligasi, dan real estat berimbal hasil tinggi untuk pendapatan pasif.',
+        'Instrumen pasar modal dan properti sedang dirancang agar modal Anda bisa berkembang secara pasif.',
+      features: [
+        'Bursa saham perusahaan dengan dividen berkala',
+        'Investasi properti sewa berimbal hasil stabil',
+        'Ringkasan portofolio dan riwayat imbal hasil'
+      ],
       svg: `
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M3 17L9 11L13 15L21 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
@@ -47,8 +53,14 @@
       `
     },
     Business: {
+      progress: 20,
       description:
-        'Dirikan jaringan ritel, pabrik manufaktur, hingga korporasi multinasional dan kelola ekspansi bisnis Anda.',
+        'Sistem pendirian dan pengelolaan unit usaha sedang disiapkan untuk ekspansi pendapatan.',
+      features: [
+        'Pembukaan gerai ritel dan kedai kopi pertama',
+        'Peningkatan kapasitas produksi dan manajer operasional',
+        'Laporan arus kas bisnis per detik'
+      ],
       svg: `
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M4 21V4.5C4 3.94772 4.44772 3.5 5 3.5H13C13.5523 3.5 14 3.94772 14 4.5V21" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" />
@@ -60,8 +72,14 @@
       `
     },
     Items: {
+      progress: 10,
       description:
-        'Koleksi aset prestisius mulai dari supercar, kapal pesiar, jet pribadi, hingga karya seni langka kelas dunia.',
+        'Katalog koleksi aset dan barang prestisius sedang disusun sebagai target jangka panjang.',
+      features: [
+        'Koleksi kendaraan eksekutif dan properti pribadi',
+        'Galeri pencapaian koleksi langka',
+        'Bonus reputasi dari kepemilikan aset'
+      ],
       svg: `
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 2.8L20 7.3V16.7L12 21.2L4 16.7V7.3L12 2.8Z" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round" />
@@ -72,8 +90,14 @@
       `
     },
     Profile: {
+      progress: 25,
       description:
-        'Pantau total kekayaan bersih, statistik ketukan, lencana pencapaian, serta peringkat kerajaan bisnis Anda.',
+        'Halaman profil pemain untuk memantau statistik ketukan, pencapaian, dan pengelolaan data.',
+      features: [
+        'Catatan total ketukan dan total pendapatan sepanjang waktu',
+        'Daftar pencapaian (milestone) pemain',
+        'Pengaturan preferensi dan manajemen data tersimpan'
+      ],
       svg: `
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="12" cy="8" r="3.8" stroke="currentColor" stroke-width="2.1" />
@@ -109,7 +133,14 @@
   const previewTitle = document.getElementById('preview-title');
   const previewDescription = document.getElementById('preview-description');
   const previewIconContainer = document.getElementById('preview-icon-container');
+  const previewProgressLabel = document.getElementById('preview-progress-label');
+  const previewProgressbar = document.getElementById('preview-progressbar');
+  const previewProgressFill = document.getElementById('preview-progress-fill');
+  const previewFeaturesList = document.getElementById('preview-features-list');
   const backToEarningsBtn = document.getElementById('back-to-earnings-btn');
+  const openRoadmapBtn = document.getElementById('open-roadmap-btn');
+  const closeRoadmapBtn = document.getElementById('close-roadmap-btn');
+  const roadmapModal = document.getElementById('roadmap-modal');
   const navTabs = Array.from(document.querySelectorAll('.nav-tab'));
   const navBadges = {
     Earnings: document.querySelector('[data-nav-badge="Earnings"]'),
@@ -479,10 +510,25 @@
       previewScreen.classList.remove('screen--active');
     } else {
       const moduleInfo = MODULE_PREVIEWS[tabName] || MODULE_PREVIEWS.Investing;
-      previewTitle.textContent = 'Modul ' + tabName + ' - Segera Hadir';
+      previewTitle.textContent = tabName + ' — Dalam Pengembangan';
       previewDescription.textContent = moduleInfo.description;
       previewIconContainer.innerHTML = moduleInfo.svg;
       previewBalanceDisplay.textContent = '$ ' + formatCurrencyValue(state.balance);
+
+      if (previewProgressLabel && previewProgressFill && previewProgressbar) {
+        previewProgressLabel.textContent = moduleInfo.progress + '%';
+        previewProgressFill.style.width = moduleInfo.progress + '%';
+        previewProgressbar.setAttribute('aria-valuenow', String(moduleInfo.progress));
+      }
+
+      if (previewFeaturesList) {
+        previewFeaturesList.innerHTML = '';
+        (moduleInfo.features || []).forEach(function (featText) {
+          const li = document.createElement('li');
+          li.textContent = featText;
+          previewFeaturesList.appendChild(li);
+        });
+      }
 
       earningsScreen.hidden = true;
       previewScreen.hidden = false;
@@ -562,6 +608,30 @@
     backToEarningsBtn.addEventListener('click', function () {
       switchTab('Earnings');
     });
+
+    // Modal Roadmap ("Lihat Roadmap")
+    if (openRoadmapBtn && roadmapModal) {
+      openRoadmapBtn.addEventListener('click', function () {
+        roadmapModal.hidden = false;
+      });
+    }
+    if (closeRoadmapBtn && roadmapModal) {
+      closeRoadmapBtn.addEventListener('click', function () {
+        roadmapModal.hidden = true;
+      });
+    }
+    if (roadmapModal) {
+      roadmapModal.addEventListener('click', function (event) {
+        if (event.target === roadmapModal) {
+          roadmapModal.hidden = true;
+        }
+      });
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && !roadmapModal.hidden) {
+          roadmapModal.hidden = true;
+        }
+      });
+    }
   }
 
   // Inisialisasi aplikasi
