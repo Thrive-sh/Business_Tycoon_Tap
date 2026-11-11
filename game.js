@@ -111,9 +111,14 @@
   const previewIconContainer = document.getElementById('preview-icon-container');
   const backToEarningsBtn = document.getElementById('back-to-earnings-btn');
   const navTabs = Array.from(document.querySelectorAll('.nav-tab'));
+  const navBadges = {
+    Earnings: document.querySelector('[data-nav-badge="Earnings"]'),
+    Profile: document.querySelector('[data-nav-badge="Profile"]')
+  };
 
   let lastTouchTimestamp = 0;
   let pulseCleanupTimer = null;
+  let acknowledgedAffordableCount = 0;
 
   /**
    * Memformat angka ke format pemisah ribuan titik (.) dan desimal koma (,).
@@ -262,6 +267,57 @@
         btn.disabled = !canAfford;
       }
     });
+
+    updateDynamicBadges();
+  }
+
+  /**
+   * Menghitung berapa banyak tier upgrade yang saat ini terjangkau oleh saldo.
+   */
+  function countAffordableUpgrades() {
+    let count = 0;
+    UPGRADE_TIERS.forEach(function (tier) {
+      const level = Number(state.upgrades[tier.id]) || 0;
+      const cost = getUpgradeCost(tier, level);
+      if (state.balance >= cost) {
+        count += 1;
+      }
+    });
+    return count;
+  }
+
+  /**
+   * Mengatur tampilan lencana notifikasi dinamis pada tab navigasi.
+   */
+  function setTabBadge(tabName, count) {
+    const badgeEl = navBadges[tabName];
+    if (!badgeEl) return;
+
+    if (count > 0) {
+      badgeEl.textContent = String(count);
+      badgeEl.hidden = false;
+      badgeEl.style.display = 'flex';
+    } else {
+      badgeEl.textContent = '';
+      badgeEl.hidden = true;
+      badgeEl.style.display = 'none';
+    }
+  }
+
+  /**
+   * Memperbarui badge dinamis berdasarkan kondisi nyata (upgrade terjangkau).
+   */
+  function updateDynamicBadges() {
+    const affordable = countAffordableUpgrades();
+    if (state.activeTab === 'Earnings') {
+      acknowledgedAffordableCount = affordable;
+      setTabBadge('Earnings', 0);
+    } else if (affordable > acknowledgedAffordableCount) {
+      setTabBadge('Earnings', affordable);
+    } else if (affordable === 0) {
+      acknowledgedAffordableCount = 0;
+      setTabBadge('Earnings', 0);
+    }
   }
 
   /**
@@ -401,6 +457,10 @@
    */
   function switchTab(tabName) {
     state.activeTab = tabName;
+    setTabBadge(tabName, 0);
+    if (tabName === 'Earnings') {
+      acknowledgedAffordableCount = countAffordableUpgrades();
+    }
 
     navTabs.forEach(function (tabBtn) {
       const isSelected = tabBtn.getAttribute('data-tab') === tabName;
@@ -506,6 +566,8 @@
 
   // Inisialisasi aplikasi
   function init() {
+    setTabBadge('Earnings', 0);
+    setTabBadge('Profile', 0);
     loadState();
     renderStats();
     renderUpgrades();
