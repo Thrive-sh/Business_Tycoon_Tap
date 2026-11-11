@@ -13,7 +13,7 @@
   const BASE_PER_CLICK = 1.0;
   const COST_GROWTH_FACTOR = 1.15;
 
-  // Definisi 3 tier upgrade per-click
+  // Definisi 3 tingkat peningkatan per ketuk
   const UPGRADE_TIERS = [
     {
       id: 'gloves',
@@ -23,7 +23,7 @@
     },
     {
       id: 'tap_machine',
-      name: 'Mesin Tap',
+      name: 'Mesin Ketuk',
       baseCost: 100,
       clickBonus: 5
     },
@@ -97,7 +97,7 @@
         'Halaman profil pemain untuk memantau statistik ketukan, pencapaian, dan pengelolaan data.',
       features: [
         'Catatan total ketukan dan total pendapatan sepanjang waktu',
-        'Daftar pencapaian (milestone) pemain',
+        'Daftar pencapaian pemain berdasarkan target',
         'Pengaturan preferensi dan manajemen data tersimpan'
       ],
       svg: `
@@ -499,10 +499,10 @@
       const btn = upgradesList.querySelector('[data-upgrade-id="' + tier.id + '"]');
 
       if (levelEl) {
-        levelEl.textContent = 'Lv. ' + level;
+        levelEl.textContent = 'Tk. ' + level;
       }
       if (effectEl) {
-        effectEl.textContent = '+$' + formatCurrencyValue(tier.clickBonus) + ' per click';
+        effectEl.textContent = '+$' + formatCurrencyValue(tier.clickBonus) + ' per ketuk';
       }
       if (btn) {
         btn.textContent = 'Beli $ ' + formatCurrencyValue(cost);
@@ -593,8 +593,8 @@
   function renderStats() {
     const formattedBalance = '$ ' + formatCurrencyValue(state.balance);
     const fullBalance = '$ ' + formatFullCurrencyValue(state.balance);
-    const formattedPerClick = '$ ' + formatCurrencyValue(state.perClick) + ' per click';
-    const fullPerClick = '$ ' + formatFullCurrencyValue(state.perClick) + ' per click';
+    const formattedPerClick = '$ ' + formatCurrencyValue(state.perClick) + ' per ketuk';
+    const fullPerClick = '$ ' + formatFullCurrencyValue(state.perClick) + ' per ketuk';
 
     balanceDisplay.textContent = formattedBalance;
     balanceDisplay.title = fullBalance;
@@ -737,7 +737,12 @@
       previewScreen.classList.remove('screen--active');
     } else {
       const moduleInfo = MODULE_PREVIEWS[tabName] || MODULE_PREVIEWS.Investing;
-      previewTitle.textContent = tabName + ' — Dalam Pengembangan';
+      previewTitle.textContent = '';
+      const brandSpan = document.createElement('span');
+      brandSpan.setAttribute('lang', 'en');
+      brandSpan.textContent = tabName;
+      previewTitle.appendChild(brandSpan);
+      previewTitle.appendChild(document.createTextNode(' — Dalam Pengembangan'));
       previewDescription.textContent = moduleInfo.description;
       previewIconContainer.innerHTML = moduleInfo.svg;
       previewBalanceDisplay.textContent = '$ ' + formatCurrencyValue(state.balance);

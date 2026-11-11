@@ -6,14 +6,14 @@
   <meta name="theme-color" content="#228B88">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Business Simulator - Earnings Dashboard</title>
+  <title>Business Tycoon Tap — Dasbor Pendapatan</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="app-shell" id="app-shell">
 
     <!-- ==================== LAYAR UTAMA: TAB EARNINGS ==================== -->
-    <main class="screen screen--active" id="earnings-screen" aria-label="Earnings Dashboard">
+    <main class="screen screen--active" id="earnings-screen" aria-label="Dasbor Pendapatan">
 
       <!-- 1. BAGIAN ATAS: TOP HEADER CARD CONTAINER -->
       <header class="top-header-container">
@@ -57,16 +57,16 @@
             <span class="bank-card__expiry">05/26</span>
           </div>
 
-          <!-- Bagian Bawah Kartu: Label Balance & Angka Saldo Utama -->
+          <!-- Bagian Bawah Kartu: Label Saldo & Angka Saldo Utama -->
           <div class="bank-card__bottom">
-            <span class="bank-card__label">Balance:</span>
+            <span class="bank-card__label">Saldo:</span>
             <div class="bank-card__balance" id="balance-display" aria-live="polite">$ 0,00</div>
           </div>
         </div>
 
         <!-- Kotak Efek Kaca Gelap Transparan (Pendapatan Per Ketukan) -->
         <div class="per-click-box" aria-label="Pendapatan per ketukan">
-          <span class="per-click-box__value" id="per-click-display">$ 1,00 per click</span>
+          <span class="per-click-box__value" id="per-click-display">$ 1,00 per ketuk</span>
         </div>
       </header>
 
@@ -99,17 +99,17 @@
               />
             </svg>
           </div>
-          <p class="tap-area__hint">Click in this area to earn money</p>
+          <p class="tap-area__hint">Ketuk area ini untuk mendapatkan uang</p>
         </div>
 
         <!-- Layer Kontainer Angka Melayang & Efek Riak Sentuhan -->
         <div class="tap-effects-layer" id="tap-effects-layer" aria-hidden="true"></div>
       </section>
 
-      <!-- 2B. PANEL UPGRADE PER-CLICK -->
-      <section class="upgrades-panel" aria-label="Daftar Upgrade">
+      <!-- 2B. PANEL PENINGKATAN PER-KETUK -->
+      <section class="upgrades-panel" aria-label="Daftar Peningkatan">
         <div class="upgrades-panel__header">
-          <h2 class="upgrades-panel__title">Upgrade Pendapatan</h2>
+          <h2 class="upgrades-panel__title">Peningkatan Pendapatan</h2>
         </div>
         <div class="upgrades-list" id="upgrades-list"></div>
       </section>
@@ -129,7 +129,7 @@
         <div class="preview-card">
           <div class="preview-card__icon-wrap" id="preview-icon-container" aria-hidden="true"></div>
           <span class="preview-card__tag">Dalam Pengembangan</span>
-          <h1 class="preview-card__title" id="preview-title">Investing — Dalam Pengembangan</h1>
+          <h1 class="preview-card__title" id="preview-title"><span lang="en">Investing</span> — Dalam Pengembangan</h1>
           <p class="preview-card__desc" id="preview-description">
             Modul ini sedang dikerjakan secara bertahap. Berikut rencana fitur yang disiapkan:
           </p>
@@ -178,28 +178,28 @@
 
           <div class="preview-actions">
             <button type="button" class="preview-card__btn" id="back-to-earnings-btn">
-              Kembali ke Earnings
+              Kembali ke <span lang="en">Earnings</span>
             </button>
             <button type="button" class="preview-card__btn preview-card__btn--secondary" id="open-roadmap-btn">
-              Lihat Roadmap
+              Lihat Peta Jalan
             </button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- MODAL ROADMAP RENCANA PENGEMBANGAN -->
+    <!-- MODAL PETA JALAN RENCANA PENGEMBANGAN -->
     <div class="modal-backdrop" id="roadmap-modal" role="dialog" aria-modal="true" aria-labelledby="roadmap-modal-title" hidden>
       <div class="modal-dialog">
         <h2 class="modal-dialog__title" id="roadmap-modal-title">Peta Jalan Pengembangan</h2>
         <p class="modal-dialog__body">
-          Urutan rilis fitur Business Tycoon Tap yang sedang dikerjakan:
+          Urutan rilis fitur <span lang="en">Business Tycoon Tap</span> yang sedang dikerjakan:
         </p>
         <ul class="roadmap-list">
-          <li><strong>Tahap 1 (Aktif):</strong> Loop ekonomi ketukan, 3 tier upgrade, dan pendapatan pasif dasar.</li>
-          <li><strong>Tahap 2:</strong> Statistik profil pemain, penghasilan offline terukur, dan dukungan instalasi PWA.</li>
-          <li><strong>Tahap 3:</strong> Pembukaan unit usaha ritel &amp; korporasi pada modul Business.</li>
-          <li><strong>Tahap 4:</strong> Simulasi instrumen saham &amp; properti pada modul Investing serta koleksi aset Items.</li>
+          <li><strong>Tahap 1 (Aktif):</strong> Siklus ekonomi ketukan, 3 tingkat peningkatan, dan pendapatan pasif dasar.</li>
+          <li><strong>Tahap 2:</strong> Statistik profil pemain, penghasilan luring terukur, dan dukungan pemasangan aplikasi.</li>
+          <li><strong>Tahap 3:</strong> Pembukaan unit usaha ritel dan korporasi pada modul <span lang="en">Business</span>.</li>
+          <li><strong>Tahap 4:</strong> Simulasi instrumen saham dan properti pada modul <span lang="en">Investing</span> serta koleksi aset <span lang="en">Items</span>.</li>
         </ul>
         <div class="modal-dialog__actions">
           <button type="button" class="preview-card__btn" id="close-roadmap-btn">Tutup</button>
@@ -212,7 +212,7 @@
       <div class="modal-dialog">
         <h2 class="modal-dialog__title" id="reset-modal-title">Reset Semua Data?</h2>
         <p class="modal-dialog__body">
-          Tindakan ini akan menghapus seluruh saldo, level upgrade, dan riwayat statistik secara permanen.
+          Tindakan ini akan menghapus seluruh saldo, tingkat peningkatan, dan riwayat statistik secara permanen.
         </p>
         <label class="reset-confirm-check" for="reset-confirm-checkbox">
           <input type="checkbox" id="reset-confirm-checkbox">
@@ -228,7 +228,7 @@
     <!-- ==================== 3. BAGIAN BAWAH: BOTTOM NAVIGATION BAR ==================== -->
     <nav class="bottom-nav" aria-label="Navigasi Utama">
       <!-- Tab 1: Investing -->
-      <button type="button" class="nav-tab" data-tab="Investing" aria-label="Investing">
+      <button type="button" class="nav-tab" data-tab="Investing" aria-label="Tab Investing">
         <span class="nav-tab__icon-box">
           <svg class="nav-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M3 17L9 11L13 15L21 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -236,11 +236,11 @@
             <path d="M4 20H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.55" />
           </svg>
         </span>
-        <span class="nav-tab__label">Investing</span>
+        <span class="nav-tab__label" lang="en">Investing</span>
       </button>
 
       <!-- Tab 2: Business -->
-      <button type="button" class="nav-tab" data-tab="Business" aria-label="Business">
+      <button type="button" class="nav-tab" data-tab="Business" aria-label="Tab Business">
         <span class="nav-tab__icon-box">
           <svg class="nav-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M4 21V4.5C4 3.94772 4.44772 3.5 5 3.5H13C13.5523 3.5 14 3.94772 14 4.5V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -251,11 +251,11 @@
             <path d="M9 21V18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
           </svg>
         </span>
-        <span class="nav-tab__label">Business</span>
+        <span class="nav-tab__label" lang="en">Business</span>
       </button>
 
-      <!-- Tab 3: Earnings (Status Aktif dengan ikon lingkaran biru penuh dan teks biru) -->
-      <button type="button" class="nav-tab nav-tab--active" data-tab="Earnings" aria-current="page" aria-label="Earnings">
+      <!-- Tab 3: Earnings -->
+      <button type="button" class="nav-tab nav-tab--active" data-tab="Earnings" aria-current="page" aria-label="Tab Earnings">
         <span class="nav-tab__icon-box">
           <svg class="nav-svg nav-svg--coin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <circle class="coin-bg" cx="12" cy="12" r="10" />
@@ -270,11 +270,11 @@
           </svg>
           <span class="nav-badge" data-nav-badge="Earnings" hidden aria-hidden="true"></span>
         </span>
-        <span class="nav-tab__label">Earnings</span>
+        <span class="nav-tab__label" lang="en">Earnings</span>
       </button>
 
       <!-- Tab 4: Items -->
-      <button type="button" class="nav-tab" data-tab="Items" aria-label="Items">
+      <button type="button" class="nav-tab" data-tab="Items" aria-label="Tab Items">
         <span class="nav-tab__icon-box">
           <svg class="nav-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M12 2.8L20 7.3V16.7L12 21.2L4 16.7V7.3L12 2.8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
@@ -283,11 +283,11 @@
             <path d="M8 5.05L16 9.55" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
           </svg>
         </span>
-        <span class="nav-tab__label">Items</span>
+        <span class="nav-tab__label" lang="en">Items</span>
       </button>
 
       <!-- Tab 5: Profile -->
-      <button type="button" class="nav-tab" data-tab="Profile" aria-label="Profile">
+      <button type="button" class="nav-tab" data-tab="Profile" aria-label="Tab Profile">
         <span class="nav-tab__icon-box">
           <svg class="nav-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <circle cx="12" cy="8" r="3.8" stroke="currentColor" stroke-width="2" />
@@ -295,7 +295,7 @@
           </svg>
           <span class="nav-badge" data-nav-badge="Profile" hidden aria-hidden="true"></span>
         </span>
-        <span class="nav-tab__label">Profile</span>
+        <span class="nav-tab__label" lang="en">Profile</span>
       </button>
     </nav>
 
