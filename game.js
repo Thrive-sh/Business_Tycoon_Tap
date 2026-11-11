@@ -8,6 +8,7 @@
   // Kunci penyimpanan otomatis di localStorage
   const STORAGE_KEY = 'business_simulator_save_v1';
   const SAVE_SCHEMA_VERSION = 2;
+  const SAVE_THROTTLE_MS = 500;
   const MAX_ACTIVE_PARTICLES = 40;
   const BASE_PER_CLICK = 1.0;
   const COST_GROWTH_FACTOR = 1.15;
@@ -165,6 +166,8 @@
 
   let lastTouchTimestamp = 0;
   let pulseCleanupTimer = null;
+  let saveThrottleTimer = null;
+  let hasPendingSave = false;
   let acknowledgedAffordableCount = 0;
 
   /**
@@ -280,7 +283,7 @@
           state.startDate = now;
           state.lastSeen = now;
           state.version = SAVE_SCHEMA_VERSION;
-          saveState();
+          writeSaveImmediate();
         }
       }
     } catch (error) {
@@ -289,9 +292,14 @@
   }
 
   /**
-   * Menyimpan payload Save Schema v2 ke localStorage.
+   * Menulis payload Save Schema v2 secara sinkron ke localStorage.
    */
-  function saveState() {
+  function writeSaveImmediate() {
+    if (saveThrottleTimer) {
+      window.clearTimeout(saveThrottleTimer);
+      saveThrottleTimer = null;
+    }
+    hasPendingSave = false;
     state.lastSeen = Date.now();
     try {
       const payload = JSON.stringify({
@@ -308,6 +316,34 @@
     } catch (error) {
       // Abaikan jika kuota penyimpanan penuh atau mode privat ketat
     }
+  }
+
+  /**
+   * Memastikan penyimpanan tertunda langsung ditulis (saat tab ditutup/sembunyi).
+   */
+  function flushSaveState() {
+    if (hasPendingSave || saveThrottleTimer) {
+      writeSaveImmediate();
+    } else {
+      writeSaveImmediate();
+    }
+  }
+
+  /**
+   * Menyimpan payload Save Schema v2 ke localStorage dengan throttle trailing-edge 500ms.
+   */
+  function saveState() {
+    state.lastSeen = Date.now();
+    hasPendingSave = true;
+    if (saveThrottleTimer) {
+      return;
+    }
+    saveThrottleTimer = window.setTimeout(function () {
+      saveThrottleTimer = null;
+      if (hasPendingSave) {
+        writeSaveImmediate();
+      }
+    }, SAVE_THROTTLE_MS);
   }
 
   /**
@@ -347,7 +383,7 @@
     } catch (error) {
       // Abaikan jika penyimpanan dibatasi
     }
-    saveState();
+    writeSaveImmediate();
     setTabBadge('Earnings', 0);
     setTabBadge('Profile', 0);
     renderStats();
@@ -493,7 +529,7 @@
     state.balance = Math.round((state.balance - cost) * 100) / 100;
     state.upgrades[tier.id] = currentLevel + 1;
     state.perClick = recalculatePerClick();
-    saveState();
+    writeSaveImmediate();
     renderStats();
     renderUpgrades();
     return true;
@@ -804,6 +840,15 @@
         }
       });
     }
+
+    // Pastikan progres tersimpan seketika saat tab disembunyikan atau ditutup
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'hidden') {
+        flushSaveState();
+      }
+    });
+    window.addEventListener('beforeunload', flushSaveState);
+    window.addEventListener('pagehide', flushSaveState);
   }
 
   // Inisialisasi aplikasi
