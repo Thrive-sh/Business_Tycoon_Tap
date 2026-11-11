@@ -9,29 +9,35 @@
   const STORAGE_KEY = 'business_simulator_save_v1';
   const SAVE_SCHEMA_VERSION = 2;
   const SAVE_THROTTLE_MS = 500;
+  const PASSIVE_TICK_MS = 1000;
+  const MAX_OFFLINE_SECONDS = 7200;
+  const OFFLINE_EFFICIENCY = 0.5;
   const MAX_ACTIVE_PARTICLES = 40;
   const BASE_PER_CLICK = 1.0;
   const COST_GROWTH_FACTOR = 1.15;
 
-  // Definisi 3 tingkat peningkatan per ketuk
+  // Definisi 3 tingkat peningkatan per ketuk & pasif
   const UPGRADE_TIERS = [
     {
       id: 'gloves',
       name: 'Sarung Tangan',
       baseCost: 15,
-      clickBonus: 1
+      clickBonus: 1,
+      passiveBonus: 0
     },
     {
       id: 'tap_machine',
       name: 'Mesin Ketuk',
       baseCost: 100,
-      clickBonus: 5
+      clickBonus: 5,
+      passiveBonus: 0
     },
     {
       id: 'auto_team',
       name: 'Tim Otomatis',
       baseCost: 500,
-      clickBonus: 25
+      clickBonus: 25,
+      passiveBonus: 10
     }
   ];
 
@@ -114,6 +120,7 @@
     version: SAVE_SCHEMA_VERSION,
     balance: 0.0,
     perClick: BASE_PER_CLICK,
+    perSecond: 0.0,
     totalTaps: 0,
     totalEarned: 0.0,
     upgrades: {
@@ -158,6 +165,10 @@
   const resetConfirmCheckbox = document.getElementById('reset-confirm-checkbox');
   const cancelResetBtn = document.getElementById('cancel-reset-btn');
   const confirmResetBtn = document.getElementById('confirm-reset-btn');
+  const offlineModal = document.getElementById('offline-modal');
+  const offlineModalTitle = document.getElementById('offline-modal-title');
+  const offlineModalDesc = document.getElementById('offline-modal-desc');
+  const closeOfflineModalBtn = document.getElementById('close-offline-modal-btn');
   const navTabs = Array.from(document.querySelectorAll('.nav-tab'));
   const navBadges = {
     Earnings: document.querySelector('[data-nav-badge="Earnings"]'),
@@ -167,6 +178,7 @@
   let lastTouchTimestamp = 0;
   let pulseCleanupTimer = null;
   let saveThrottleTimer = null;
+  let passiveIntervalId = null;
   let hasPendingSave = false;
   let acknowledgedAffordableCount = 0;
 
@@ -252,6 +264,52 @@
   }
 
   /**
+   * Menghitung ulang nilai pendapatan pasif per detik berdasarkan tingkat peningkatan.
+   */
+  function recalculatePerSecond() {
+    let total = 0;
+    UPGRADE_TIERS.forEach(function (tier) {
+      const lvl = Number(state.upgrades[tier.id]) || 0;
+      total += lvl * (tier.passiveBonus || 0);
+    });
+    return Math.round(total * 100) / 100;
+  }
+
+  /**
+   * Menghitung bonus luring (offline earnings) maksimal 2 jam dengan efisiensi 50%.
+   */
+  function calculateOfflineBonus(ratePerSecond, elapsedMs) {
+    if (!Number.isFinite(ratePerSecond) || ratePerSecond <= 0) {
+      return { bonus: 0, seconds: 0 };
+    }
+    const rawSeconds = Math.floor((Number(elapsedMs) || 0) / 1000);
+    if (rawSeconds <= 0) {
+      return { bonus: 0, seconds: 0 };
+    }
+    const cappedSeconds = Math.min(rawSeconds, MAX_OFFLINE_SECONDS);
+    const bonus =
+      Math.round(ratePerSecond * cappedSeconds * OFFLINE_EFFICIENCY * 100) / 100;
+    return { bonus: bonus, seconds: cappedSeconds };
+  }
+
+  /**
+   * Menampilkan modal sambutan pendapatan luring jika bonus > 0.
+   */
+  function showOfflineWelcomeModal(bonus, seconds) {
+    if (!offlineModal || !offlineModalTitle || bonus <= 0) return;
+    offlineModalTitle.textContent =
+      'Selamat datang kembali, +$' + formatCurrencyValue(bonus);
+    if (offlineModalDesc) {
+      const minutes = Math.max(1, Math.round(seconds / 60));
+      offlineModalDesc.textContent =
+        'Tim Otomatis mengumpulkan penghasilan selama ' +
+        (seconds < 60 ? seconds + ' detik' : minutes + ' menit') +
+        ' Anda tidak aktif (efisiensi 50%, batas maksimal 2 jam).';
+    }
+    offlineModal.hidden = false;
+  }
+
+  /**
    * Memformat bilangan bulat dengan pemisah ribuan titik (.).
    */
   function formatIntegerID(value) {
@@ -310,6 +368,7 @@
         } else {
           state.perClick = BASE_PER_CLICK;
         }
+        state.perSecond = recalculatePerSecond();
 
         if (isV2) {
           const taps = Number(parsed.totalTaps);
@@ -323,7 +382,19 @@
               ? Math.round(earned * 100) / 100
               : state.balance;
           state.startDate = Number.isFinite(start) && start > 0 ? start : now;
-          state.lastSeen = Number.isFinite(seen) && seen > 0 ? seen : now;
+          const previousSeen = Number.isFinite(seen) && seen > 0 ? seen : now;
+
+          // Hitung penghasilan luring sejak lastSeen
+          const offlineResult = calculateOfflineBonus(state.perSecond, now - previousSeen);
+          if (offlineResult.bonus > 0) {
+            state.balance = Math.round((state.balance + offlineResult.bonus) * 100) / 100;
+            state.totalEarned = Math.round((state.totalEarned + offlineResult.bonus) * 100) / 100;
+            state.lastSeen = now;
+            writeSaveImmediate();
+            showOfflineWelcomeModal(offlineResult.bonus, offlineResult.seconds);
+          } else {
+            state.lastSeen = now;
+          }
         } else {
           // Migrasi otomatis dari v1 (version belum ada)
           state.totalTaps = 0;
@@ -420,6 +491,7 @@
     state.version = SAVE_SCHEMA_VERSION;
     state.balance = 0.0;
     state.perClick = BASE_PER_CLICK;
+    state.perSecond = 0.0;
     state.totalTaps = 0;
     state.totalEarned = 0.0;
     UPGRADE_TIERS.forEach(function (tier) {
@@ -428,6 +500,9 @@
     state.startDate = now;
     state.lastSeen = now;
     acknowledgedAffordableCount = 0;
+    if (offlineModal) {
+      offlineModal.hidden = true;
+    }
 
     try {
       window.localStorage.removeItem(STORAGE_KEY);
@@ -502,7 +577,12 @@
         levelEl.textContent = 'Tk. ' + level;
       }
       if (effectEl) {
-        effectEl.textContent = '+$' + formatCurrencyValue(tier.clickBonus) + ' per ketuk';
+        const passivePart =
+          tier.passiveBonus > 0
+            ? ' • +$' + formatCurrencyValue(tier.passiveBonus) + '/dtk'
+            : '';
+        effectEl.textContent =
+          '+$' + formatCurrencyValue(tier.clickBonus) + ' per ketuk' + passivePart;
       }
       if (btn) {
         btn.textContent = 'Beli $ ' + formatCurrencyValue(cost);
@@ -581,6 +661,7 @@
     state.balance = Math.round((state.balance - cost) * 100) / 100;
     state.upgrades[tier.id] = currentLevel + 1;
     state.perClick = recalculatePerClick();
+    state.perSecond = recalculatePerSecond();
     writeSaveImmediate();
     renderStats();
     renderUpgrades();
@@ -588,13 +669,17 @@
   }
 
   /**
-   * Memperbarui teks saldo utama, nominal per click, dan ukuran font adaptif.
+   * Memperbarui teks saldo utama, nominal per ketuk/detik, dan ukuran font adaptif.
    */
   function renderStats() {
     const formattedBalance = '$ ' + formatCurrencyValue(state.balance);
     const fullBalance = '$ ' + formatFullCurrencyValue(state.balance);
-    const formattedPerClick = '$ ' + formatCurrencyValue(state.perClick) + ' per ketuk';
-    const fullPerClick = '$ ' + formatFullCurrencyValue(state.perClick) + ' per ketuk';
+    const passiveLabel =
+      state.perSecond > 0 ? ' • +$ ' + formatCurrencyValue(state.perSecond) + '/dtk' : '';
+    const passiveFull =
+      state.perSecond > 0 ? ' dan +$ ' + formatFullCurrencyValue(state.perSecond) + ' per detik' : '';
+    const formattedPerClick = '$ ' + formatCurrencyValue(state.perClick) + ' per ketuk' + passiveLabel;
+    const fullPerClick = '$ ' + formatFullCurrencyValue(state.perClick) + ' per ketuk' + passiveFull;
 
     balanceDisplay.textContent = formattedBalance;
     balanceDisplay.title = fullBalance;
@@ -908,14 +993,68 @@
       });
     }
 
-    // Pastikan progres tersimpan seketika saat tab disembunyikan atau ditutup
+    // Modal Sambutan Penghasilan Luring
+    if (closeOfflineModalBtn && offlineModal) {
+      closeOfflineModalBtn.addEventListener('click', function () {
+        offlineModal.hidden = true;
+      });
+    }
+    if (offlineModal) {
+      offlineModal.addEventListener('click', function (event) {
+        if (event.target === offlineModal) {
+          offlineModal.hidden = true;
+        }
+      });
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && !offlineModal.hidden) {
+          offlineModal.hidden = true;
+        }
+      });
+    }
+
+    // Simpan seketika saat tab disembunyikan, dan sinkronkan tampilan saat kembali terlihat
     document.addEventListener('visibilitychange', function () {
       if (document.visibilityState === 'hidden') {
         flushSaveState();
+      } else if (document.visibilityState === 'visible') {
+        renderStats();
+        renderUpgrades();
+        if (state.activeTab === 'Profile') {
+          renderProfileStats();
+        }
       }
     });
     window.addEventListener('beforeunload', flushSaveState);
     window.addEventListener('pagehide', flushSaveState);
+  }
+
+  /**
+   * Satu siklus pendapatan pasif per detik (hanya merender DOM jika tab terlihat).
+   */
+  function runPassiveTick() {
+    if (state.perSecond <= 0) return;
+
+    state.balance = Math.round((state.balance + state.perSecond) * 100) / 100;
+    state.totalEarned = Math.round((state.totalEarned + state.perSecond) * 100) / 100;
+    saveState();
+
+    if (document.visibilityState === 'visible') {
+      renderStats();
+      renderUpgrades();
+      if (state.activeTab === 'Profile') {
+        renderProfileStats();
+      }
+    }
+  }
+
+  /**
+   * Memulai interval 1 detik untuk pendapatan pasif.
+   */
+  function startPassiveIncomeLoop() {
+    if (passiveIntervalId) {
+      window.clearInterval(passiveIntervalId);
+    }
+    passiveIntervalId = window.setInterval(runPassiveTick, PASSIVE_TICK_MS);
   }
 
   // Inisialisasi aplikasi
@@ -927,6 +1066,7 @@
     renderUpgrades();
     renderProfileStats();
     bindEvents();
+    startPassiveIncomeLoop();
   }
 
   if (document.readyState === 'loading') {
