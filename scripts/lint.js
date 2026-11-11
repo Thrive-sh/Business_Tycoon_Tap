@@ -57,17 +57,17 @@ if (!css.includes(':focus-visible')) {
   throw new Error('Aturan :focus-visible belum ada di style.css.');
 }
 
-// 5. Pastikan tidak ada magic number di luar CONFIG pada game.js (kecuali 0, 1, 100)
+// 5. Pastikan tidak ada magic number di luar blok deklarasi CONFIG/ASSETS pada game.js (kecuali 0, 1, 100)
 const gameLines = readText('public/assets/js/game.js').split('\n');
 let configEndIndex = -1;
-for (let i = 10; i < gameLines.length; i += 1) {
-  if (gameLines[i].trim() === '});') {
+for (let i = 0; i < gameLines.length; i += 1) {
+  if (gameLines[i].trim() === '// END_CONFIG') {
     configEndIndex = i;
     break;
   }
 }
 if (configEndIndex < 0) {
-  throw new Error('Blok CONFIG tidak ditemukan di public/assets/js/game.js.');
+  throw new Error('Penanda // END_CONFIG tidak ditemukan di public/assets/js/game.js.');
 }
 
 let inBlockComment = false;

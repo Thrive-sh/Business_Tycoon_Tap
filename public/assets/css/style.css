@@ -1098,6 +1098,518 @@ input:focus-visible,
   }
 }
 
+/* ==========================================================================
+   6. LAYAR INVESTASI (SAHAM / PROPERTI / KRIPTO / FOREX) & DETAIL ASET
+   ========================================================================== */
+
+.invest-header {
+  flex-shrink: 0;
+  width: 100%;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 12px;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.invest-header__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.invest-header__title {
+  font-size: 21px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.invest-header__wallet {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background-color: var(--orange-light);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  color: #9A3412;
+  font-variant-numeric: tabular-nums;
+  max-width: 62%;
+}
+
+.invest-header__wallet-value {
+  font-weight: 800;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.invest-subtabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  background-color: var(--orange-50);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.invest-subtab {
+  appearance: none;
+  border: none;
+  border-radius: 9px;
+  padding: 8px 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.invest-subtab--active {
+  background-color: var(--orange);
+  color: #FFFFFF;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.25);
+}
+
+.invest-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  background-color: var(--bg);
+  padding: 14px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.invest-summary-card {
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 22px rgba(249, 115, 22, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.invest-summary-card__label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.invest-summary-card__total {
+  font-size: 26px;
+  line-height: 1.18;
+  font-weight: 800;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  word-break: break-word;
+}
+
+.invest-summary-card__pnl {
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pnl--positive {
+  color: var(--green);
+}
+
+.pnl--negative {
+  color: var(--red);
+}
+
+.invest-summary-card__yield {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12.5px;
+}
+
+.invest-summary-card__yield-label {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.invest-summary-card__yield-value {
+  color: #9A3412;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.invest-asset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.asset-card {
+  appearance: none;
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 3px 10px rgba(249, 115, 22, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.12s ease, border-color 0.15s ease;
+}
+
+.asset-card:active {
+  transform: scale(0.985);
+}
+
+.asset-card__left {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  flex: 1;
+}
+
+.asset-card__avatar {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.asset-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.asset-card__name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.asset-card__owned {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.asset-card__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.asset-card__price {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.asset-card__change {
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Layar Detail Aset & Grafik Canvas */
+.detail-header {
+  flex-shrink: 0;
+  width: 100%;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.detail-back-btn {
+  appearance: none;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background-color: var(--orange-50);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.detail-back-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.detail-header__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-header__title {
+  font-size: 16.5px;
+  font-weight: 800;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detail-header__subtitle {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.detail-header__wallet {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-variant-numeric: tabular-nums;
+}
+
+.detail-header__wallet-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.detail-header__wallet-value {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #9A3412;
+}
+
+.detail-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  background-color: var(--bg);
+  padding: 14px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detail-price-box {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 2px 0;
+}
+
+.detail-price-box__current {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.detail-price-box__change {
+  font-size: 13.5px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.detail-chart-card {
+  width: 100%;
+  padding: 10px 10px 8px;
+  border-radius: 16px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.06);
+}
+
+.detail-chart-canvas {
+  display: block;
+  width: 100%;
+  height: 176px;
+}
+
+.detail-trade-card {
+  width: 100%;
+  padding: 14px;
+  border-radius: 16px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.detail-qty-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.qty-chip {
+  appearance: none;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 7px 6px;
+  background-color: var(--orange-50);
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+  font-variant-numeric: tabular-nums;
+}
+
+.qty-chip--active {
+  background-color: var(--orange-light);
+  border-color: var(--orange);
+  color: #9A3412;
+}
+
+.detail-trade-notice {
+  min-height: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--red);
+  text-align: center;
+}
+
+.detail-trade-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 10px;
+}
+
+.trade-btn {
+  appearance: none;
+  border-radius: 12px;
+  padding: 12px 12px;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.12s ease, opacity 0.15s ease;
+}
+
+.trade-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.trade-btn--sell {
+  background-color: var(--surface);
+  border: 1.5px solid var(--red);
+  color: var(--red);
+}
+
+.trade-btn--sell:disabled {
+  border-color: #D6D3D1;
+  background-color: #F5F5F4;
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.trade-btn--buy {
+  background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
+  border: 1.5px solid var(--orange-dark);
+  color: #FFFFFF;
+  box-shadow: 0 5px 14px rgba(234, 88, 12, 0.22);
+}
+
+.trade-btn--buy:disabled {
+  background: #E7E5E4;
+  border-color: #D6D3D1;
+  color: var(--text-muted);
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.78;
+}
+
+.detail-stats-card {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.detail-stats-card__heading {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.detail-stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-stats-list__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.detail-stats-list__row dt {
+  color: var(--text-muted);
+}
+
+.detail-stats-list__row dd {
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
 /* Hormati preferensi pengurangan gerak pengguna (WCAG AA 2.3.3) */
 @media (prefers-reduced-motion: reduce) {
   *,

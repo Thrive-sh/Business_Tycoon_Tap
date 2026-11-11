@@ -1,9 +1,218 @@
 /* ==========================================================================
-   BUSINESS TYCOON TAP - CORE GAME LOGIC & UI CONTROLLER (game.js)
+   BUSINESS TYCOON TAP - CORE GAME LOGIC & INVESTMENT MODULE (game.js)
    ========================================================================== */
 
 (function () {
   'use strict';
+
+  // Definisi 18 aset investasi fiktif & instrumen pasar (Saham, Properti, Kripto, Forex)
+  const ASSETS = Object.freeze([
+    // 1. Saham (yield dividen per jam)
+    {
+      id: 'teknonusa',
+      name: 'TeknoNusa',
+      category: 'Saham',
+      initialPrice: 25000,
+      volatility: 0.010,
+      yieldRate: 0.004,
+      color: '#EA580C',
+      symbol: 'TN',
+      unitLabel: 'pcs.'
+    },
+    {
+      id: 'bankartha',
+      name: 'BankArtha',
+      category: 'Saham',
+      initialPrice: 8500,
+      volatility: 0.008,
+      yieldRate: 0.003,
+      color: '#D97706',
+      symbol: 'BA',
+      unitLabel: 'pcs.'
+    },
+    {
+      id: 'energiku',
+      name: 'EnergiKu',
+      category: 'Saham',
+      initialPrice: 12000,
+      volatility: 0.012,
+      yieldRate: 0.005,
+      color: '#16A34A',
+      symbol: 'EK',
+      unitLabel: 'pcs.'
+    },
+    {
+      id: 'pangansehat',
+      name: 'PanganSehat',
+      category: 'Saham',
+      initialPrice: 5200,
+      volatility: 0.007,
+      yieldRate: 0.003,
+      color: '#65A30D',
+      symbol: 'PS',
+      unitLabel: 'pcs.'
+    },
+    {
+      id: 'mediakita',
+      name: 'MediaKita',
+      category: 'Saham',
+      initialPrice: 3800,
+      volatility: 0.015,
+      yieldRate: 0.006,
+      color: '#DB2777',
+      symbol: 'MK',
+      unitLabel: 'pcs.'
+    },
+
+    // 2. Properti (yield sewa per jam)
+    {
+      id: 'apt_sudirman',
+      name: 'Apartemen Sudirman',
+      category: 'Properti',
+      initialPrice: 850000000,
+      volatility: 0.004,
+      yieldRate: 0.002,
+      color: '#C2410C',
+      symbol: 'AS',
+      unitLabel: 'unit'
+    },
+    {
+      id: 'ruko_kemang',
+      name: 'Ruko Kemang',
+      category: 'Properti',
+      initialPrice: 1200000000,
+      volatility: 0.005,
+      yieldRate: 0.0025,
+      color: '#B45309',
+      symbol: 'RK',
+      unitLabel: 'unit'
+    },
+    {
+      id: 'villa_bali',
+      name: 'Villa Bali',
+      category: 'Properti',
+      initialPrice: 2500000000,
+      volatility: 0.006,
+      yieldRate: 0.003,
+      color: '#059669',
+      symbol: 'VB',
+      unitLabel: 'unit'
+    },
+    {
+      id: 'tanah_ikn',
+      name: 'Tanah IKN',
+      category: 'Properti',
+      initialPrice: 500000000,
+      volatility: 0.003,
+      yieldRate: 0.0015,
+      color: '#CA8A04',
+      symbol: 'TI',
+      unitLabel: 'unit'
+    },
+
+    // 3. Kripto (tanpa yield, volatilitas tinggi)
+    {
+      id: 'bitcoin',
+      name: 'Bitcoin',
+      category: 'Kripto',
+      initialPrice: 1600000000,
+      volatility: 0.030,
+      yieldRate: 0,
+      color: '#F97316',
+      symbol: 'BTC',
+      unitLabel: 'koin'
+    },
+    {
+      id: 'ethereum',
+      name: 'Ethereum',
+      category: 'Kripto',
+      initialPrice: 55000000,
+      volatility: 0.028,
+      yieldRate: 0,
+      color: '#7C3AED',
+      symbol: 'ETH',
+      unitLabel: 'koin'
+    },
+    {
+      id: 'solana',
+      name: 'Solana',
+      category: 'Kripto',
+      initialPrice: 2800000,
+      volatility: 0.035,
+      yieldRate: 0,
+      color: '#9333EA',
+      symbol: 'SOL',
+      unitLabel: 'koin'
+    },
+    {
+      id: 'dogecoin',
+      name: 'DogeCoin',
+      category: 'Kripto',
+      initialPrice: 2500,
+      volatility: 0.045,
+      yieldRate: 0,
+      color: '#D97706',
+      symbol: 'DOGE',
+      unitLabel: 'koin'
+    },
+    {
+      id: 'ripplex',
+      name: 'RippleX',
+      category: 'Kripto',
+      initialPrice: 9800,
+      volatility: 0.032,
+      yieldRate: 0,
+      color: '#57534E',
+      symbol: 'XRP',
+      unitLabel: 'koin'
+    },
+
+    // 4. Forex (tanpa yield, volatilitas rendah)
+    {
+      id: 'usd_idr',
+      name: 'USD/IDR',
+      category: 'Forex',
+      initialPrice: 16200,
+      volatility: 0.002,
+      yieldRate: 0,
+      color: '#15803D',
+      symbol: 'USD',
+      unitLabel: 'unit'
+    },
+    {
+      id: 'eur_usd',
+      name: 'EUR/USD',
+      category: 'Forex',
+      initialPrice: 17500,
+      volatility: 0.002,
+      yieldRate: 0,
+      color: '#B91C1C',
+      symbol: 'EUR',
+      unitLabel: 'unit'
+    },
+    {
+      id: 'gbp_usd',
+      name: 'GBP/USD',
+      category: 'Forex',
+      initialPrice: 20600,
+      volatility: 0.0025,
+      yieldRate: 0,
+      color: '#9A3412',
+      symbol: 'GBP',
+      unitLabel: 'unit'
+    },
+    {
+      id: 'jpy_usd',
+      name: 'JPY/USD',
+      category: 'Forex',
+      initialPrice: 105,
+      volatility: 0.002,
+      yieldRate: 0,
+      color: '#DC2626',
+      symbol: 'JPY',
+      unitLabel: 'unit'
+    }
+  ]);
 
   // Konfigurasi terpusat: seluruh konstanta & parameter permainan dikumpulkan di sini
   const CONFIG = Object.freeze({
@@ -11,6 +220,13 @@
     SAVE_SCHEMA_VERSION: 2,
     TOUCH_DEDUP_MS: 500,
     SAVE_THROTTLE_MS: 500,
+    PRICE_SAVE_THROTTLE_MS: 5000,
+    PRICE_TICK_MS: 3000,
+    HISTORY_MAX: 60,
+    MIN_PRICE_FACTOR: 0.01,
+    RANDOM_WALK_CENTER: 0.5,
+    RANDOM_WALK_SPREAD: 2,
+    SECONDS_PER_HOUR: 3600,
     SR_ANNOUNCE_THROTTLE_MS: 4000,
     PASSIVE_TICK_MS: 1000,
     MS_PER_SECOND: 1000,
@@ -44,6 +260,12 @@
     TAP_JITTER_CENTER: 0.5,
     TAP_JITTER_SPREAD_PX: 12,
     THOUSANDS_GROUP_REGEX: /\B(?=(\d{3})+(?!\d))/g,
+    INVEST_SUMMARY_LABELS: {
+      Saham: 'Total nilai saham',
+      Properti: 'Total nilai properti',
+      Kripto: 'Total nilai kriptocurrency',
+      Forex: 'Total nilai forex'
+    },
     COMPACT_UNITS: [
       { threshold: 1e12, suffix: 'T' },
       { threshold: 1e9, suffix: 'M' },
@@ -74,18 +296,8 @@
       }
     ],
     MODULE_PREVIEWS: {
-      Investing: {
-        progress: 15,
-        iconId: 'icon-investing',
-        description:
-          'Instrumen pasar modal dan properti sedang dirancang agar modal Anda bisa berkembang secara pasif.',
-        features: [
-          'Bursa saham perusahaan dengan dividen berkala',
-          'Investasi properti sewa berimbal hasil stabil',
-          'Ringkasan portofolio dan riwayat imbal hasil'
-        ]
-      },
       Business: {
+        label: 'Usaha',
         progress: 20,
         iconId: 'icon-business',
         description:
@@ -93,10 +305,11 @@
         features: [
           'Pembukaan gerai ritel dan kedai kopi pertama',
           'Peningkatan kapasitas produksi dan manajer operasional',
-          'Laporan arus kas bisnis per detik'
+          'Laporan arus kas usaha per jam'
         ]
       },
       Items: {
+        label: 'Toko',
         progress: 10,
         iconId: 'icon-items',
         description:
@@ -108,6 +321,7 @@
         ]
       },
       Profile: {
+        label: 'Profil',
         progress: 25,
         iconId: 'icon-profile',
         description:
@@ -123,11 +337,12 @@
       { id: 'taps_100', type: 'taps', threshold: 100, title: '100 Ketukan Pertama' },
       { id: 'taps_500', type: 'taps', threshold: 500, title: '500 Ketukan Aktif' },
       { id: 'taps_1000', type: 'taps', threshold: 1000, title: '1.000 Ketukan Tekun' },
-      { id: 'earned_100', type: 'earned', threshold: 100, title: 'Total Pendapatan $100' },
-      { id: 'earned_1000', type: 'earned', threshold: 1000, title: 'Total Pendapatan $1 rb' },
-      { id: 'earned_10000', type: 'earned', threshold: 10000, title: 'Total Pendapatan $10 rb' }
+      { id: 'earned_100', type: 'earned', threshold: 100, title: 'Total Pendapatan 100' },
+      { id: 'earned_1000', type: 'earned', threshold: 1000, title: 'Total Pendapatan 1 rb' },
+      { id: 'earned_10000', type: 'earned', threshold: 10000, title: 'Total Pendapatan 10 rb' }
     ]
   });
+  // END_CONFIG
 
   const root = typeof window !== 'undefined' ? window : globalThis;
   const hasDOM = typeof document !== 'undefined';
@@ -149,6 +364,9 @@
       tap_machine: 0,
       auto_team: 0
     },
+    holdings: {},
+    lastPrices: {},
+    priceHistory: {},
     settings: {
       sound: true,
       haptic: true
@@ -156,7 +374,10 @@
     milestones: {},
     startDate: Date.now(),
     lastSeen: Date.now(),
-    activeTab: 'Earnings'
+    activeTab: 'Earnings',
+    activeInvestCategory: 'Saham',
+    selectedAssetId: null,
+    selectedQtyMode: '1'
   };
 
   // Referensi elemen DOM
@@ -170,7 +391,30 @@
   const upgradesList = getEl('upgrades-list');
 
   const earningsScreen = getEl('earnings-screen');
+  const investingScreen = getEl('investing-screen');
+  const assetDetailScreen = getEl('asset-detail-screen');
   const previewScreen = getEl('preview-screen');
+
+  const investWalletBalance = getEl('invest-wallet-balance');
+  const investSummaryLabel = getEl('invest-summary-label');
+  const investSummaryTotal = getEl('invest-summary-total');
+  const investSummaryPnl = getEl('invest-summary-pnl');
+  const investSummaryYield = getEl('invest-summary-yield');
+  const investAssetList = getEl('invest-asset-list');
+  const investSubtabs = hasDOM ? Array.from(document.querySelectorAll('.invest-subtab')) : [];
+
+  const assetDetailBackBtn = getEl('asset-detail-back-btn');
+  const detailAssetName = getEl('detail-asset-name');
+  const detailAssetCategory = getEl('detail-asset-category');
+  const detailWalletBalance = getEl('detail-wallet-balance');
+  const detailMarketPriceHero = getEl('detail-market-price-hero');
+  const detailPriceChange = getEl('detail-price-change');
+  const detailOwnedUnits = getEl('detail-owned-units');
+  const detailMarketPrice = getEl('detail-market-price');
+  const detailAvgEntry = getEl('detail-avg-entry');
+  const detailTotalCost = getEl('detail-total-cost');
+  const detailUnrealizedPnl = getEl('detail-unrealized-pnl');
+
   const previewTitle = getEl('preview-title');
   const previewDescription = getEl('preview-description');
   const previewIconContainer = getEl('preview-icon-container');
@@ -233,6 +477,17 @@
   }
 
   /**
+   * Mencari definisi aset berdasarkan id.
+   */
+  function getAssetById(assetId) {
+    return (
+      ASSETS.find(function (item) {
+        return item.id === assetId;
+      }) || null
+    );
+  }
+
+  /**
    * Memicu umpan balik getar singkat pada perangkat yang mendukung.
    */
   function triggerHaptic() {
@@ -288,13 +543,17 @@
   }
 
   /**
-   * Menampilkan toast pencapaian baru selama beberapa detik.
+   * Menampilkan toast notifikasi singkat di atas navigasi bawah.
    */
-  function showMilestoneToast(title) {
+  function showToast(label, title) {
     if (!milestoneToast || !milestoneToastTitle) return;
+    const labelEl = milestoneToast.querySelector('.milestone-toast__label');
+    if (labelEl) {
+      labelEl.textContent = label;
+    }
     milestoneToastTitle.textContent = title;
     milestoneToast.hidden = false;
-    announceScreenReader('Pencapaian baru terbuka: ' + title, true);
+    announceScreenReader(label + ': ' + title, true);
 
     if (toastHideTimer) {
       root.clearTimeout(toastHideTimer);
@@ -303,6 +562,13 @@
       milestoneToast.hidden = true;
       toastHideTimer = null;
     }, CONFIG.TOAST_DURATION_MS);
+  }
+
+  /**
+   * Menampilkan toast pencapaian baru selama beberapa detik.
+   */
+  function showMilestoneToast(title) {
+    showToast('Pencapaian Baru', title);
   }
 
   /**
@@ -360,7 +626,7 @@
     if (srAnnounceTimer) return;
     srAnnounceTimer = root.setTimeout(function () {
       srAnnounceTimer = null;
-      srAnnouncer.textContent = 'Saldo saat ini $ ' + formatCurrencyValue(state.balance);
+      srAnnouncer.textContent = 'Saldo saat ini Rp' + formatCurrencyValue(state.balance);
     }, CONFIG.SR_ANNOUNCE_THROTTLE_MS);
   }
 
@@ -414,6 +680,340 @@
    */
   function formatCurrencyValue(amount) {
     return formatCompact(amount);
+  }
+
+  /**
+   * Memformat nominal Rupiah ringkas ("Rp25 rb", "Rp1,6 M") dengan guard Number.isFinite.
+   */
+  function formatRupiahCompact(amount) {
+    const safe = Number.isFinite(amount) ? Math.abs(amount) : 0;
+    const prefix = Number.isFinite(amount) && amount < 0 ? '-Rp' : 'Rp';
+    return prefix + formatCompact(safe);
+  }
+
+  /**
+   * Memformat nominal Rupiah penuh ("Rp1.234.567,89") dengan guard Number.isFinite.
+   */
+  function formatRupiahFull(amount) {
+    const safe = Number.isFinite(amount) ? Math.abs(amount) : 0;
+    const prefix = Number.isFinite(amount) && amount < 0 ? '-Rp' : 'Rp';
+    return prefix + formatFullCurrencyValue(safe);
+  }
+
+  /**
+   * Memformat persentase bertanda ("+1,25%" / "-0,40%") yang selalu finite 2 desimal.
+   */
+  function formatSignedPercent(pct) {
+    const safe = Number.isFinite(pct) ? pct : 0;
+    const sign = safe >= 0 ? '+' : '-';
+    const absStr = Math.abs(safe).toFixed(CONFIG.CURRENCY_DECIMALS).replace('.', ',');
+    return sign + absStr + '%';
+  }
+
+  /**
+   * Menginisialisasi harga pasar & riwayat awal untuk setiap aset di ASSETS.
+   */
+  function initMarketData() {
+    const now = Date.now();
+    ASSETS.forEach(function (asset) {
+      const savedPrice = Number(state.lastPrices[asset.id]);
+      const minAllowed = asset.initialPrice * CONFIG.MIN_PRICE_FACTOR;
+      const basePrice =
+        Number.isFinite(savedPrice) && savedPrice >= minAllowed
+          ? savedPrice
+          : asset.initialPrice;
+
+      state.lastPrices[asset.id] = Math.round(basePrice * 100) / 100;
+      if (!Array.isArray(state.priceHistory[asset.id]) || state.priceHistory[asset.id].length === 0) {
+        state.priceHistory[asset.id] = [
+          { ts: now - CONFIG.PRICE_TICK_MS, price: state.lastPrices[asset.id] },
+          { ts: now, price: state.lastPrices[asset.id] }
+        ];
+      }
+    });
+  }
+
+  /**
+   * Mengambil harga pasar terkini suatu aset (dijamin finite > 0).
+   */
+  function getCurrentAssetPrice(assetId) {
+    const asset = getAssetById(assetId);
+    if (!asset) return 0;
+    const p = Number(state.lastPrices[assetId]);
+    if (Number.isFinite(p) && p > 0) {
+      return p;
+    }
+    return asset.initialPrice;
+  }
+
+  /**
+   * Menghitung persentase perubahan harga aset terhadap titik awal riwayat.
+   */
+  function getAssetChangePercent(assetId) {
+    const history = state.priceHistory[assetId];
+    if (!Array.isArray(history) || history.length === 0) {
+      return 0;
+    }
+    const firstPrice = Number(history[0].price);
+    const currentPrice = getCurrentAssetPrice(assetId);
+    if (!Number.isFinite(firstPrice) || firstPrice <= 0 || !Number.isFinite(currentPrice)) {
+      return 0;
+    }
+    const pct = ((currentPrice - firstPrice) / firstPrice) * 100;
+    return Number.isFinite(pct) ? pct : 0;
+  }
+
+  /**
+   * Menghitung ringkasan nilai portofolio, P&L, dan pendapatan/jam untuk satu kategori.
+   */
+  function getCategorySummary(category) {
+    let totalValue = 0;
+    let totalCost = 0;
+    let hourlyYield = 0;
+
+    ASSETS.forEach(function (asset) {
+      if (asset.category !== category) return;
+      const holding = state.holdings[asset.id];
+      const units = holding && Number.isFinite(Number(holding.units)) ? Number(holding.units) : 0;
+      const avgEntry =
+        holding && Number.isFinite(Number(holding.avgEntry)) ? Number(holding.avgEntry) : 0;
+      if (units <= 0) return;
+
+      const marketPrice = getCurrentAssetPrice(asset.id);
+      const positionValue = units * marketPrice;
+      const positionCost = units * avgEntry;
+
+      if (Number.isFinite(positionValue)) {
+        totalValue += positionValue;
+      }
+      if (Number.isFinite(positionCost)) {
+        totalCost += positionCost;
+      }
+      if (asset.yieldRate > 0 && Number.isFinite(positionValue)) {
+        hourlyYield += positionValue * asset.yieldRate;
+      }
+    });
+
+    const pnlValue = totalCost > 0 ? totalValue - totalCost : 0;
+    const rawPct = totalCost > 0 ? (pnlValue / totalCost) * 100 : 0;
+    const pnlPct = Number.isFinite(rawPct) ? rawPct : 0;
+
+    return {
+      totalValue: Number.isFinite(totalValue) ? totalValue : 0,
+      totalCost: Number.isFinite(totalCost) ? totalCost : 0,
+      pnlValue: Number.isFinite(pnlValue) ? pnlValue : 0,
+      pnlPct: pnlPct,
+      hourlyYield: Number.isFinite(hourlyYield) ? hourlyYield : 0
+    };
+  }
+
+  /**
+   * Merender layar utama Investasi (4 sub-tab, kartu ringkasan, dan daftar aset).
+   */
+  function renderInvestingScreen() {
+    if (!investingScreen) return;
+    const cat = state.activeInvestCategory;
+
+    if (investWalletBalance) {
+      investWalletBalance.textContent = formatRupiahCompact(state.balance);
+      investWalletBalance.title = formatRupiahFull(state.balance);
+    }
+
+    investSubtabs.forEach(function (btn) {
+      const isSelected = btn.getAttribute('data-invest-cat') === cat;
+      btn.classList.toggle('invest-subtab--active', isSelected);
+      btn.setAttribute('aria-pressed', String(isSelected));
+      if (isSelected) {
+        btn.setAttribute('aria-current', 'true');
+      } else {
+        btn.removeAttribute('aria-current');
+      }
+    });
+
+    const summary = getCategorySummary(cat);
+    if (investSummaryLabel) {
+      investSummaryLabel.textContent =
+        CONFIG.INVEST_SUMMARY_LABELS[cat] || CONFIG.INVEST_SUMMARY_LABELS.Saham;
+    }
+    if (investSummaryTotal) {
+      investSummaryTotal.textContent = formatRupiahCompact(summary.totalValue);
+      investSummaryTotal.title = formatRupiahFull(summary.totalValue);
+    }
+    if (investSummaryPnl) {
+      const isPositive = summary.pnlValue >= 0;
+      const pnlPrefix = summary.pnlValue > 0 ? '+' : '';
+      investSummaryPnl.textContent =
+        pnlPrefix +
+        formatRupiahCompact(summary.pnlValue) +
+        ' (' +
+        formatSignedPercent(summary.pnlPct) +
+        ') sepanjang waktu';
+      investSummaryPnl.classList.toggle('pnl--positive', isPositive);
+      investSummaryPnl.classList.toggle('pnl--negative', !isPositive);
+    }
+    if (investSummaryYield) {
+      if (cat === 'Saham' || cat === 'Properti') {
+        investSummaryYield.textContent = formatRupiahCompact(summary.hourlyYield) + '/jam';
+        investSummaryYield.title = formatRupiahFull(summary.hourlyYield) + ' per jam';
+      } else {
+        investSummaryYield.textContent = '—';
+        investSummaryYield.removeAttribute('title');
+      }
+    }
+
+    if (!investAssetList) return;
+    const categoryAssets = ASSETS.filter(function (a) {
+      return a.category === cat;
+    });
+
+    investAssetList.innerHTML = '';
+    categoryAssets.forEach(function (asset) {
+      const holding = state.holdings[asset.id];
+      const units = holding && Number.isFinite(Number(holding.units)) ? Number(holding.units) : 0;
+      const currentPrice = getCurrentAssetPrice(asset.id);
+      const changePct = getAssetChangePercent(asset.id);
+      const isUp = changePct >= 0;
+
+      const cardBtn = document.createElement('button');
+      cardBtn.type = 'button';
+      cardBtn.className = 'asset-card';
+      cardBtn.setAttribute('data-asset-id', asset.id);
+
+      const left = document.createElement('div');
+      left.className = 'asset-card__left';
+
+      const avatar = document.createElement('span');
+      avatar.className = 'asset-card__avatar';
+      avatar.style.backgroundColor = asset.color;
+      avatar.textContent = asset.symbol;
+
+      const meta = document.createElement('div');
+      meta.className = 'asset-card__meta';
+
+      const nameEl = document.createElement('span');
+      nameEl.className = 'asset-card__name';
+      nameEl.textContent = asset.name;
+
+      const ownedEl = document.createElement('span');
+      ownedEl.className = 'asset-card__owned';
+      ownedEl.textContent = formatIntegerID(units) + ' ' + asset.unitLabel;
+
+      meta.appendChild(nameEl);
+      meta.appendChild(ownedEl);
+      left.appendChild(avatar);
+      left.appendChild(meta);
+
+      const right = document.createElement('div');
+      right.className = 'asset-card__right';
+
+      const priceEl = document.createElement('span');
+      priceEl.className = 'asset-card__price';
+      priceEl.textContent = formatRupiahCompact(currentPrice);
+      priceEl.title = formatRupiahFull(currentPrice);
+
+      const changeEl = document.createElement('span');
+      changeEl.className = 'asset-card__change ' + (isUp ? 'pnl--positive' : 'pnl--negative');
+      changeEl.textContent = formatSignedPercent(changePct);
+
+      right.appendChild(priceEl);
+      right.appendChild(changeEl);
+
+      cardBtn.appendChild(left);
+      cardBtn.appendChild(right);
+      investAssetList.appendChild(cardBtn);
+    });
+  }
+
+  /**
+   * Merender informasi layar detail aset yang dipilih.
+   */
+  function renderAssetDetailScreen() {
+    if (!assetDetailScreen || !state.selectedAssetId) return;
+    const asset = getAssetById(state.selectedAssetId);
+    if (!asset) return;
+
+    const currentPrice = getCurrentAssetPrice(asset.id);
+    const changePct = getAssetChangePercent(asset.id);
+    const holding = state.holdings[asset.id];
+    const units = holding && Number.isFinite(Number(holding.units)) ? Number(holding.units) : 0;
+    const avgEntry =
+      holding && Number.isFinite(Number(holding.avgEntry)) ? Number(holding.avgEntry) : 0;
+    const totalCost = units > 0 ? units * avgEntry : 0;
+    const marketValue = units > 0 ? units * currentPrice : 0;
+    const unrealizedValue = units > 0 ? marketValue - totalCost : 0;
+    const rawPct = totalCost > 0 ? (unrealizedValue / totalCost) * 100 : 0;
+    const unrealizedPct = Number.isFinite(rawPct) ? rawPct : 0;
+
+    if (detailAssetName) detailAssetName.textContent = asset.name;
+    if (detailAssetCategory) detailAssetCategory.textContent = asset.category;
+    if (detailWalletBalance) {
+      detailWalletBalance.textContent = formatRupiahCompact(state.balance);
+      detailWalletBalance.title = formatRupiahFull(state.balance);
+    }
+    if (detailMarketPriceHero) {
+      detailMarketPriceHero.textContent = formatRupiahCompact(currentPrice);
+      detailMarketPriceHero.title = formatRupiahFull(currentPrice);
+    }
+    if (detailPriceChange) {
+      const up = changePct >= 0;
+      detailPriceChange.textContent = formatSignedPercent(changePct);
+      detailPriceChange.classList.toggle('pnl--positive', up);
+      detailPriceChange.classList.toggle('pnl--negative', !up);
+    }
+    if (detailOwnedUnits) {
+      detailOwnedUnits.textContent = formatIntegerID(units) + ' ' + asset.unitLabel;
+    }
+    if (detailMarketPrice) {
+      detailMarketPrice.textContent = formatRupiahFull(currentPrice);
+    }
+    if (detailAvgEntry) {
+      detailAvgEntry.textContent = units > 0 ? formatRupiahFull(avgEntry) : '—';
+    }
+    if (detailTotalCost) {
+      detailTotalCost.textContent = formatRupiahFull(totalCost);
+    }
+    if (detailUnrealizedPnl) {
+      const pos = unrealizedValue >= 0;
+      const prefix = unrealizedValue > 0 ? '+' : '';
+      detailUnrealizedPnl.textContent =
+        prefix +
+        formatRupiahCompact(unrealizedValue) +
+        ' (' +
+        formatSignedPercent(unrealizedPct) +
+        ')';
+      detailUnrealizedPnl.classList.toggle('pnl--positive', pos);
+      detailUnrealizedPnl.classList.toggle('pnl--negative', !pos);
+    }
+  }
+
+  /**
+   * Membuka layar detail untuk aset tertentu.
+   */
+  function openAssetDetail(assetId) {
+    const asset = getAssetById(assetId);
+    if (!asset || !assetDetailScreen || !investingScreen) return;
+    state.selectedAssetId = asset.id;
+    investingScreen.hidden = true;
+    investingScreen.classList.remove('screen--active');
+    assetDetailScreen.hidden = false;
+    assetDetailScreen.classList.add('screen--active');
+    renderAssetDetailScreen();
+  }
+
+  /**
+   * Menutup layar detail aset dan kembali ke daftar investasi.
+   */
+  function closeAssetDetail() {
+    state.selectedAssetId = null;
+    if (assetDetailScreen) {
+      assetDetailScreen.hidden = true;
+      assetDetailScreen.classList.remove('screen--active');
+    }
+    if (investingScreen && state.activeTab === 'Investing') {
+      investingScreen.hidden = false;
+      investingScreen.classList.add('screen--active');
+      renderInvestingScreen();
+    }
   }
 
   /**
@@ -531,6 +1131,7 @@
     if (!storage) {
       state.startDate = now;
       state.lastSeen = now;
+      initMarketData();
       return;
     }
 
@@ -539,6 +1140,7 @@
       if (!raw) {
         state.startDate = now;
         state.lastSeen = now;
+        initMarketData();
         return;
       }
 
@@ -588,6 +1190,10 @@
           });
         }
 
+        state.holdings = {};
+        state.lastPrices = {};
+        initMarketData();
+
         if (isV2) {
           const taps = Number(parsed.totalTaps);
           const earned = Number(parsed.totalEarned);
@@ -624,7 +1230,7 @@
         }
       }
     } catch (error) {
-      // Abaikan jika penyimpanan lokal dibatasi oleh pengaturan privasi peramban
+      initMarketData();
     }
   }
 
@@ -685,7 +1291,7 @@
   }
 
   /**
-   * Merender statistik dasar & pengaturan preferensi pemain pada tab Profile.
+   * Merender statistik dasar & pengaturan preferensi pemain pada tab Profil.
    */
   function renderProfileStats() {
     if (statTotalTaps) {
@@ -731,6 +1337,10 @@
     CONFIG.UPGRADE_TIERS.forEach(function (tier) {
       state.upgrades[tier.id] = 0;
     });
+    state.holdings = {};
+    state.lastPrices = {};
+    state.priceHistory = {};
+    initMarketData();
     state.settings = { sound: true, haptic: true };
     state.milestones = {};
     state.startDate = now;
@@ -759,6 +1369,7 @@
     renderStats();
     renderUpgrades();
     renderProfileStats();
+    renderInvestingScreen();
   }
 
   /**
@@ -947,6 +1558,13 @@
     perClickDisplay.title = fullPerClick;
     perClickDisplay.setAttribute('aria-label', fullPerClick);
 
+    if (investWalletBalance) {
+      investWalletBalance.textContent = formatRupiahCompact(state.balance);
+    }
+    if (detailWalletBalance) {
+      detailWalletBalance.textContent = formatRupiahCompact(state.balance);
+    }
+
     // Sesuaikan ukuran huruf bila saldo panjang
     balanceDisplay.classList.remove(
       'bank-card__balance--compact',
@@ -1057,6 +1675,7 @@
    */
   function switchTab(tabName) {
     state.activeTab = tabName;
+    state.selectedAssetId = null;
     setTabBadge(tabName, 0);
     if (tabName === 'Earnings') {
       acknowledgedAffordableCount = countAffordableUpgrades();
@@ -1075,9 +1694,9 @@
       }
       if (tabAttr === 'Earnings') {
         if (isSelected) {
-          tabBtn.style.setProperty('--coin-bg-fill', '#2563EB');
-          tabBtn.style.setProperty('--coin-bg-stroke', '#2563EB');
-          tabBtn.style.setProperty('--coin-ring-stroke', 'rgba(255,255,255,0.26)');
+          tabBtn.style.setProperty('--coin-bg-fill', '#F97316');
+          tabBtn.style.setProperty('--coin-bg-stroke', '#F97316');
+          tabBtn.style.setProperty('--coin-ring-stroke', 'rgba(255,255,255,0.32)');
           tabBtn.style.setProperty('--coin-symbol-stroke', '#FFFFFF');
         } else {
           tabBtn.style.removeProperty('--coin-bg-fill');
@@ -1090,20 +1709,30 @@
 
     if (!earningsScreen || !previewScreen) return;
 
+    earningsScreen.hidden = true;
+    earningsScreen.classList.remove('screen--active');
+    previewScreen.hidden = true;
+    previewScreen.classList.remove('screen--active');
+    if (investingScreen) {
+      investingScreen.hidden = true;
+      investingScreen.classList.remove('screen--active');
+    }
+    if (assetDetailScreen) {
+      assetDetailScreen.hidden = true;
+      assetDetailScreen.classList.remove('screen--active');
+    }
+
     if (tabName === 'Earnings') {
-      previewScreen.hidden = true;
       earningsScreen.hidden = false;
       earningsScreen.classList.add('screen--active');
-      previewScreen.classList.remove('screen--active');
+    } else if (tabName === 'Investing' && investingScreen) {
+      investingScreen.hidden = false;
+      investingScreen.classList.add('screen--active');
+      renderInvestingScreen();
     } else {
-      const moduleInfo = CONFIG.MODULE_PREVIEWS[tabName] || CONFIG.MODULE_PREVIEWS.Investing;
+      const moduleInfo = CONFIG.MODULE_PREVIEWS[tabName] || CONFIG.MODULE_PREVIEWS.Business;
       if (previewTitle) {
-        previewTitle.textContent = '';
-        const brandSpan = document.createElement('span');
-        brandSpan.setAttribute('lang', 'en');
-        brandSpan.textContent = tabName;
-        previewTitle.appendChild(brandSpan);
-        previewTitle.appendChild(document.createTextNode(' — Dalam Pengembangan'));
+        previewTitle.textContent = (moduleInfo.label || tabName) + ' — Dalam Pengembangan';
       }
       if (previewDescription) {
         previewDescription.textContent = moduleInfo.description;
@@ -1140,15 +1769,13 @@
         }
       }
 
-      earningsScreen.hidden = true;
       previewScreen.hidden = false;
-      earningsScreen.classList.remove('screen--active');
       previewScreen.classList.add('screen--active');
     }
   }
 
   /**
-   * Mendaftarkan seluruh event listener sentuhan, klik, dan navigasi.
+   * Mendaftarkan seluruh event listener sentuhan, klik, investasi, dan navigasi.
    */
   function bindEvents() {
     if (!hasDOM || !tapArea) return;
@@ -1198,6 +1825,35 @@
         }
       });
     });
+
+    // Sub-tab kategori investasi (Saham, Properti, Kripto, Forex)
+    investSubtabs.forEach(function (subBtn) {
+      subBtn.addEventListener('click', function () {
+        const cat = subBtn.getAttribute('data-invest-cat');
+        if (cat) {
+          state.activeInvestCategory = cat;
+          renderInvestingScreen();
+        }
+      });
+    });
+
+    // Klik kartu aset pada daftar investasi -> buka layar detail
+    if (investAssetList) {
+      investAssetList.addEventListener('click', function (event) {
+        const card = event.target.closest('[data-asset-id]');
+        if (!card) return;
+        const assetId = card.getAttribute('data-asset-id');
+        if (assetId) {
+          openAssetDetail(assetId);
+        }
+      });
+    }
+
+    if (assetDetailBackBtn) {
+      assetDetailBackBtn.addEventListener('click', function () {
+        closeAssetDetail();
+      });
+    }
 
     if (upgradesList) {
       upgradesList.addEventListener('click', function (event) {
@@ -1319,7 +1975,13 @@
       } else if (document.visibilityState === 'visible') {
         renderStats();
         renderUpgrades();
-        if (state.activeTab === 'Profile') {
+        if (state.activeTab === 'Investing') {
+          if (state.selectedAssetId) {
+            renderAssetDetailScreen();
+          } else {
+            renderInvestingScreen();
+          }
+        } else if (state.activeTab === 'Profile') {
           renderProfileStats();
         }
       }
@@ -1380,6 +2042,7 @@
     renderStats();
     renderUpgrades();
     renderProfileStats();
+    renderInvestingScreen();
     bindEvents();
     startPassiveIncomeLoop();
     registerServiceWorker();
@@ -1396,16 +2059,21 @@
   // Ekspor fungsi inti untuk pengujian otomatis (Node.js)
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
+      ASSETS: ASSETS,
       CONFIG: CONFIG,
       state: state,
       formatCurrencyValue: formatCurrencyValue,
       formatFullCurrencyValue: formatFullCurrencyValue,
       formatCompact: formatCompact,
+      formatRupiahCompact: formatRupiahCompact,
+      formatRupiahFull: formatRupiahFull,
+      formatSignedPercent: formatSignedPercent,
       getUpgradeCost: getUpgradeCost,
       recalculatePerClick: recalculatePerClick,
       recalculatePerSecond: recalculatePerSecond,
       calculateOfflineBonus: calculateOfflineBonus,
       derivePlayerCardId: derivePlayerCardId,
+      getCategorySummary: getCategorySummary,
       loadState: loadState,
       saveState: saveState,
       writeSaveImmediate: writeSaveImmediate,

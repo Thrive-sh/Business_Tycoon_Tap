@@ -53,6 +53,10 @@
       <circle cx="12" cy="9" r="5.5" stroke="currentColor" stroke-width="2" />
       <path d="M9 13.8L7.5 21L12 18.6L16.5 21L15 13.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
     </symbol>
+    <symbol id="icon-arrow-left" viewBox="0 0 24 24" fill="none">
+      <path d="M19 12H5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M11.5 18.5L5 12L11.5 5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+    </symbol>
   </svg>
 
   <div class="app-shell" id="app-shell">
@@ -130,6 +134,149 @@
       </section>
 
     </main>
+
+    <!-- ==================== LAYAR INVESTASI (4 KATEGORI) ==================== -->
+    <section class="screen" id="investing-screen" aria-label="Dasbor Investasi" hidden>
+      <header class="invest-header">
+        <div class="invest-header__top">
+          <h1 class="invest-header__title">Investasi</h1>
+          <div class="invest-header__wallet" aria-label="Saldo tersedia">
+            <span class="invest-header__wallet-label">Saldo:</span>
+            <strong class="invest-header__wallet-value" id="invest-wallet-balance">Rp0,00</strong>
+          </div>
+        </div>
+
+        <!-- 4 Sub-Tab Kategori Investasi -->
+        <div class="invest-subtabs" role="group" aria-label="Kategori Investasi">
+          <button
+            type="button"
+            class="invest-subtab invest-subtab--active"
+            data-invest-cat="Saham"
+            aria-pressed="true"
+            aria-current="true"
+          >
+            Saham
+          </button>
+          <button
+            type="button"
+            class="invest-subtab"
+            data-invest-cat="Properti"
+            aria-pressed="false"
+          >
+            Properti
+          </button>
+          <button
+            type="button"
+            class="invest-subtab"
+            data-invest-cat="Kripto"
+            aria-pressed="false"
+          >
+            Kripto
+          </button>
+          <button
+            type="button"
+            class="invest-subtab"
+            data-invest-cat="Forex"
+            aria-pressed="false"
+          >
+            Forex
+          </button>
+        </div>
+      </header>
+
+      <div class="invest-body">
+        <!-- Kartu Ringkasan Kategori -->
+        <div class="invest-summary-card" id="invest-summary-card">
+          <span class="invest-summary-card__label" id="invest-summary-label">Total nilai saham</span>
+          <div class="invest-summary-card__total" id="invest-summary-total">Rp0,00</div>
+          <div class="invest-summary-card__pnl pnl--positive" id="invest-summary-pnl">
+            Rp0,00 (+0,00%) sepanjang waktu
+          </div>
+          <div class="invest-summary-card__yield" id="invest-summary-yield-row">
+            <span class="invest-summary-card__yield-label">Estimasi pendapatan per jam</span>
+            <strong class="invest-summary-card__yield-value" id="invest-summary-yield">Rp0,00</strong>
+          </div>
+        </div>
+
+        <!-- Daftar Aset per Kategori -->
+        <div class="invest-asset-list" id="invest-asset-list" aria-label="Daftar Aset Investasi"></div>
+      </div>
+    </section>
+
+    <!-- ==================== LAYAR DETAIL ASET INVESTASI ==================== -->
+    <section class="screen" id="asset-detail-screen" aria-label="Detail Aset Investasi" hidden>
+      <header class="detail-header">
+        <button
+          type="button"
+          class="detail-back-btn"
+          id="asset-detail-back-btn"
+          aria-label="Kembali ke daftar investasi"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-arrow-left"></use>
+          </svg>
+        </button>
+        <div class="detail-header__info">
+          <h1 class="detail-header__title" id="detail-asset-name">Aset</h1>
+          <span class="detail-header__subtitle" id="detail-asset-category">Saham</span>
+        </div>
+        <div class="detail-header__wallet">
+          <span class="detail-header__wallet-label">Saldo</span>
+          <strong class="detail-header__wallet-value" id="detail-wallet-balance">Rp0,00</strong>
+        </div>
+      </header>
+
+      <div class="detail-body" id="detail-body">
+        <div class="detail-price-box">
+          <div class="detail-price-box__current" id="detail-market-price-hero">Rp0,00</div>
+          <div class="detail-price-box__change pnl--positive" id="detail-price-change">+0,00%</div>
+        </div>
+
+        <div class="detail-chart-card" id="detail-chart-card">
+          <canvas id="asset-price-canvas" class="detail-chart-canvas" aria-label="Grafik riwayat harga aset"></canvas>
+        </div>
+
+        <div class="detail-trade-card" id="detail-trade-card">
+          <div class="detail-qty-row" role="group" aria-label="Pilih jumlah unit transaksi">
+            <button type="button" class="qty-chip qty-chip--active" data-qty-mode="1" aria-pressed="true">1</button>
+            <button type="button" class="qty-chip" data-qty-mode="10" aria-pressed="false">10</button>
+            <button type="button" class="qty-chip" data-qty-mode="100" aria-pressed="false">100</button>
+            <button type="button" class="qty-chip" data-qty-mode="max" aria-pressed="false">Maks</button>
+          </div>
+          <div class="detail-trade-notice" id="detail-trade-notice" aria-live="polite"></div>
+          <div class="detail-trade-actions">
+            <button type="button" class="trade-btn trade-btn--sell" id="btn-sell-asset" disabled>JUAL</button>
+            <button type="button" class="trade-btn trade-btn--buy" id="btn-buy-asset">Beli lebih banyak</button>
+          </div>
+        </div>
+
+        <div class="detail-stats-card">
+          <h2 class="detail-stats-card__heading">Rincian Kepemilikan</h2>
+          <dl class="detail-stats-list">
+            <div class="detail-stats-list__row">
+              <dt>Jumlah dimiliki</dt>
+              <dd id="detail-owned-units">0 pcs.</dd>
+            </div>
+            <div class="detail-stats-list__row">
+              <dt>Harga pasar</dt>
+              <dd id="detail-market-price">Rp0,00</dd>
+            </div>
+            <div class="detail-stats-list__row">
+              <dt>Harga masuk</dt>
+              <dd id="detail-avg-entry">—</dd>
+            </div>
+            <div class="detail-stats-list__row">
+              <dt>Total biaya</dt>
+              <dd id="detail-total-cost">Rp0,00</dd>
+            </div>
+            <div class="detail-stats-list__row">
+              <dt>Untung / Rugi belum terealisasi</dt>
+              <dd id="detail-unrealized-pnl" class="pnl--positive">Rp0,00 (+0,00%)</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </section>
 
     <!-- ==================== LAYAR PRATINJAU MODUL LAIN ==================== -->
     <section class="screen" id="preview-screen" aria-label="Pratinjau Modul" hidden>
