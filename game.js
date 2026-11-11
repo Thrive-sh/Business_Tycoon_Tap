@@ -7,6 +7,7 @@
 
   // Kunci penyimpanan otomatis di localStorage
   const STORAGE_KEY = 'business_simulator_save_v1';
+  const SAVE_SCHEMA_VERSION = 2;
   const MAX_ACTIVE_PARTICLES = 40;
   const BASE_PER_CLICK = 1.0;
   const COST_GROWTH_FACTOR = 1.15;
@@ -107,15 +108,20 @@
     }
   };
 
-  // State utama permainan
+  // State utama permainan (Save Schema v2)
   const state = {
+    version: SAVE_SCHEMA_VERSION,
     balance: 0.0,
     perClick: BASE_PER_CLICK,
+    totalTaps: 0,
+    totalEarned: 0.0,
     upgrades: {
       gloves: 0,
       tap_machine: 0,
       auto_team: 0
     },
+    startDate: Date.now(),
+    lastSeen: Date.now(),
     activeTab: 'Earnings'
   };
 
@@ -141,6 +147,16 @@
   const openRoadmapBtn = document.getElementById('open-roadmap-btn');
   const closeRoadmapBtn = document.getElementById('close-roadmap-btn');
   const roadmapModal = document.getElementById('roadmap-modal');
+
+  const profilePanel = document.getElementById('profile-panel');
+  const statTotalTaps = document.getElementById('stat-total-taps');
+  const statTotalEarned = document.getElementById('stat-total-earned');
+  const statStartDate = document.getElementById('stat-start-date');
+  const openResetModalBtn = document.getElementById('open-reset-modal-btn');
+  const resetModal = document.getElementById('reset-modal');
+  const resetConfirmCheckbox = document.getElementById('reset-confirm-checkbox');
+  const cancelResetBtn = document.getElementById('cancel-reset-btn');
+  const confirmResetBtn = document.getElementById('confirm-reset-btn');
   const navTabs = Array.from(document.querySelectorAll('.nav-tab'));
   const navBadges = {
     Earnings: document.querySelector('[data-nav-badge="Earnings"]'),
@@ -185,29 +201,86 @@
   }
 
   /**
-   * Memuat data saldo, nilai per click, dan level upgrade dari localStorage.
+   * Memformat bilangan bulat dengan pemisah ribuan titik (.).
+   */
+  function formatIntegerID(value) {
+    const safeInt = Number.isFinite(value) && value >= 0 ? Math.floor(value) : 0;
+    return String(safeInt).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+
+  /**
+   * Memformat timestamp menjadi tanggal singkat DD/MM/YYYY.
+   */
+  function formatDateShort(timestamp) {
+    const d = new Date(Number.isFinite(timestamp) ? timestamp : Date.now());
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return day + '/' + month + '/' + year;
+  }
+
+  /**
+   * Memuat data dari localStorage dengan migrasi otomatis dari Save Schema v1 ke v2.
    */
   function loadState() {
+    const now = Date.now();
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
+      if (!raw) {
+        state.startDate = now;
+        state.lastSeen = now;
+        return;
+      }
 
       const parsed = JSON.parse(raw);
       if (parsed && typeof parsed === 'object') {
+        const isV2 = Number(parsed.version) >= SAVE_SCHEMA_VERSION;
         const loadedBalance = Number(parsed.balance);
         const loadedPerClick = Number(parsed.perClick);
 
-        if (Number.isFinite(loadedBalance) && loadedBalance >= 0) {
-          state.balance = Math.round(loadedBalance * 100) / 100;
-        }
+        state.balance =
+          Number.isFinite(loadedBalance) && loadedBalance >= 0
+            ? Math.round(loadedBalance * 100) / 100
+            : 0;
+
+        UPGRADE_TIERS.forEach(function (tier) {
+          const lvl =
+            parsed.upgrades && typeof parsed.upgrades === 'object'
+              ? Number(parsed.upgrades[tier.id])
+              : 0;
+          state.upgrades[tier.id] = Number.isFinite(lvl) && lvl >= 0 ? Math.floor(lvl) : 0;
+        });
+
+        const calculatedClick = recalculatePerClick();
         if (parsed.upgrades && typeof parsed.upgrades === 'object') {
-          UPGRADE_TIERS.forEach(function (tier) {
-            const lvl = Number(parsed.upgrades[tier.id]);
-            state.upgrades[tier.id] = Number.isFinite(lvl) && lvl >= 0 ? Math.floor(lvl) : 0;
-          });
-          state.perClick = recalculatePerClick();
+          state.perClick = calculatedClick;
         } else if (Number.isFinite(loadedPerClick) && loadedPerClick > 0) {
           state.perClick = Math.round(loadedPerClick * 100) / 100;
+        } else {
+          state.perClick = BASE_PER_CLICK;
+        }
+
+        if (isV2) {
+          const taps = Number(parsed.totalTaps);
+          const earned = Number(parsed.totalEarned);
+          const start = Number(parsed.startDate);
+          const seen = Number(parsed.lastSeen);
+
+          state.totalTaps = Number.isFinite(taps) && taps >= 0 ? Math.floor(taps) : 0;
+          state.totalEarned =
+            Number.isFinite(earned) && earned >= state.balance
+              ? Math.round(earned * 100) / 100
+              : state.balance;
+          state.startDate = Number.isFinite(start) && start > 0 ? start : now;
+          state.lastSeen = Number.isFinite(seen) && seen > 0 ? seen : now;
+        } else {
+          // Migrasi otomatis dari v1 (version belum ada)
+          state.totalTaps = 0;
+          state.totalEarned = state.balance;
+          state.startDate = now;
+          state.lastSeen = now;
+          state.version = SAVE_SCHEMA_VERSION;
+          saveState();
         }
       }
     } catch (error) {
@@ -216,19 +289,70 @@
   }
 
   /**
-   * Menyimpan data saldo, nilai per click, dan level upgrade ke localStorage.
+   * Menyimpan payload Save Schema v2 ke localStorage.
    */
   function saveState() {
+    state.lastSeen = Date.now();
     try {
       const payload = JSON.stringify({
+        version: SAVE_SCHEMA_VERSION,
         balance: state.balance,
         perClick: state.perClick,
-        upgrades: Object.assign({}, state.upgrades)
+        totalTaps: state.totalTaps,
+        totalEarned: state.totalEarned,
+        upgrades: Object.assign({}, state.upgrades),
+        startDate: state.startDate,
+        lastSeen: state.lastSeen
       });
       window.localStorage.setItem(STORAGE_KEY, payload);
     } catch (error) {
       // Abaikan jika kuota penyimpanan penuh atau mode privat ketat
     }
+  }
+
+  /**
+   * Merender statistik dasar pemain pada tab Profile.
+   */
+  function renderProfileStats() {
+    if (statTotalTaps) {
+      statTotalTaps.textContent = formatIntegerID(state.totalTaps);
+    }
+    if (statTotalEarned) {
+      statTotalEarned.textContent = '$ ' + formatCurrencyValue(state.totalEarned);
+    }
+    if (statStartDate) {
+      statStartDate.textContent = formatDateShort(state.startDate);
+    }
+  }
+
+  /**
+   * Mereset seluruh data permainan ke nilai awal ($ 0,00 dan statistik nol).
+   */
+  function resetAllData() {
+    const now = Date.now();
+    state.version = SAVE_SCHEMA_VERSION;
+    state.balance = 0.0;
+    state.perClick = BASE_PER_CLICK;
+    state.totalTaps = 0;
+    state.totalEarned = 0.0;
+    UPGRADE_TIERS.forEach(function (tier) {
+      state.upgrades[tier.id] = 0;
+    });
+    state.startDate = now;
+    state.lastSeen = now;
+    acknowledgedAffordableCount = 0;
+
+    try {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+      // Abaikan jika penyimpanan dibatasi
+    }
+    saveState();
+    setTabBadge('Earnings', 0);
+    setTabBadge('Profile', 0);
+    renderStats();
+    renderUpgrades();
+    renderProfileStats();
   }
 
   /**
@@ -476,9 +600,14 @@
    */
   function processTap(clientX, clientY) {
     state.balance = Math.round((state.balance + state.perClick) * 100) / 100;
+    state.totalTaps += 1;
+    state.totalEarned = Math.round((state.totalEarned + state.perClick) * 100) / 100;
     saveState();
     renderStats();
     renderUpgrades();
+    if (state.activeTab === 'Profile') {
+      renderProfileStats();
+    }
     triggerHandPulse();
     spawnFloatingFeedback(clientX, clientY, state.perClick);
   }
@@ -528,6 +657,13 @@
           li.textContent = featText;
           previewFeaturesList.appendChild(li);
         });
+      }
+
+      if (profilePanel) {
+        profilePanel.hidden = tabName !== 'Profile';
+        if (tabName === 'Profile') {
+          renderProfileStats();
+        }
       }
 
       earningsScreen.hidden = true;
@@ -632,6 +768,42 @@
         }
       });
     }
+
+    // Modal Reset Semua Data (Konfirmasi Dua Langkah)
+    if (openResetModalBtn && resetModal && resetConfirmCheckbox && confirmResetBtn) {
+      openResetModalBtn.addEventListener('click', function () {
+        resetConfirmCheckbox.checked = false;
+        confirmResetBtn.disabled = true;
+        resetModal.hidden = false;
+      });
+
+      resetConfirmCheckbox.addEventListener('change', function () {
+        confirmResetBtn.disabled = !resetConfirmCheckbox.checked;
+      });
+
+      confirmResetBtn.addEventListener('click', function () {
+        if (!resetConfirmCheckbox.checked) return;
+        resetAllData();
+        resetModal.hidden = true;
+      });
+    }
+    if (cancelResetBtn && resetModal) {
+      cancelResetBtn.addEventListener('click', function () {
+        resetModal.hidden = true;
+      });
+    }
+    if (resetModal) {
+      resetModal.addEventListener('click', function (event) {
+        if (event.target === resetModal) {
+          resetModal.hidden = true;
+        }
+      });
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && !resetModal.hidden) {
+          resetModal.hidden = true;
+        }
+      });
+    }
   }
 
   // Inisialisasi aplikasi
@@ -641,6 +813,7 @@
     loadState();
     renderStats();
     renderUpgrades();
+    renderProfileStats();
     bindEvents();
   }
 

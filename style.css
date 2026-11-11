@@ -633,6 +633,97 @@ body {
   justify-content: flex-end;
 }
 
+.profile-panel {
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background-color: #F8FAFC;
+  border: 1px solid var(--border-light);
+  text-align: left;
+}
+
+.profile-panel[hidden] {
+  display: none !important;
+}
+
+.profile-panel__heading {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.profile-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.profile-stats__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.profile-stats__item dt {
+  color: var(--text-muted);
+}
+
+.profile-stats__item dd {
+  font-weight: 700;
+  color: var(--text-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.danger-btn {
+  appearance: none;
+  width: 100%;
+  border: 1px solid #FCA5A5;
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #B91C1C;
+  background-color: #FEF2F2;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.danger-btn--solid {
+  width: auto;
+  border-color: #DC2626;
+  background-color: #DC2626;
+  color: #FFFFFF;
+}
+
+.danger-btn:disabled {
+  background-color: #E2E8F0;
+  border-color: #CBD5E1;
+  color: #64748B;
+  cursor: not-allowed;
+}
+
+.reset-confirm-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text-dark);
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.reset-confirm-check input {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
 /* ==========================================================================
    4. LAYAR PRATINJAU MODUL LAIN ("Modul [Nama Tab] - Segera Hadir")
    ========================================================================== */
@@ -670,16 +761,20 @@ body {
 
 .preview-body {
   flex: 1;
+  min-height: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 24px 22px;
+  padding: 20px 18px;
   background-color: #F8FAFC;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .preview-card {
   width: 100%;
-  padding: 30px 24px;
+  margin: auto 0;
+  padding: 24px 20px;
   border-radius: 22px;
   background-color: var(--surface-white);
   border: 1px solid var(--border-light);

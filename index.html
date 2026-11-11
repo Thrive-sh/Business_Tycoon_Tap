@@ -154,6 +154,28 @@
 
           <ul class="preview-features" id="preview-features-list"></ul>
 
+          <!-- Panel Statistik Dasar & Reset Data (Khusus Tab Profile) -->
+          <div class="profile-panel" id="profile-panel" hidden>
+            <h2 class="profile-panel__heading">Statistik Pemain</h2>
+            <dl class="profile-stats">
+              <div class="profile-stats__item">
+                <dt>Total Ketukan</dt>
+                <dd id="stat-total-taps">0</dd>
+              </div>
+              <div class="profile-stats__item">
+                <dt>Total Pendapatan</dt>
+                <dd id="stat-total-earned">$ 0,00</dd>
+              </div>
+              <div class="profile-stats__item">
+                <dt>Mulai Bermain</dt>
+                <dd id="stat-start-date">-</dd>
+              </div>
+            </dl>
+            <button type="button" class="danger-btn" id="open-reset-modal-btn">
+              Reset Semua Data
+            </button>
+          </div>
+
           <div class="preview-actions">
             <button type="button" class="preview-card__btn" id="back-to-earnings-btn">
               Kembali ke Earnings
@@ -181,6 +203,24 @@
         </ul>
         <div class="modal-dialog__actions">
           <button type="button" class="preview-card__btn" id="close-roadmap-btn">Tutup</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI DUA LANGKAH: RESET SEMUA DATA -->
+    <div class="modal-backdrop" id="reset-modal" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title" hidden>
+      <div class="modal-dialog">
+        <h2 class="modal-dialog__title" id="reset-modal-title">Reset Semua Data?</h2>
+        <p class="modal-dialog__body">
+          Tindakan ini akan menghapus seluruh saldo, level upgrade, dan riwayat statistik secara permanen.
+        </p>
+        <label class="reset-confirm-check" for="reset-confirm-checkbox">
+          <input type="checkbox" id="reset-confirm-checkbox">
+          <span>Saya mengerti seluruh progres akan dihapus dan tidak dapat dikembalikan.</span>
+        </label>
+        <div class="modal-dialog__actions">
+          <button type="button" class="preview-card__btn preview-card__btn--secondary" id="cancel-reset-btn">Batal</button>
+          <button type="button" class="danger-btn danger-btn--solid" id="confirm-reset-btn" disabled>Hapus Permanen</button>
         </div>
       </div>
     </div>
