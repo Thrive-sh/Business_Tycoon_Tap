@@ -259,6 +259,29 @@
     TAP_CLAMP_MAX_PAD_Y: 24,
     TAP_JITTER_CENTER: 0.5,
     TAP_JITTER_SPREAD_PX: 12,
+    CHART_CSS_HEIGHT_PX: 160,
+    CHART_FALLBACK_WIDTH_PX: 320,
+    CHART_LINE_WIDTH: 2,
+    CHART_DOT_OUTER_RADIUS: 4.5,
+    CHART_DOT_INNER_RADIUS: 2.5,
+    CHART_PAD_TOP: 22,
+    CHART_PAD_RIGHT: 12,
+    CHART_PAD_BOTTOM: 22,
+    CHART_PAD_LEFT: 12,
+    CHART_MID_DIVISOR: 2,
+    CHART_FLAT_SPREAD_RATIO: 0.01,
+    CHART_RANGE_PAD_RATIO: 0.12,
+    CHART_LABEL_OFFSET_TOP_Y: 13,
+    CHART_LABEL_OFFSET_BOTTOM_Y: 6,
+    CHART_X_LABEL_OFFSET_Y: 16,
+    CHART_STROKE_COLOR: '#F97316',
+    CHART_DOT_BG_COLOR: '#FFFFFF',
+    CHART_FILL_TOP: 'rgba(249, 115, 22, 0.25)',
+    CHART_FILL_BOTTOM: 'rgba(249, 115, 22, 0.0)',
+    CHART_GRID_COLOR: 'rgba(249, 115, 22, 0.16)',
+    CHART_LABEL_COLOR: '#78716C',
+    CHART_FONT: '600 10px Inter, system-ui, -apple-system, sans-serif',
+    DEFAULT_TRADE_QTY: '1',
     THOUSANDS_GROUP_REGEX: /\B(?=(\d{3})+(?!\d))/g,
     INVEST_SUMMARY_LABELS: {
       Saham: 'Total nilai saham',
@@ -409,11 +432,19 @@
   const detailWalletBalance = getEl('detail-wallet-balance');
   const detailMarketPriceHero = getEl('detail-market-price-hero');
   const detailPriceChange = getEl('detail-price-change');
+  const assetPriceCanvas = getEl('asset-price-canvas');
   const detailOwnedUnits = getEl('detail-owned-units');
   const detailMarketPrice = getEl('detail-market-price');
   const detailAvgEntry = getEl('detail-avg-entry');
+  const detailMarketValue = getEl('detail-market-value');
   const detailTotalCost = getEl('detail-total-cost');
   const detailUnrealizedPnl = getEl('detail-unrealized-pnl');
+  const detailYieldRow = getEl('detail-yield-row');
+  const detailHourlyYield = getEl('detail-hourly-yield');
+  const detailQtyChips = hasDOM ? Array.from(document.querySelectorAll('[data-trade-qty]')) : [];
+  const detailTradeNotice = getEl('detail-trade-notice');
+  const detailSellBtn = getEl('detail-sell-btn');
+  const detailBuyBtn = getEl('detail-buy-btn');
 
   const previewTitle = getEl('preview-title');
   const previewDescription = getEl('preview-description');
@@ -1021,7 +1052,203 @@
   }
 
   /**
-   * Merender informasi layar detail aset yang dipilih.
+   * Memformat timestamp menjadi jam singkat HH:MM untuk sumbu X grafik.
+   */
+  function formatTimeHHMM(timestamp) {
+    const d = new Date(Number.isFinite(timestamp) ? timestamp : Date.now());
+    const hh = String(d.getHours()).padStart(CONFIG.DATE_PAD_LENGTH, '0');
+    const mm = String(d.getMinutes()).padStart(CONFIG.DATE_PAD_LENGTH, '0');
+    return hh + ':' + mm;
+  }
+
+  /**
+   * Menghitung jumlah unit beli & jual berdasarkan chip aktif ('1', '10', '100', 'max').
+   */
+  function resolveTradeQuantities(currentPrice, ownedUnits) {
+    const safePrice = Number.isFinite(currentPrice) && currentPrice > 0 ? currentPrice : 0;
+    const safeOwned = Number.isFinite(ownedUnits) && ownedUnits > 0 ? Math.floor(ownedUnits) : 0;
+    const maxAffordable =
+      safePrice > 0 && Number.isFinite(state.balance) && state.balance >= safePrice
+        ? Math.floor(state.balance / safePrice)
+        : 0;
+
+    if (state.selectedQtyMode === 'max') {
+      return {
+        buyQty: maxAffordable,
+        sellQty: safeOwned,
+        maxAffordable: maxAffordable
+      };
+    }
+
+    const parsed = Number(state.selectedQtyMode);
+    const fixedQty = Number.isFinite(parsed) && parsed >= 1 ? Math.floor(parsed) : 1;
+    return {
+      buyQty: fixedQty,
+      sellQty: fixedQty,
+      maxAffordable: maxAffordable
+    };
+  }
+
+  /**
+   * Menggambar grafik riwayat harga aset di Canvas 2D (DPR-scaled, mulus, tanpa library luar).
+   */
+  function renderAssetPriceChart(asset) {
+    if (!assetPriceCanvas || typeof assetPriceCanvas.getContext !== 'function') return;
+    const ctx = assetPriceCanvas.getContext('2d');
+    if (!ctx) return;
+
+    const rect = assetPriceCanvas.getBoundingClientRect();
+    const cssWidth = rect && rect.width > 0 ? rect.width : CONFIG.CHART_FALLBACK_WIDTH_PX;
+    const cssHeight = CONFIG.CHART_CSS_HEIGHT_PX;
+    const dpr =
+      Number.isFinite(root.devicePixelRatio) && root.devicePixelRatio > 0
+        ? root.devicePixelRatio
+        : 1;
+
+    const targetW = Math.round(cssWidth * dpr);
+    const targetH = Math.round(cssHeight * dpr);
+    if (assetPriceCanvas.width !== targetW || assetPriceCanvas.height !== targetH) {
+      assetPriceCanvas.width = targetW;
+      assetPriceCanvas.height = targetH;
+    }
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, cssWidth, cssHeight);
+
+    const rawHistory = Array.isArray(state.priceHistory[asset.id])
+      ? state.priceHistory[asset.id]
+      : [];
+    const fallbackNow = Date.now();
+    const fallbackPrice = getCurrentAssetPrice(asset.id);
+    const points = rawHistory.filter(function (pt) {
+      return pt && Number.isFinite(pt.price) && pt.price > 0;
+    });
+    if (points.length === 0) {
+      points.push(
+        { ts: fallbackNow - CONFIG.PRICE_TICK_MS, price: fallbackPrice },
+        { ts: fallbackNow, price: fallbackPrice }
+      );
+    } else if (points.length === 1) {
+      points.unshift({ ts: points[0].ts - CONFIG.PRICE_TICK_MS, price: points[0].price });
+    }
+
+    let minPrice = points[0].price;
+    let maxPrice = points[0].price;
+    points.forEach(function (pt) {
+      if (pt.price < minPrice) minPrice = pt.price;
+      if (pt.price > maxPrice) maxPrice = pt.price;
+    });
+
+    const displayMin = minPrice;
+    const displayMax = maxPrice;
+
+    if (maxPrice <= minPrice) {
+      const flatSpread = Math.max(minPrice * CONFIG.CHART_FLAT_SPREAD_RATIO, 1);
+      minPrice = Math.max(0, minPrice - flatSpread);
+      maxPrice = maxPrice + flatSpread;
+    } else {
+      const range = maxPrice - minPrice;
+      minPrice = Math.max(0, minPrice - range * CONFIG.CHART_RANGE_PAD_RATIO);
+      maxPrice = maxPrice + range * CONFIG.CHART_RANGE_PAD_RATIO;
+    }
+    const safeSpan = maxPrice - minPrice > 0 ? maxPrice - minPrice : 1;
+
+    const plotLeft = CONFIG.CHART_PAD_LEFT;
+    const plotRight = cssWidth - CONFIG.CHART_PAD_RIGHT;
+    const plotTop = CONFIG.CHART_PAD_TOP;
+    const plotBottom = cssHeight - CONFIG.CHART_PAD_BOTTOM;
+    const plotW = Math.max(1, plotRight - plotLeft);
+    const plotH = Math.max(1, plotBottom - plotTop);
+
+    // Grid horizontal tipis (atas, tengah, bawah)
+    ctx.strokeStyle = CONFIG.CHART_GRID_COLOR;
+    ctx.lineWidth = 1;
+    const midGridY = (plotTop + plotBottom) / CONFIG.CHART_MID_DIVISOR;
+    [plotTop, midGridY, plotBottom].forEach(function (gy) {
+      ctx.beginPath();
+      ctx.moveTo(plotLeft, gy);
+      ctx.lineTo(plotRight, gy);
+      ctx.stroke();
+    });
+
+    const coords = points.map(function (pt, idx) {
+      const x = plotLeft + (idx / (points.length - 1)) * plotW;
+      const y = plotBottom - ((pt.price - minPrice) / safeSpan) * plotH;
+      return { x: x, y: y };
+    });
+
+    // Helper untuk membangun kurva mulus (quadratic midpoint)
+    function traceSmoothCurve() {
+      ctx.moveTo(coords[0].x, coords[0].y);
+      for (let i = 0; i < coords.length - 1; i += 1) {
+        const midX = (coords[i].x + coords[i + 1].x) / CONFIG.CHART_MID_DIVISOR;
+        const midY = (coords[i].y + coords[i + 1].y) / CONFIG.CHART_MID_DIVISOR;
+        if (i === 0) {
+          ctx.lineTo(midX, midY);
+        } else {
+          ctx.quadraticCurveTo(coords[i].x, coords[i].y, midX, midY);
+        }
+      }
+      const last = coords[coords.length - 1];
+      ctx.lineTo(last.x, last.y);
+    }
+
+    // Area gradient orange muda di bawah garis
+    const lastCoord = coords[coords.length - 1];
+    ctx.beginPath();
+    traceSmoothCurve();
+    ctx.lineTo(lastCoord.x, plotBottom);
+    ctx.lineTo(coords[0].x, plotBottom);
+    ctx.closePath();
+    const grad = ctx.createLinearGradient(0, plotTop, 0, plotBottom);
+    grad.addColorStop(0, CONFIG.CHART_FILL_TOP);
+    grad.addColorStop(1, CONFIG.CHART_FILL_BOTTOM);
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Garis utama #F97316 tebal 2px
+    ctx.beginPath();
+    traceSmoothCurve();
+    ctx.strokeStyle = CONFIG.CHART_STROKE_COLOR;
+    ctx.lineWidth = CONFIG.CHART_LINE_WIDTH;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    // Titik harga terakhir di ujung kanan
+    ctx.beginPath();
+    ctx.arc(lastCoord.x, lastCoord.y, CONFIG.CHART_DOT_OUTER_RADIUS, 0, Math.PI * CONFIG.CHART_MID_DIVISOR);
+    ctx.fillStyle = CONFIG.CHART_DOT_BG_COLOR;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(lastCoord.x, lastCoord.y, CONFIG.CHART_DOT_INNER_RADIUS, 0, Math.PI * CONFIG.CHART_MID_DIVISOR);
+    ctx.fillStyle = CONFIG.CHART_STROKE_COLOR;
+    ctx.fill();
+
+    // Label Y-axis (Maks & Min) + X-axis (HH:MM)
+    ctx.font = CONFIG.CHART_FONT;
+    ctx.fillStyle = CONFIG.CHART_LABEL_COLOR;
+
+    ctx.textAlign = 'left';
+    ctx.fillText('Maks ' + formatRupiahCompact(displayMax), plotLeft, CONFIG.CHART_LABEL_OFFSET_TOP_Y);
+    ctx.textAlign = 'right';
+    ctx.fillText('Min ' + formatRupiahCompact(displayMin), plotRight, CONFIG.CHART_LABEL_OFFSET_TOP_Y);
+
+    const firstTs = points[0].ts;
+    const midTs = points[Math.floor(points.length / CONFIG.CHART_MID_DIVISOR)].ts;
+    const lastTs = points[points.length - 1].ts;
+    const xLabelY = plotBottom + CONFIG.CHART_X_LABEL_OFFSET_Y;
+
+    ctx.textAlign = 'left';
+    ctx.fillText(formatTimeHHMM(firstTs), plotLeft, xLabelY);
+    ctx.textAlign = 'center';
+    ctx.fillText(formatTimeHHMM(midTs), plotLeft + plotW / CONFIG.CHART_MID_DIVISOR, xLabelY);
+    ctx.textAlign = 'right';
+    ctx.fillText(formatTimeHHMM(lastTs), plotRight, xLabelY);
+  }
+
+  /**
+   * Merender informasi layar detail aset yang dipilih beserta grafik Canvas 2D.
    */
   function renderAssetDetailScreen() {
     if (!assetDetailScreen || !state.selectedAssetId) return;
@@ -1039,6 +1266,8 @@
     const unrealizedValue = units > 0 ? marketValue - totalCost : 0;
     const rawPct = totalCost > 0 ? (unrealizedValue / totalCost) * 100 : 0;
     const unrealizedPct = Number.isFinite(rawPct) ? rawPct : 0;
+    const assetHourlyYield =
+      asset.yieldRate > 0 && units > 0 ? marketValue * asset.yieldRate : 0;
 
     if (detailAssetName) detailAssetName.textContent = asset.name;
     if (detailAssetCategory) detailAssetCategory.textContent = asset.category;
@@ -1065,6 +1294,9 @@
     if (detailAvgEntry) {
       detailAvgEntry.textContent = units > 0 ? formatRupiahFull(avgEntry) : '—';
     }
+    if (detailMarketValue) {
+      detailMarketValue.textContent = formatRupiahFull(marketValue);
+    }
     if (detailTotalCost) {
       detailTotalCost.textContent = formatRupiahFull(totalCost);
     }
@@ -1080,6 +1312,64 @@
       detailUnrealizedPnl.classList.toggle('pnl--positive', pos);
       detailUnrealizedPnl.classList.toggle('pnl--negative', !pos);
     }
+    if (detailYieldRow && detailHourlyYield) {
+      if (asset.yieldRate > 0) {
+        detailYieldRow.hidden = false;
+        detailHourlyYield.textContent = formatRupiahCompact(assetHourlyYield) + '/jam';
+        detailHourlyYield.title = formatRupiahFull(assetHourlyYield) + ' per jam';
+      } else {
+        detailYieldRow.hidden = true;
+      }
+    }
+
+    // Status chip jumlah [1] [10] [100] [Maks] & tombol BELI / JUAL
+    detailQtyChips.forEach(function (chip) {
+      const active = chip.getAttribute('data-trade-qty') === state.selectedQtyMode;
+      chip.classList.toggle('qty-chip--active', active);
+      chip.setAttribute('aria-pressed', String(active));
+    });
+
+    const trade = resolveTradeQuantities(currentPrice, units);
+    const estBuyCost = trade.buyQty * currentPrice;
+    const canBuy =
+      trade.buyQty >= 1 &&
+      Number.isFinite(estBuyCost) &&
+      estBuyCost > 0 &&
+      state.balance >= estBuyCost;
+    const canSell = units > 0 && trade.sellQty >= 1 && trade.sellQty <= units;
+
+    if (detailBuyBtn) {
+      detailBuyBtn.disabled = !canBuy;
+    }
+    if (detailSellBtn) {
+      detailSellBtn.disabled = !canSell;
+    }
+    if (detailTradeNotice) {
+      if (!canBuy) {
+        detailTradeNotice.textContent = 'Saldo tidak cukup';
+        detailTradeNotice.classList.add('detail-trade-card__notice--error');
+      } else if (state.selectedQtyMode === 'max') {
+        detailTradeNotice.textContent =
+          'Maks beli: ' +
+          formatIntegerID(trade.buyQty) +
+          ' ' +
+          asset.unitLabel +
+          ' (' +
+          formatRupiahCompact(estBuyCost) +
+          ')';
+        detailTradeNotice.classList.remove('detail-trade-card__notice--error');
+      } else {
+        detailTradeNotice.textContent =
+          formatIntegerID(trade.buyQty) +
+          ' ' +
+          asset.unitLabel +
+          ' · ' +
+          formatRupiahCompact(estBuyCost);
+        detailTradeNotice.classList.remove('detail-trade-card__notice--error');
+      }
+    }
+
+    renderAssetPriceChart(asset);
   }
 
   /**
@@ -1089,6 +1379,7 @@
     const asset = getAssetById(assetId);
     if (!asset || !assetDetailScreen || !investingScreen) return;
     state.selectedAssetId = asset.id;
+    state.selectedQtyMode = CONFIG.DEFAULT_TRADE_QTY;
     investingScreen.hidden = true;
     investingScreen.classList.remove('screen--active');
     assetDetailScreen.hidden = false;
@@ -1950,6 +2241,40 @@
     if (assetDetailBackBtn) {
       assetDetailBackBtn.addEventListener('click', function () {
         closeAssetDetail();
+      });
+    }
+
+    detailQtyChips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        const mode = chip.getAttribute('data-trade-qty');
+        if (mode) {
+          state.selectedQtyMode = mode;
+          renderAssetDetailScreen();
+        }
+      });
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (
+        event.key === 'Escape' &&
+        assetDetailScreen &&
+        !assetDetailScreen.hidden &&
+        (!roadmapModal || roadmapModal.hidden) &&
+        (!resetModal || resetModal.hidden) &&
+        (!offlineModal || offlineModal.hidden)
+      ) {
+        closeAssetDetail();
+      }
+    });
+
+    if (root.addEventListener) {
+      root.addEventListener('resize', function () {
+        if (assetDetailScreen && !assetDetailScreen.hidden && state.selectedAssetId) {
+          const currentAsset = getAssetById(state.selectedAssetId);
+          if (currentAsset) {
+            renderAssetPriceChart(currentAsset);
+          }
+        }
       });
     }
 
