@@ -8,6 +8,30 @@
   // Kunci penyimpanan otomatis di localStorage
   const STORAGE_KEY = 'business_simulator_save_v1';
   const MAX_ACTIVE_PARTICLES = 40;
+  const BASE_PER_CLICK = 1.0;
+  const COST_GROWTH_FACTOR = 1.15;
+
+  // Definisi 3 tier upgrade per-click
+  const UPGRADE_TIERS = [
+    {
+      id: 'gloves',
+      name: 'Sarung Tangan',
+      baseCost: 15,
+      clickBonus: 1
+    },
+    {
+      id: 'tap_machine',
+      name: 'Mesin Tap',
+      baseCost: 100,
+      clickBonus: 5
+    },
+    {
+      id: 'auto_team',
+      name: 'Tim Otomatis',
+      baseCost: 500,
+      clickBonus: 25
+    }
+  ];
 
   // Data deskripsi & ikon SVG vektor untuk layar pratinjau modul lain
   const MODULE_PREVIEWS = {
@@ -62,7 +86,12 @@
   // State utama permainan
   const state = {
     balance: 0.0,
-    perClick: 1.0,
+    perClick: BASE_PER_CLICK,
+    upgrades: {
+      gloves: 0,
+      tap_machine: 0,
+      auto_team: 0
+    },
     activeTab: 'Earnings'
   };
 
@@ -73,6 +102,7 @@
   const tapArea = document.getElementById('tap-area');
   const tapHandIcon = document.getElementById('tap-hand-icon');
   const tapEffectsLayer = document.getElementById('tap-effects-layer');
+  const upgradesList = document.getElementById('upgrades-list');
 
   const earningsScreen = document.getElementById('earnings-screen');
   const previewScreen = document.getElementById('preview-screen');
@@ -98,7 +128,28 @@
   }
 
   /**
-   * Memuat data saldo dan nilai per click dari localStorage saat halaman dibuka.
+   * Menghitung biaya upgrade level berikutnya: baseCost * 1.15^level (2 desimal).
+   */
+  function getUpgradeCost(tier, level) {
+    const safeLevel = Number.isFinite(level) && level >= 0 ? Math.floor(level) : 0;
+    const rawCost = tier.baseCost * Math.pow(COST_GROWTH_FACTOR, safeLevel);
+    return Math.round(rawCost * 100) / 100;
+  }
+
+  /**
+   * Menghitung ulang nilai perClick berdasarkan level seluruh upgrade.
+   */
+  function recalculatePerClick() {
+    let total = BASE_PER_CLICK;
+    UPGRADE_TIERS.forEach(function (tier) {
+      const lvl = Number(state.upgrades[tier.id]) || 0;
+      total += lvl * tier.clickBonus;
+    });
+    return Math.round(total * 100) / 100;
+  }
+
+  /**
+   * Memuat data saldo, nilai per click, dan level upgrade dari localStorage.
    */
   function loadState() {
     try {
@@ -113,7 +164,13 @@
         if (Number.isFinite(loadedBalance) && loadedBalance >= 0) {
           state.balance = Math.round(loadedBalance * 100) / 100;
         }
-        if (Number.isFinite(loadedPerClick) && loadedPerClick > 0) {
+        if (parsed.upgrades && typeof parsed.upgrades === 'object') {
+          UPGRADE_TIERS.forEach(function (tier) {
+            const lvl = Number(parsed.upgrades[tier.id]);
+            state.upgrades[tier.id] = Number.isFinite(lvl) && lvl >= 0 ? Math.floor(lvl) : 0;
+          });
+          state.perClick = recalculatePerClick();
+        } else if (Number.isFinite(loadedPerClick) && loadedPerClick > 0) {
           state.perClick = Math.round(loadedPerClick * 100) / 100;
         }
       }
@@ -123,18 +180,112 @@
   }
 
   /**
-   * Menyimpan data saldo dan nilai per click ke localStorage secara otomatis.
+   * Menyimpan data saldo, nilai per click, dan level upgrade ke localStorage.
    */
   function saveState() {
     try {
       const payload = JSON.stringify({
         balance: state.balance,
-        perClick: state.perClick
+        perClick: state.perClick,
+        upgrades: Object.assign({}, state.upgrades)
       });
       window.localStorage.setItem(STORAGE_KEY, payload);
     } catch (error) {
       // Abaikan jika kuota penyimpanan penuh atau mode privat ketat
     }
+  }
+
+  /**
+   * Merender daftar 3 tier upgrade beserta status tombol beli.
+   */
+  function renderUpgrades() {
+    if (!upgradesList) return;
+
+    if (upgradesList.childElementCount === 0) {
+      UPGRADE_TIERS.forEach(function (tier) {
+        const row = document.createElement('div');
+        row.className = 'upgrade-item';
+        row.setAttribute('data-tier-row', tier.id);
+
+        const info = document.createElement('div');
+        info.className = 'upgrade-item__info';
+
+        const top = document.createElement('div');
+        top.className = 'upgrade-item__top';
+
+        const nameEl = document.createElement('span');
+        nameEl.className = 'upgrade-item__name';
+        nameEl.textContent = tier.name;
+
+        const levelEl = document.createElement('span');
+        levelEl.className = 'upgrade-item__level';
+        levelEl.setAttribute('data-upgrade-level', tier.id);
+
+        top.appendChild(nameEl);
+        top.appendChild(levelEl);
+
+        const effectEl = document.createElement('span');
+        effectEl.className = 'upgrade-item__effect';
+        effectEl.setAttribute('data-upgrade-effect', tier.id);
+
+        info.appendChild(top);
+        info.appendChild(effectEl);
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'upgrade-btn';
+        btn.setAttribute('data-upgrade-id', tier.id);
+
+        row.appendChild(info);
+        row.appendChild(btn);
+        upgradesList.appendChild(row);
+      });
+    }
+
+    UPGRADE_TIERS.forEach(function (tier) {
+      const level = Number(state.upgrades[tier.id]) || 0;
+      const cost = getUpgradeCost(tier, level);
+      const canAfford = state.balance >= cost;
+
+      const levelEl = upgradesList.querySelector('[data-upgrade-level="' + tier.id + '"]');
+      const effectEl = upgradesList.querySelector('[data-upgrade-effect="' + tier.id + '"]');
+      const btn = upgradesList.querySelector('[data-upgrade-id="' + tier.id + '"]');
+
+      if (levelEl) {
+        levelEl.textContent = 'Lv. ' + level;
+      }
+      if (effectEl) {
+        effectEl.textContent = '+$' + formatCurrencyValue(tier.clickBonus) + ' per click';
+      }
+      if (btn) {
+        btn.textContent = 'Beli $ ' + formatCurrencyValue(cost);
+        btn.disabled = !canAfford;
+      }
+    });
+  }
+
+  /**
+   * Membeli upgrade berdasarkan id jika saldo mencukupi.
+   */
+  function buyUpgrade(upgradeId) {
+    const tier = UPGRADE_TIERS.find(function (item) {
+      return item.id === upgradeId;
+    });
+    if (!tier) return false;
+
+    const currentLevel = Number(state.upgrades[tier.id]) || 0;
+    const cost = getUpgradeCost(tier, currentLevel);
+    if (state.balance < cost) {
+      return false;
+    }
+
+    state.balance = Math.round((state.balance - cost) * 100) / 100;
+    state.upgrades[tier.id] = currentLevel + 1;
+    state.perClick = recalculatePerClick();
+    saveState();
+    renderStats();
+    renderUpgrades();
+    return true;
   }
 
   /**
@@ -240,6 +391,7 @@
     state.balance = Math.round((state.balance + state.perClick) * 100) / 100;
     saveState();
     renderStats();
+    renderUpgrades();
     triggerHandPulse();
     spawnFloatingFeedback(clientX, clientY, state.perClick);
   }
@@ -334,6 +486,18 @@
       });
     });
 
+    // Pembelian upgrade per-click
+    if (upgradesList) {
+      upgradesList.addEventListener('click', function (event) {
+        const btn = event.target.closest('[data-upgrade-id]');
+        if (!btn || btn.disabled) return;
+        const upgradeId = btn.getAttribute('data-upgrade-id');
+        if (upgradeId) {
+          buyUpgrade(upgradeId);
+        }
+      });
+    }
+
     // Tombol pintas kembali ke tab Earnings dari layar pratinjau
     backToEarningsBtn.addEventListener('click', function () {
       switchTab('Earnings');
@@ -344,6 +508,7 @@
   function init() {
     loadState();
     renderStats();
+    renderUpgrades();
     bindEvents();
   }
 
