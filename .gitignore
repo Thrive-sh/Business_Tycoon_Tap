@@ -1,5 +1,17 @@
+# Dependencies
+node_modules/
+
+# Build & Coverage
+coverage/
+dist/
+
 # Vercel
-.vercel
+.vercel/
+
+# Environment & Logs
+.env
+.env.*
+*.log
 
 # OS files
 .DS_Store

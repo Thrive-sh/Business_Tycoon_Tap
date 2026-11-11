@@ -1,6 +1,67 @@
 # Business Tycoon Tap
 
-Web-based Business Simulator (Mobile-First Dashboard / Tab Earnings).
+Simulasi bisnis ketuk layar (*mobile-first*) berbasis web murni (**HTML5, CSS3, Vanilla JavaScript**) dengan dukungan pemasangan **PWA** dan mode luring (*offline*).
 
-- **Production URL (Vercel):** https://business-tycoon-tap.vercel.app
+## Tautan Produksi
+
+- **Vercel Production:** https://business-tycoon-tap.vercel.app
 - **GitHub Pages:** https://thrive-sh.github.io/Business_Tycoon_Tap/
+
+## Fitur Utama
+
+- **Siklus Ekonomi Ketukan & 3 Tingkat Peningkatan:** Sarung Tangan (`+$1/ketuk`), Mesin Ketuk (`+$5/ketuk`), dan Tim Otomatis (`+$25/ketuk` & `+$10/dtk`) dengan eskalasi biaya `baseCost * 1.15^level`.
+- **Pendapatan Pasif & Penghasilan Luring:** Dihitung otomatis dari `lastSeen` (efisiensi `50%`, batas maksimal `2 jam`) dan hanya merender DOM saat tab aktif terlihat.
+- **Format Angka Ringkas Indonesia:** Mendukung singkatan `rb`, `jt`, `M`, dan `T` dengan nominal penuh pada `title` dan `aria-label`.
+- **Save Schema v2 & Throttle 500ms:** Migrasi otomatis dari format simpanan v1, pencatatan statistik profil, konfirmasi reset dua langkah, serta penyimpanan seketika saat tab disembunyikan/ditutup.
+- **Umpan Balik & Pencapaian:** Bunyi blip koin sintetis (*Web Audio API*), getar sentuh (`navigator.vibrate`), preferensi ON/OFF tersimpan, dan notifikasi pencapaian satu kali.
+- **Aksesibilitas WCAG AA & PWA:** Kontras teks terverifikasi, `:focus-visible`, dukungan `prefers-reduced-motion`, satu sumber ikon vektor SVG `<symbol>`, serta `Service Worker` *cache-first*.
+
+## Struktur Proyek
+
+```text
+.
+├── index.html              # Antarmuka utama, SVG symbol sprite, dan modal dialog
+├── style.css               # Tata letak mobile-first, aksesibilitas fokus, dan animasi
+├── game.js                 # Logika permainan, CONFIG terpusat, penyimpanan, dan audio
+├── manifest.webmanifest    # Metadata pemasangan aplikasi PWA
+├── sw.js                   # Service Worker cache-first untuk mode luring
+├── icon-192.png            # Ikon aplikasi 192x192
+├── icon-512.png            # Ikon aplikasi 512x512
+├── scripts/lint.js         # Pemeriksa konsistensi aset, JSON, CSS, dan konstanta
+├── tests/smoke.test.js     # Pengujian otomatis format angka, migrasi save, dan throttle
+├── vercel.json             # Konfigurasi header keamanan & cache pada Vercel
+└── .github/workflows/      # Alur CI (check + test) dan rilis otomatis GitHub Pages
+```
+
+## Menjalankan Proyek Secara Lokal
+
+Prasyarat: **Node.js >= 18** (dan `python3` untuk peladen HTTP lokal sederhana).
+
+1. **Kloning repositori:**
+   ```bash
+   git clone https://github.com/Thrive-sh/Business_Tycoon_Tap.git
+   cd Business_Tycoon_Tap
+   ```
+
+2. **Jalankan peladen pengembangan lokal:**
+   ```bash
+   npm run dev
+   ```
+   Buka `http://localhost:8080` pada peramban (disarankan mode tampilan seluler Android `360x800` atau `412x915`).
+
+3. **Jalankan pemeriksaan statis (lint) dan pengujian:**
+   ```bash
+   npm run lint
+   npm test
+   ```
+
+## Panduan Kontribusi
+
+- Pertahankan pemisahan berkas inti (`index.html`, `style.css`, `game.js`) tanpa *framework* eksternal.
+- Seluruh ikon antarmuka wajib menggunakan vektor SVG pada `<symbol>` di `index.html` (tanpa emoji standar).
+- Letakkan seluruh konstanta numerik baru di dalam objek `CONFIG` pada `game.js`.
+- Pastikan `npm run lint` dan `npm test` lulus sebelum membuka *Pull Request*.
+
+## Lisensi
+
+Dirilis di bawah [MIT License](./LICENSE).
