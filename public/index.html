@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#228B88">
+  <meta name="theme-color" content="#F97316">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Business Tycoon Tap — Dasbor Pendapatan</title>
@@ -64,41 +64,9 @@
 
       <!-- 1. BAGIAN ATAS: TOP HEADER CARD CONTAINER -->
       <header class="top-header-container">
-        <!-- Kartu Bank Metalik (Bank Card UI) -->
+        <!-- Kartu Saldo Utama -->
         <div class="bank-card" aria-label="Kartu Saldo Utama">
-          <!-- Tekstur Garis Lengkung Abstrak Abu-Abu Perak (Inline SVG) -->
-          <svg class="bank-card__artwork" viewBox="0 0 360 200" preserveAspectRatio="none" aria-hidden="true">
-            <defs>
-              <linearGradient id="silverWavePrimary" x1="0%" y1="100%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#94A3B8" stop-opacity="0.06" />
-                <stop offset="45%" stop-color="#E2E8F0" stop-opacity="0.32" />
-                <stop offset="100%" stop-color="#64748B" stop-opacity="0.08" />
-              </linearGradient>
-              <linearGradient id="silverWaveSecondary" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#CBD5E1" stop-opacity="0.22" />
-                <stop offset="60%" stop-color="#94A3B8" stop-opacity="0.12" />
-                <stop offset="100%" stop-color="#475569" stop-opacity="0.04" />
-              </linearGradient>
-              <radialGradient id="metallicSheen" cx="82%" cy="18%" r="65%">
-                <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.12" />
-                <stop offset="55%" stop-color="#94A3B8" stop-opacity="0.03" />
-                <stop offset="100%" stop-color="#000000" stop-opacity="0" />
-              </radialGradient>
-            </defs>
-
-            <!-- Kilau Metalik Lembut -->
-            <rect width="360" height="200" fill="url(#metallicSheen)" />
-
-            <!-- Garis-Garis Lengkung Abstrak Perak -->
-            <path d="M -30 175 C 65 160, 115 65, 225 52 C 285 45, 330 68, 390 30" fill="none" stroke="url(#silverWavePrimary)" stroke-width="1.6" />
-            <path d="M -25 192 C 80 172, 130 82, 240 68 C 298 60, 338 82, 395 48" fill="none" stroke="url(#silverWavePrimary)" stroke-width="1.2" />
-            <path d="M -15 210 C 95 186, 148 98, 255 84 C 310 77, 345 96, 400 66" fill="none" stroke="url(#silverWaveSecondary)" stroke-width="1" />
-            <path d="M 110 -18 C 145 48, 225 96, 385 112" fill="none" stroke="url(#silverWaveSecondary)" stroke-width="1.3" />
-            <path d="M 145 -22 C 178 38, 248 82, 392 94" fill="none" stroke="url(#silverWavePrimary)" stroke-width="0.9" />
-            <path d="M -40 128 C 40 105, 135 138, 235 168 C 295 186, 340 176, 390 152" fill="none" stroke="url(#silverWaveSecondary)" stroke-width="1.1" />
-          </svg>
-
-          <!-- Baris Atas Kartu: Nomor Samar & Masa Berlaku -->
+          <!-- Baris Atas Kartu: Label Netral & ID Pemain -->
           <div class="bank-card__top">
             <span class="bank-card__number">KARTU UTAMA</span>
             <span class="bank-card__expiry" id="player-card-id">#BT-2026-0000</span>
@@ -111,7 +79,7 @@
           </div>
         </div>
 
-        <!-- Kotak Efek Kaca Gelap Transparan (Pendapatan Per Ketukan) -->
+        <!-- Kotak Pendapatan Per Ketukan -->
         <div class="per-click-box" aria-label="Pendapatan per ketukan">
           <span class="per-click-box__value" id="per-click-display">$ 1,00 per ketuk</span>
         </div>
@@ -124,9 +92,9 @@
           <div class="tap-hand-wrapper" id="tap-hand-icon">
             <svg class="tap-hand-svg" viewBox="0 0 80 88" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <!-- Busur Riak Ketuk Luar -->
-              <path class="tap-ring-outer" d="M 20.6 30.2 A 17 17 0 1 1 51.4 30.2" stroke="#1E2538" stroke-opacity="0.35" stroke-width="2" stroke-linecap="round" />
+              <path class="tap-ring-outer" d="M 20.6 30.2 A 17 17 0 1 1 51.4 30.2" stroke="#F97316" stroke-opacity="0.35" stroke-width="2" stroke-linecap="round" />
               <!-- Lingkaran Ketuk Dalam -->
-              <path class="tap-ring-inner" d="M 27 29.3 A 11 11 0 1 1 45 29.3" stroke="#1E2538" stroke-width="2.3" stroke-linecap="round" />
+              <path class="tap-ring-inner" d="M 27 29.3 A 11 11 0 1 1 45 29.3" stroke="#F97316" stroke-width="2.3" stroke-linecap="round" />
               <!-- Siluet Garis Tangan Menunjuk -->
               <path
                 d="M 31 54.5 V 23 A 5 5 0 0 1 41 23 V 46.5
@@ -139,7 +107,7 @@
                    L 18.2 53
                    A 4.1 4.1 0 0 1 25.3 48.8
                    L 31 54.5"
-                stroke="#1E2538"
+                stroke="#F97316"
                 stroke-width="2.3"
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -259,7 +227,7 @@
 
           <div class="preview-actions">
             <button type="button" class="preview-card__btn" id="back-to-earnings-btn">
-              Kembali ke <span lang="en">Earnings</span>
+              Kembali ke Pendapatan
             </button>
             <button type="button" class="preview-card__btn preview-card__btn--secondary" id="open-roadmap-btn">
               Lihat Peta Jalan
@@ -278,9 +246,9 @@
         </p>
         <ul class="roadmap-list">
           <li><strong>Tahap 1 (Aktif):</strong> Siklus ekonomi ketukan, 3 tingkat peningkatan, dan pendapatan pasif dasar.</li>
-          <li><strong>Tahap 2:</strong> Statistik profil pemain, penghasilan luring terukur, dan dukungan pemasangan aplikasi.</li>
-          <li><strong>Tahap 3:</strong> Pembukaan unit usaha ritel dan korporasi pada modul <span lang="en">Business</span>.</li>
-          <li><strong>Tahap 4:</strong> Simulasi instrumen saham dan properti pada modul <span lang="en">Investing</span> serta koleksi aset <span lang="en">Items</span>.</li>
+          <li><strong>Tahap 2 (Aktif):</strong> Bursa Investasi (Saham, Properti, Kripto, Forex), statistik profil, dan mode luring.</li>
+          <li><strong>Tahap 3:</strong> Pembukaan unit usaha ritel dan korporasi pada modul Usaha.</li>
+          <li><strong>Tahap 4:</strong> Katalog koleksi aset prestisius pada modul Toko.</li>
         </ul>
         <div class="modal-dialog__actions">
           <button type="button" class="preview-card__btn" id="close-roadmap-btn">Tutup</button>
@@ -334,34 +302,34 @@
 
     <!-- ==================== 3. BAGIAN BAWAH: BOTTOM NAVIGATION BAR ==================== -->
     <nav class="bottom-nav" aria-label="Navigasi Utama">
-      <!-- Tab 1: Investing -->
-      <button type="button" class="nav-tab" data-tab="Investing" aria-label="Tab Investing">
+      <!-- Tab 1: Investasi -->
+      <button type="button" class="nav-tab" data-tab="Investing" aria-label="Tab Investasi">
         <span class="nav-tab__icon-box">
           <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
             <use href="#icon-investing"></use>
           </svg>
         </span>
-        <span class="nav-tab__label" lang="en">Investing</span>
+        <span class="nav-tab__label">Investasi</span>
       </button>
 
-      <!-- Tab 2: Business -->
-      <button type="button" class="nav-tab" data-tab="Business" aria-label="Tab Business">
+      <!-- Tab 2: Usaha -->
+      <button type="button" class="nav-tab" data-tab="Business" aria-label="Tab Usaha">
         <span class="nav-tab__icon-box">
           <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
             <use href="#icon-business"></use>
           </svg>
         </span>
-        <span class="nav-tab__label" lang="en">Business</span>
+        <span class="nav-tab__label">Usaha</span>
       </button>
 
-      <!-- Tab 3: Earnings -->
+      <!-- Tab 3: Pendapatan -->
       <button
         type="button"
         class="nav-tab nav-tab--active"
         data-tab="Earnings"
         aria-current="page"
-        aria-label="Tab Earnings"
-        style="--coin-bg-fill:#2563EB;--coin-bg-stroke:#2563EB;--coin-ring-stroke:rgba(255,255,255,0.26);--coin-symbol-stroke:#FFFFFF;"
+        aria-label="Tab Pendapatan"
+        style="--coin-bg-fill:#F97316;--coin-bg-stroke:#F97316;--coin-ring-stroke:rgba(255,255,255,0.32);--coin-symbol-stroke:#FFFFFF;"
       >
         <span class="nav-tab__icon-box">
           <svg class="nav-svg nav-svg--coin" viewBox="0 0 24 24" aria-hidden="true">
@@ -369,28 +337,28 @@
           </svg>
           <span class="nav-badge" data-nav-badge="Earnings" hidden aria-hidden="true"></span>
         </span>
-        <span class="nav-tab__label" lang="en">Earnings</span>
+        <span class="nav-tab__label">Pendapatan</span>
       </button>
 
-      <!-- Tab 4: Items -->
-      <button type="button" class="nav-tab" data-tab="Items" aria-label="Tab Items">
+      <!-- Tab 4: Toko -->
+      <button type="button" class="nav-tab" data-tab="Items" aria-label="Tab Toko">
         <span class="nav-tab__icon-box">
           <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
             <use href="#icon-items"></use>
           </svg>
         </span>
-        <span class="nav-tab__label" lang="en">Items</span>
+        <span class="nav-tab__label">Toko</span>
       </button>
 
-      <!-- Tab 5: Profile -->
-      <button type="button" class="nav-tab" data-tab="Profile" aria-label="Tab Profile">
+      <!-- Tab 5: Profil -->
+      <button type="button" class="nav-tab" data-tab="Profile" aria-label="Tab Profil">
         <span class="nav-tab__icon-box">
           <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
             <use href="#icon-profile"></use>
           </svg>
           <span class="nav-badge" data-nav-badge="Profile" hidden aria-hidden="true"></span>
         </span>
-        <span class="nav-tab__label" lang="en">Profile</span>
+        <span class="nav-tab__label">Profil</span>
       </button>
     </nav>
 
