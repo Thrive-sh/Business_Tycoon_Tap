@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#228B88">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Business Simulator - Earnings Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell" id="app-shell">
+
+    <!-- ==================== LAYAR UTAMA: TAB EARNINGS ==================== -->
+    <main class="screen screen--active" id="earnings-screen" aria-label="Earnings Dashboard">
+
+      <!-- 1. BAGIAN ATAS: TOP HEADER CARD CONTAINER -->
+      <header class="top-header-container">
+        <!-- Kartu Bank Metalik (Bank Card UI) -->
+        <div class="bank-card" aria-label="Kartu Saldo Utama">
+          <!-- Tekstur Garis Lengkung Abstrak Abu-Abu Perak (Inline SVG) -->
+          <svg class="bank-card__artwork" viewBox="0 0 360 200" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="silverWavePrimary" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#94A3B8" stop-opacity="0.06" />
+                <stop offset="45%" stop-color="#E2E8F0" stop-opacity="0.32" />
+                <stop offset="100%" stop-color="#64748B" stop-opacity="0.08" />
+              </linearGradient>
+              <linearGradient id="silverWaveSecondary" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#CBD5E1" stop-opacity="0.22" />
+                <stop offset="60%" stop-color="#94A3B8" stop-opacity="0.12" />
+                <stop offset="100%" stop-color="#475569" stop-opacity="0.04" />
+              </linearGradient>
+              <radialGradient id="metallicSheen" cx="82%" cy="18%" r="65%">
+                <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.12" />
+                <stop offset="55%" stop-color="#94A3B8" stop-opacity="0.03" />
+                <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+              </radialGradient>
+            </defs>
+
+            <!-- Kilau Metalik Lembut -->
+            <rect width="360" height="200" fill="url(#metallicSheen)" />
+
+            <!-- Garis-Garis Lengkung Abstrak Perak -->
+            <path d="M -30 175 C 65 160, 115 65, 225 52 C 285 45, 330 68, 390 30" fill="none" stroke="url(#silverWavePrimary)" stroke-width="1.6" />
+            <path d="M -25 192 C 80 172, 130 82, 240 68 C 298 60, 338 82, 395 48" fill="none" stroke="url(#silverWavePrimary)" stroke-width="1.2" />
+            <path d="M -15 210 C 95 186, 148 98, 255 84 C 310 77, 345 96, 400 66" fill="none" stroke="url(#silverWaveSecondary)" stroke-width="1" />
+            <path d="M 110 -18 C 145 48, 225 96, 385 112" fill="none" stroke="url(#silverWaveSecondary)" stroke-width="1.3" />
+            <path d="M 145 -22 C 178 38, 248 82, 392 94" fill="none" stroke="url(#silverWavePrimary)" stroke-width="0.9" />
+            <path d="M -40 128 C 40 105, 135 138, 235 168 C 295 186, 340 176, 390 152" fill="none" stroke="url(#silverWaveSecondary)" stroke-width="1.1" />
+          </svg>
+
+          <!-- Baris Atas Kartu: Nomor Samar & Masa Berlaku -->
+          <div class="bank-card__top">
+            <span class="bank-card__number">**** 7439</span>
+            <span class="bank-card__expiry">05/26</span>
+          </div>
+
+          <!-- Bagian Bawah Kartu: Label Balance & Angka Saldo Utama -->
+          <div class="bank-card__bottom">
+            <span class="bank-card__label">Balance:</span>
+            <div class="bank-card__balance" id="balance-display" aria-live="polite">$ 0,00</div>
+          </div>
+        </div>
+
+        <!-- Kotak Efek Kaca Gelap Transparan (Pendapatan Per Ketukan) -->
+        <div class="per-click-box" aria-label="Pendapatan per ketukan">
+          <span class="per-click-box__value" id="per-click-display">$ 1,00 per click</span>
+        </div>
+      </header>
+
+      <!-- 2. BAGIAN TENGAH: INTERACTIVE TAP AREA -->
+      <section class="tap-area" id="tap-area" role="button" tabindex="0" aria-label="Area ketuk untuk mendapatkan uang">
+        <div class="tap-area__center" id="tap-prompt">
+          <!-- Ikon Inline SVG: Tangan Menunjuk Lingkaran Ketuk -->
+          <div class="tap-hand-wrapper" id="tap-hand-icon">
+            <svg class="tap-hand-svg" viewBox="0 0 80 88" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <!-- Busur Riak Ketuk Luar -->
+              <path class="tap-ring-outer" d="M 20.6 30.2 A 17 17 0 1 1 51.4 30.2" stroke="#1E2538" stroke-opacity="0.35" stroke-width="2" stroke-linecap="round" />
+              <!-- Lingkaran Ketuk Dalam -->
+              <path class="tap-ring-inner" d="M 27 29.3 A 11 11 0 1 1 45 29.3" stroke="#1E2538" stroke-width="2.3" stroke-linecap="round" />
+              <!-- Siluet Garis Tangan Menunjuk -->
+              <path
+                d="M 31 54.5 V 23 A 5 5 0 0 1 41 23 V 46.5
+                   M 41 38.5 A 4.25 4.25 0 0 1 49.5 38.5 V 48.5
+                   M 49.5 41.5 A 4.25 4.25 0 0 1 58 41.5 V 50.5
+                   M 58 44.5 A 4 4 0 0 1 66 44.5 V 56.5
+                   C 66 68.5 57.5 77 45.5 77
+                   H 36.5
+                   C 31.5 77 28.5 71 25 64.5
+                   L 18.2 53
+                   A 4.1 4.1 0 0 1 25.3 48.8
+                   L 31 54.5"
+                stroke="#1E2538"
+                stroke-width="2.3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <p class="tap-area__hint">Click in this area to earn money</p>
+        </div>
+
+        <!-- Layer Kontainer Angka Melayang & Efek Riak Sentuhan -->
+        <div class="tap-effects-layer" id="tap-effects-layer" aria-hidden="true"></div>
+      </section>
+
+    </main>
+
+    <!-- ==================== LAYAR PRATINJAU MODUL LAIN ==================== -->
+    <section class="screen" id="preview-screen" aria-label="Pratinjau Modul" hidden>
+      <div class="preview-header">
+        <div class="preview-header__meta">
+          <span class="preview-header__label">Saldo Tersimpan</span>
+          <span class="preview-header__balance" id="preview-balance-display">$ 0,00</span>
+        </div>
+      </div>
+
+      <div class="preview-body">
+        <div class="preview-card">
+          <div class="preview-card__icon-wrap" id="preview-icon-container" aria-hidden="true"></div>
+          <span class="preview-card__tag">Tahap Pengembangan</span>
+          <h1 class="preview-card__title" id="preview-title">Modul Investing - Segera Hadir</h1>
+          <p class="preview-card__desc" id="preview-description">
+            Fitur ini sedang disiapkan untuk memperluas kerajaan bisnis Anda. Kembali ke tab Earnings untuk terus mengumpulkan modal.
+          </p>
+          <button type="button" class="preview-card__btn" id="back-to-earnings-btn">
+            Kembali ke Earnings
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 3. BAGIAN BAWAH: BOTTOM NAVIGATION BAR ==================== -->
+    <nav class="bottom-nav" aria-label="Navigasi Utama">
+      <!-- Tab 1: Investing -->
+      <button type="button" class="nav-tab" data-tab="Investing" aria-label="Investing">
+        <span class="nav-tab__icon-box">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M3 17L9 11L13 15L21 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M16 7H21V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M4 20H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.55" />
+          </svg>
+        </span>
+        <span class="nav-tab__label">Investing</span>
+      </button>
+
+      <!-- Tab 2: Business (dengan lencana notifikasi bulat merah angka "2") -->
+      <button type="button" class="nav-tab" data-tab="Business" aria-label="Business, 2 notifikasi">
+        <span class="nav-tab__icon-box">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M4 21V4.5C4 3.94772 4.44772 3.5 5 3.5H13C13.5523 3.5 14 3.94772 14 4.5V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M14 9.5H19C19.5523 9.5 20 9.94772 20 10.5V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M2.5 21H21.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            <path d="M7.5 7.5H10.5M7.5 11H10.5M7.5 14.5H10.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            <path d="M16.5 13H17.5M16.5 16.5H17.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            <path d="M9 21V18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          </svg>
+          <span class="nav-badge" aria-hidden="true">2</span>
+        </span>
+        <span class="nav-tab__label">Business</span>
+      </button>
+
+      <!-- Tab 3: Earnings (Status Aktif dengan ikon lingkaran biru penuh dan teks biru) -->
+      <button type="button" class="nav-tab nav-tab--active" data-tab="Earnings" aria-current="page" aria-label="Earnings">
+        <span class="nav-tab__icon-box">
+          <svg class="nav-svg nav-svg--coin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle class="coin-bg" cx="12" cy="12" r="10" />
+            <circle class="coin-inner-ring" cx="12" cy="12" r="7.6" />
+            <path
+              class="coin-symbol"
+              d="M12 6.8V17.2M14.3 9.4C14.3 8.25 13.3 7.6 12 7.6C10.65 7.6 9.7 8.25 9.7 9.4C9.7 10.55 10.65 11.05 12 11.5C13.35 11.95 14.3 12.45 14.3 13.65C14.3 14.85 13.3 15.55 12 15.55C10.6 15.55 9.65 14.85 9.65 13.65"
+              stroke-width="1.9"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </span>
+        <span class="nav-tab__label">Earnings</span>
+      </button>
+
+      <!-- Tab 4: Items -->
+      <button type="button" class="nav-tab" data-tab="Items" aria-label="Items">
+        <span class="nav-tab__icon-box">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 2.8L20 7.3V16.7L12 21.2L4 16.7V7.3L12 2.8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+            <path d="M4 7.3L12 11.8L20 7.3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M12 11.8V21.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            <path d="M8 5.05L16 9.55" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          </svg>
+        </span>
+        <span class="nav-tab__label">Items</span>
+      </button>
+
+      <!-- Tab 5: Profile (dengan lencana notifikasi bulat merah angka "1") -->
+      <button type="button" class="nav-tab" data-tab="Profile" aria-label="Profile, 1 notifikasi">
+        <span class="nav-tab__icon-box">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="12" cy="8" r="3.8" stroke="currentColor" stroke-width="2" />
+            <path d="M4.8 20.2C4.8 16.5 7.9 14.2 12 14.2C16.1 14.2 19.2 16.5 19.2 20.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          <span class="nav-badge" aria-hidden="true">1</span>
+        </span>
+        <span class="nav-tab__label">Profile</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

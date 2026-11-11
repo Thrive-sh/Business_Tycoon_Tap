@@ -1,0 +1,657 @@
+/* ==========================================================================
+   BUSINESS SIMULATOR - MOBILE-FIRST DASHBOARD STYLESHEET
+   ========================================================================== */
+
+:root {
+  --header-grad-start: #228B88;
+  --header-grad-mid: #1D5874;
+  --header-grad-end: #1A235A;
+  --card-bg-start: #2A2F3A;
+  --card-bg-mid: #181C24;
+  --card-bg-end: #0E1117;
+  --glass-bg: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.16);
+  --surface-white: #FFFFFF;
+  --text-dark: #1E2538;
+  --text-muted: #8590A2;
+  --nav-inactive: #7D8797;
+  --nav-active-blue: #2563EB;
+  --badge-red: #EF4444;
+  --border-light: #E6EAF0;
+  --floating-green: #16A34A;
+}
+
+/* 1. Reset & Kunci Viewport Mobile-First (Anti-Geser & Anti-Zoom Ketuk Cepat) */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  overscroll-behavior: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: #E9EEF5;
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Kontainer Utama Proporsional HP Android */
+.app-shell {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  height: 100vh;
+  height: 100dvh;
+  margin: 0 auto;
+  background-color: var(--surface-white);
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+@media (min-width: 431px) {
+  .app-shell {
+    box-shadow: 0 12px 42px rgba(15, 23, 42, 0.14);
+  }
+}
+
+/* Manajemen Layar Tab */
+.screen {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+}
+
+.screen[hidden] {
+  display: none !important;
+}
+
+/* ==========================================================================
+   2. BAGIAN ATAS: TOP HEADER CARD CONTAINER
+   ========================================================================== */
+
+.top-header-container {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  width: 100%;
+  padding: calc(18px + env(safe-area-inset-top, 0px)) 18px 20px;
+  background: linear-gradient(135deg, var(--header-grad-start) 0%, var(--header-grad-mid) 48%, var(--header-grad-end) 100%);
+  border-bottom-left-radius: 28px;
+  border-bottom-right-radius: 28px;
+  box-shadow: 0 10px 26px rgba(26, 35, 90, 0.22);
+}
+
+/* Kartu Bank Metalik Gelap Mengilap */
+.bank-card {
+  position: relative;
+  width: 100%;
+  min-height: 168px;
+  padding: 20px 22px;
+  border-radius: 20px;
+  background:
+    linear-gradient(125deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.01) 36%, rgba(255, 255, 255, 0.05) 68%, rgba(0, 0, 0, 0.2) 100%),
+    linear-gradient(140deg, var(--card-bg-start) 0%, var(--card-bg-mid) 52%, var(--card-bg-end) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 14px 28px rgba(8, 12, 28, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+/* Efek Kilau Metalik Sudut Kartu */
+.bank-card::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -25%;
+  width: 75%;
+  height: 180%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.055) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(24deg);
+  pointer-events: none;
+}
+
+/* Latar Garis Lengkung Abstrak Abu-Abu Perak (SVG) */
+.bank-card__artwork {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bank-card__top,
+.bank-card__bottom {
+  position: relative;
+  z-index: 1;
+}
+
+.bank-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: rgba(226, 232, 240, 0.56);
+  font-variant-numeric: tabular-nums;
+}
+
+.bank-card__bottom {
+  margin-top: 34px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bank-card__label {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: rgba(226, 232, 240, 0.68);
+}
+
+.bank-card__balance {
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  word-break: break-word;
+  transition: transform 0.12s ease-out, font-size 0.15s ease;
+}
+
+.bank-card__balance--compact {
+  font-size: 24px;
+}
+
+.bank-card__balance--ultra-compact {
+  font-size: 20px;
+}
+
+/* Kotak Persegi Panjang Melengkung Efek Kaca Gelap Transparan */
+.per-click-box {
+  margin-top: 14px;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.per-click-box__value {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #FFFFFF;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   3. BAGIAN TENGAH: INTERACTIVE TAP AREA
+   ========================================================================== */
+
+.tap-area {
+  position: relative;
+  flex: 1;
+  min-height: 200px;
+  width: 100%;
+  background-color: var(--surface-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  touch-action: manipulation;
+  outline: none;
+}
+
+.tap-area__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 20px;
+  text-align: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tap-hand-wrapper {
+  width: 74px;
+  height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: 45% 35%;
+  will-change: transform;
+}
+
+.tap-hand-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Animasi Memantul Halus (Scale Pulse) saat Area Diketuk */
+.tap-hand-wrapper.is-pulsing {
+  animation: handTapPulse 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tap-hand-wrapper.is-pulsing .tap-ring-outer {
+  animation: ringExpand 240ms ease-out;
+}
+
+@keyframes handTapPulse {
+  0% {
+    transform: scale(1);
+  }
+  38% {
+    transform: scale(0.88) translateY(2px);
+  }
+  75% {
+    transform: scale(1.06) translateY(-1px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes ringExpand {
+  0% {
+    stroke-opacity: 0.75;
+  }
+  100% {
+    stroke-opacity: 0.35;
+  }
+}
+
+.tap-area__hint {
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.01em;
+}
+
+/* Layer Teks Angka Melayang & Efek Riak */
+.tap-effects-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 3;
+}
+
+.floating-earning {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--floating-green);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow: 0 2px 8px rgba(22, 163, 74, 0.18);
+  will-change: transform, opacity;
+  animation: floatUpAndFade 780ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes floatUpAndFade {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -20%) scale(0.82);
+  }
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -65%) scale(1.04);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -235%) scale(0.96);
+  }
+}
+
+.tap-ripple {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid rgba(34, 139, 136, 0.28);
+  background: radial-gradient(circle, rgba(34, 139, 136, 0.12) 0%, rgba(34, 139, 136, 0) 70%);
+  transform: translate(-50%, -50%) scale(0.35);
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: tapRippleOut 460ms ease-out forwards;
+}
+
+@keyframes tapRippleOut {
+  0% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(0.35);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.75);
+  }
+}
+
+/* ==========================================================================
+   4. LAYAR PRATINJAU MODUL LAIN ("Modul [Nama Tab] - Segera Hadir")
+   ========================================================================== */
+
+.preview-header {
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 20px 18px;
+  background: linear-gradient(135deg, var(--header-grad-start) 0%, var(--header-grad-end) 100%);
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+  box-shadow: 0 8px 20px rgba(26, 35, 90, 0.16);
+}
+
+.preview-header__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+}
+
+.preview-header__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.preview-header__balance {
+  font-size: 16px;
+  font-weight: 700;
+  color: #FFFFFF;
+  font-variant-numeric: tabular-nums;
+}
+
+.preview-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 22px;
+  background-color: #F8FAFC;
+}
+
+.preview-card {
+  width: 100%;
+  padding: 30px 24px;
+  border-radius: 22px;
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-light);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: previewFadeIn 200ms ease-out;
+}
+
+@keyframes previewFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.preview-card__icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(34, 139, 136, 0.12) 0%, rgba(37, 99, 235, 0.12) 100%);
+  color: var(--nav-active-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.preview-card__icon-wrap svg {
+  width: 32px;
+  height: 32px;
+}
+
+.preview-card__tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #1D4ED8;
+  background-color: #EFF6FF;
+  margin-bottom: 12px;
+}
+
+.preview-card__title {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--text-dark);
+  line-height: 1.3;
+  margin-bottom: 10px;
+}
+
+.preview-card__desc {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-muted);
+  margin-bottom: 22px;
+}
+
+.preview-card__btn {
+  appearance: none;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, var(--header-grad-start) 0%, var(--nav-active-blue) 100%);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.24);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+
+.preview-card__btn:active {
+  transform: scale(0.97);
+  opacity: 0.92;
+}
+
+/* ==========================================================================
+   5. BAGIAN BAWAH: BOTTOM NAVIGATION BAR
+   ========================================================================== */
+
+.bottom-nav {
+  flex-shrink: 0;
+  width: 100%;
+  background-color: var(--surface-white);
+  border-top: 1px solid var(--border-light);
+  padding: 8px 6px calc(8px + env(safe-area-inset-bottom, 0px));
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+  z-index: 10;
+}
+
+.nav-tab {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 4px 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: var(--nav-inactive);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: color 0.16s ease, transform 0.12s ease;
+}
+
+.nav-tab:active {
+  transform: scale(0.94);
+}
+
+.nav-tab__icon-box {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.nav-tab__label {
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+}
+
+/* Status Aktif Navigasi */
+.nav-tab--active {
+  color: var(--nav-active-blue);
+}
+
+.nav-tab--active .nav-tab__label {
+  font-weight: 700;
+  color: var(--nav-active-blue);
+}
+
+/* Khusus Ikon Koin Tab Earnings: Lingkaran Biru Penuh Saat Aktif */
+.nav-svg--coin .coin-bg {
+  fill: transparent;
+  stroke: currentColor;
+  stroke-width: 2;
+  transition: fill 0.18s ease, stroke 0.18s ease;
+}
+
+.nav-svg--coin .coin-inner-ring {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 1;
+}
+
+.nav-svg--coin .coin-symbol {
+  stroke: currentColor;
+  transition: stroke 0.18s ease;
+}
+
+.nav-tab--active .nav-svg--coin .coin-bg {
+  fill: var(--nav-active-blue);
+  stroke: var(--nav-active-blue);
+}
+
+.nav-tab--active .nav-svg--coin .coin-inner-ring {
+  stroke: rgba(255, 255, 255, 0.26);
+}
+
+.nav-tab--active .nav-svg--coin .coin-symbol {
+  stroke: #FFFFFF;
+}
+
+/* Lencana Notifikasi Bulat Merah */
+.nav-badge {
+  position: absolute;
+  top: -4px;
+  right: -7px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background-color: var(--badge-red);
+  border: 2px solid var(--surface-white);
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 2px 5px rgba(239, 68, 68, 0.35);
+}
+
+/* Penyesuaian Layar Pendek (HP Compact Landscape/Small Portrait) */
+@media (max-height: 640px) {
+  .top-header-container {
+    padding: 14px 16px 16px;
+  }
+
+  .bank-card {
+    min-height: 142px;
+    padding: 16px 18px;
+  }
+
+  .bank-card__bottom {
+    margin-top: 22px;
+  }
+
+  .bank-card__balance {
+    font-size: 26px;
+  }
+
+  .per-click-box {
+    margin-top: 10px;
+    padding: 10px 14px;
+  }
+}
