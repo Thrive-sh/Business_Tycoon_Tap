@@ -13,6 +13,44 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- SUMBER TUNGGAL IKON VEKTOR (SVG SYMBOL SPRITE) -->
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+    <symbol id="icon-investing" viewBox="0 0 24 24" fill="none">
+      <path d="M3 17L9 11L13 15L21 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M16 7H21V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M4 20H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.55" />
+    </symbol>
+    <symbol id="icon-business" viewBox="0 0 24 24" fill="none">
+      <path d="M4 21V4.5C4 3.94772 4.44772 3.5 5 3.5H13C13.5523 3.5 14 3.94772 14 4.5V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M14 9.5H19C19.5523 9.5 20 9.94772 20 10.5V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M2.5 21H21.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      <path d="M7.5 7.5H10.5M7.5 11H10.5M7.5 14.5H10.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      <path d="M16.5 13H17.5M16.5 16.5H17.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      <path d="M9 21V18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+    </symbol>
+    <symbol id="icon-earnings" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" fill="var(--coin-bg-fill, transparent)" stroke="var(--coin-bg-stroke, currentColor)" stroke-width="2" />
+      <circle cx="12" cy="12" r="7.6" fill="none" stroke="var(--coin-ring-stroke, transparent)" stroke-width="1" />
+      <path
+        d="M12 6.8V17.2M14.3 9.4C14.3 8.25 13.3 7.6 12 7.6C10.65 7.6 9.7 8.25 9.7 9.4C9.7 10.55 10.65 11.05 12 11.5C13.35 11.95 14.3 12.45 14.3 13.65C14.3 14.85 13.3 15.55 12 15.55C10.6 15.55 9.65 14.85 9.65 13.65"
+        stroke="var(--coin-symbol-stroke, currentColor)"
+        stroke-width="1.9"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </symbol>
+    <symbol id="icon-items" viewBox="0 0 24 24" fill="none">
+      <path d="M12 2.8L20 7.3V16.7L12 21.2L4 16.7V7.3L12 2.8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+      <path d="M4 7.3L12 11.8L20 7.3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M12 11.8V21.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      <path d="M8 5.05L16 9.55" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+    </symbol>
+    <symbol id="icon-profile" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="8" r="3.8" stroke="currentColor" stroke-width="2" />
+      <path d="M4.8 20.2C4.8 16.5 7.9 14.2 12 14.2C16.1 14.2 19.2 16.5 19.2 20.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+    </symbol>
+  </svg>
+
   <div class="app-shell" id="app-shell">
 
     <!-- ==================== LAYAR UTAMA: TAB EARNINGS ==================== -->
@@ -246,10 +284,8 @@
       <!-- Tab 1: Investing -->
       <button type="button" class="nav-tab" data-tab="Investing" aria-label="Tab Investing">
         <span class="nav-tab__icon-box">
-          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M3 17L9 11L13 15L21 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M16 7H21V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M4 20H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.55" />
+          <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-investing"></use>
           </svg>
         </span>
         <span class="nav-tab__label" lang="en">Investing</span>
@@ -258,31 +294,25 @@
       <!-- Tab 2: Business -->
       <button type="button" class="nav-tab" data-tab="Business" aria-label="Tab Business">
         <span class="nav-tab__icon-box">
-          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M4 21V4.5C4 3.94772 4.44772 3.5 5 3.5H13C13.5523 3.5 14 3.94772 14 4.5V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M14 9.5H19C19.5523 9.5 20 9.94772 20 10.5V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M2.5 21H21.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-            <path d="M7.5 7.5H10.5M7.5 11H10.5M7.5 14.5H10.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-            <path d="M16.5 13H17.5M16.5 16.5H17.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-            <path d="M9 21V18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-business"></use>
           </svg>
         </span>
         <span class="nav-tab__label" lang="en">Business</span>
       </button>
 
       <!-- Tab 3: Earnings -->
-      <button type="button" class="nav-tab nav-tab--active" data-tab="Earnings" aria-current="page" aria-label="Tab Earnings">
+      <button
+        type="button"
+        class="nav-tab nav-tab--active"
+        data-tab="Earnings"
+        aria-current="page"
+        aria-label="Tab Earnings"
+        style="--coin-bg-fill:#2563EB;--coin-bg-stroke:#2563EB;--coin-ring-stroke:rgba(255,255,255,0.26);--coin-symbol-stroke:#FFFFFF;"
+      >
         <span class="nav-tab__icon-box">
-          <svg class="nav-svg nav-svg--coin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <circle class="coin-bg" cx="12" cy="12" r="10" />
-            <circle class="coin-inner-ring" cx="12" cy="12" r="7.6" />
-            <path
-              class="coin-symbol"
-              d="M12 6.8V17.2M14.3 9.4C14.3 8.25 13.3 7.6 12 7.6C10.65 7.6 9.7 8.25 9.7 9.4C9.7 10.55 10.65 11.05 12 11.5C13.35 11.95 14.3 12.45 14.3 13.65C14.3 14.85 13.3 15.55 12 15.55C10.6 15.55 9.65 14.85 9.65 13.65"
-              stroke-width="1.9"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
+          <svg class="nav-svg nav-svg--coin" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-earnings"></use>
           </svg>
           <span class="nav-badge" data-nav-badge="Earnings" hidden aria-hidden="true"></span>
         </span>
@@ -292,11 +322,8 @@
       <!-- Tab 4: Items -->
       <button type="button" class="nav-tab" data-tab="Items" aria-label="Tab Items">
         <span class="nav-tab__icon-box">
-          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M12 2.8L20 7.3V16.7L12 21.2L4 16.7V7.3L12 2.8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
-            <path d="M4 7.3L12 11.8L20 7.3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M12 11.8V21.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-            <path d="M8 5.05L16 9.55" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-items"></use>
           </svg>
         </span>
         <span class="nav-tab__label" lang="en">Items</span>
@@ -305,9 +332,8 @@
       <!-- Tab 5: Profile -->
       <button type="button" class="nav-tab" data-tab="Profile" aria-label="Tab Profile">
         <span class="nav-tab__icon-box">
-          <svg class="nav-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <circle cx="12" cy="8" r="3.8" stroke="currentColor" stroke-width="2" />
-            <path d="M4.8 20.2C4.8 16.5 7.9 14.2 12 14.2C16.1 14.2 19.2 16.5 19.2 20.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-profile"></use>
           </svg>
           <span class="nav-badge" data-nav-badge="Profile" hidden aria-hidden="true"></span>
         </span>
