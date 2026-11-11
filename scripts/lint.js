@@ -10,18 +10,21 @@ function readText(relPath) {
 }
 
 // 1. Validasi berkas JSON
-['package.json', 'manifest.webmanifest', 'vercel.json'].forEach(function (file) {
+['package.json', 'public/manifest.webmanifest', 'vercel.json'].forEach(function (file) {
   const raw = readText(file);
   JSON.parse(raw);
 });
 
-// 2. Pastikan indeks HTML memiliki referensi SVG sprite yang konsisten dan tanpa badge statis
-const html = readText('index.html');
+// 2. Pastikan indeks HTML memiliki referensi SVG sprite & aset yang konsisten
+const html = readText('public/index.html');
 if (html.includes('7439') || html.includes('05/26')) {
-  throw new Error('Detail kartu statis lama masih ditemukan di index.html.');
+  throw new Error('Detail kartu statis lama masih ditemukan di public/index.html.');
 }
 if (!html.includes('rel="manifest"')) {
-  throw new Error('Tautan manifest PWA belum ada di index.html.');
+  throw new Error('Tautan manifest PWA belum ada di public/index.html.');
+}
+if (!html.includes('assets/css/style.css') || !html.includes('assets/js/game.js')) {
+  throw new Error('Jalur aset CSS/JS terstruktur belum terpasang di public/index.html.');
 }
 
 const definedSymbols = new Set(
@@ -38,8 +41,15 @@ usedSymbols.forEach(function (symId) {
   }
 });
 
-// 3. Pastikan user-select: none hanya pada area ketuk, bukan global *
-const css = readText('style.css');
+// 3. Pastikan berkas ikon PWA tersedia di public/assets/icons/
+['public/assets/icons/icon-192.png', 'public/assets/icons/icon-512.png'].forEach(function (iconPath) {
+  if (!fs.existsSync(path.join(ROOT, iconPath))) {
+    throw new Error('Berkas ikon tidak ditemukan: ' + iconPath);
+  }
+});
+
+// 4. Pastikan aksesibilitas dasar di public/assets/css/style.css
+const css = readText('public/assets/css/style.css');
 if (!css.includes('prefers-reduced-motion: reduce')) {
   throw new Error('Aturan @media (prefers-reduced-motion: reduce) belum ada di style.css.');
 }
@@ -47,8 +57,8 @@ if (!css.includes(':focus-visible')) {
   throw new Error('Aturan :focus-visible belum ada di style.css.');
 }
 
-// 4. Pastikan tidak ada magic number di luar CONFIG pada game.js (kecuali 0, 1, 100)
-const gameLines = readText('game.js').split('\n');
+// 5. Pastikan tidak ada magic number di luar CONFIG pada game.js (kecuali 0, 1, 100)
+const gameLines = readText('public/assets/js/game.js').split('\n');
 let configEndIndex = -1;
 for (let i = 10; i < gameLines.length; i += 1) {
   if (gameLines[i].trim() === '});') {
@@ -57,7 +67,7 @@ for (let i = 10; i < gameLines.length; i += 1) {
   }
 }
 if (configEndIndex < 0) {
-  throw new Error('Blok CONFIG tidak ditemukan di game.js.');
+  throw new Error('Blok CONFIG tidak ditemukan di public/assets/js/game.js.');
 }
 
 let inBlockComment = false;

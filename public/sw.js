@@ -2,15 +2,15 @@
    BUSINESS TYCOON TAP - SERVICE WORKER (OFFLINE CACHE-FIRST)
    ========================================================================== */
 
-const CACHE_NAME = 'business-tycoon-tap-v1';
+const CACHE_NAME = 'business-tycoon-tap-v2';
 const CORE_ASSETS = [
   './',
   './index.html',
-  './style.css',
-  './game.js',
+  './assets/css/style.css',
+  './assets/js/game.js',
   './manifest.webmanifest',
-  './icon-192.png',
-  './icon-512.png'
+  './assets/icons/icon-192.png',
+  './assets/icons/icon-512.png'
 ];
 
 self.addEventListener('install', function (event) {

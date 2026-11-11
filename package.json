@@ -5,8 +5,8 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "dev": "python3 -m http.server 8080",
-    "lint": "node --check game.js && node --check sw.js && node scripts/lint.js",
+    "dev": "python3 -m http.server 8080 --directory public",
+    "lint": "node --check public/assets/js/game.js && node --check public/sw.js && node scripts/lint.js",
     "test": "node --test tests/smoke.test.js"
   },
   "engines": {

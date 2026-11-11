@@ -20,17 +20,30 @@ Simulasi bisnis ketuk layar (*mobile-first*) berbasis web murni (**HTML5, CSS3, 
 
 ```text
 .
-├── index.html              # Antarmuka utama, SVG symbol sprite, dan modal dialog
-├── style.css               # Tata letak mobile-first, aksesibilitas fokus, dan animasi
-├── game.js                 # Logika permainan, CONFIG terpusat, penyimpanan, dan audio
-├── manifest.webmanifest    # Metadata pemasangan aplikasi PWA
-├── sw.js                   # Service Worker cache-first untuk mode luring
-├── icon-192.png            # Ikon aplikasi 192x192
-├── icon-512.png            # Ikon aplikasi 512x512
-├── scripts/lint.js         # Pemeriksa konsistensi aset, JSON, CSS, dan konstanta
-├── tests/smoke.test.js     # Pengujian otomatis format angka, migrasi save, dan throttle
-├── vercel.json             # Konfigurasi header keamanan & cache pada Vercel
-└── .github/workflows/      # Alur CI (check + test) dan rilis otomatis GitHub Pages
+├── .github/
+│   └── workflows/
+│       └── static.yml          # Alur CI (check + test) & rilis GitHub Pages
+├── public/                     # Direktori aplikasi web publik (siap tayang)
+│   ├── assets/
+│   │   ├── css/
+│   │   │   └── style.css       # Tata letak mobile-first, fokus & animasi
+│   │   ├── icons/
+│   │   │   ├── icon-192.png    # Ikon PWA 192x192
+│   │   │   └── icon-512.png    # Ikon PWA 512x512
+│   │   └── js/
+│   │       └── game.js         # Logika inti, CONFIG terpusat, save & audio
+│   ├── index.html              # Antarmuka utama, SVG symbol sprite & modal
+│   ├── manifest.webmanifest    # Metadata pemasangan aplikasi PWA
+│   └── sw.js                   # Service Worker cache-first mode luring
+├── scripts/
+│   └── lint.js                 # Pemeriksa konsistensi aset, JSON, CSS & CONFIG
+├── tests/
+│   └── smoke.test.js           # Pengujian otomatis format angka, migrasi & throttle
+├── .gitignore
+├── LICENSE
+├── package.json
+├── README.md
+└── vercel.json                 # Konfigurasi direktori publik & header keamanan Vercel
 ```
 
 ## Menjalankan Proyek Secara Lokal
@@ -57,9 +70,9 @@ Prasyarat: **Node.js >= 18** (dan `python3` untuk peladen HTTP lokal sederhana).
 
 ## Panduan Kontribusi
 
-- Pertahankan pemisahan berkas inti (`index.html`, `style.css`, `game.js`) tanpa *framework* eksternal.
-- Seluruh ikon antarmuka wajib menggunakan vektor SVG pada `<symbol>` di `index.html` (tanpa emoji standar).
-- Letakkan seluruh konstanta numerik baru di dalam objek `CONFIG` pada `game.js`.
+- Pertahankan pemisahan berkas aplikasi di dalam `public/` (`index.html`, `assets/css/style.css`, `assets/js/game.js`) tanpa *framework* eksternal.
+- Seluruh ikon antarmuka wajib menggunakan vektor SVG pada `<symbol>` di `public/index.html` (tanpa emoji standar).
+- Letakkan seluruh konstanta numerik baru di dalam objek `CONFIG` pada `public/assets/js/game.js`.
 - Pastikan `npm run lint` dan `npm test` lulus sebelum membuka *Pull Request*.
 
 ## Lisensi

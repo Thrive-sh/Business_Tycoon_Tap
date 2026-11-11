@@ -34,7 +34,7 @@ function createMockStorage() {
 const mockStorage = createMockStorage();
 globalThis.localStorage = mockStorage;
 
-const game = require('../game.js');
+const game = require('../public/assets/js/game.js');
 
 test('formatCurrencyValue memformat angka kecil dan singkatan Indonesia (rb, jt, M, T)', function () {
   assert.equal(game.formatCurrencyValue(0), '0,00');
