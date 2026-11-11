@@ -488,12 +488,14 @@
   let lastTouchTimestamp = 0;
   let pulseCleanupTimer = null;
   let saveThrottleTimer = null;
+  let priceSaveThrottleTimer = null;
   let srAnnounceTimer = null;
   let toastHideTimer = null;
   let passiveIntervalId = null;
   let priceIntervalId = null;
   let audioCtx = null;
   let hasPendingSave = false;
+  let hasPendingPriceSave = false;
   let acknowledgedAffordableCount = 0;
   let unseenMilestonesCount = 0;
   let investmentYieldCarry = 0;
@@ -836,6 +838,8 @@
         renderInvestingScreen();
       }
     }
+
+    saveMarketPricesThrottled();
   }
 
   /**
@@ -1700,6 +1704,36 @@
 
         state.holdings = {};
         state.lastPrices = {};
+
+        if (isV2) {
+          if (parsed.holdings && typeof parsed.holdings === 'object') {
+            ASSETS.forEach(function (asset) {
+              const entry = parsed.holdings[asset.id];
+              if (!entry || typeof entry !== 'object') return;
+              const u = Number(entry.units);
+              const avg = Number(entry.avgEntry);
+              if (Number.isFinite(u) && u >= 1 && Number.isFinite(avg) && avg >= 0) {
+                state.holdings[asset.id] = {
+                  units: Math.floor(u),
+                  avgEntry: Math.round(avg * 100) / 100
+                };
+              }
+            });
+          }
+
+          if (parsed.lastPrices && typeof parsed.lastPrices === 'object') {
+            ASSETS.forEach(function (asset) {
+              const lp = Number(parsed.lastPrices[asset.id]);
+              const minAllowed = asset.initialPrice * CONFIG.MIN_PRICE_FACTOR;
+              if (Number.isFinite(lp) && lp >= minAllowed) {
+                state.lastPrices[asset.id] = Math.round(lp * 100) / 100;
+              }
+            });
+          }
+        }
+
+        // Bangkitkan ulang 60 titik grafik di sekitar lastPrices tanpa menyimpannya ke localStorage
+        state.priceHistory = {};
         initMarketData();
 
         if (isV2) {
@@ -1716,8 +1750,10 @@
           state.startDate = Number.isFinite(start) && start > 0 ? start : now;
           const previousSeen = Number.isFinite(seen) && seen > 0 ? seen : now;
 
-          // Hitung penghasilan luring sejak lastSeen
-          const offlineResult = calculateOfflineBonus(state.perSecond, now - previousSeen);
+          // Hitung penghasilan luring sejak lastSeen (Tim Otomatis + dividen/sewa portofolio)
+          const totalOfflineRatePerSec =
+            state.perSecond + getTotalInvestmentHourlyYield() / CONFIG.SECONDS_PER_HOUR;
+          const offlineResult = calculateOfflineBonus(totalOfflineRatePerSec, now - previousSeen);
           if (offlineResult.bonus > 0) {
             state.balance = Math.round((state.balance + offlineResult.bonus) * 100) / 100;
             state.totalEarned = Math.round((state.totalEarned + offlineResult.bonus) * 100) / 100;
@@ -1728,7 +1764,7 @@
             state.lastSeen = now;
           }
         } else {
-          // Migrasi otomatis dari v1 (version belum ada)
+          // Migrasi otomatis dari v1 (version belum ada atau < 2): holdings & lastPrices baru, saldo tetap aman
           state.totalTaps = 0;
           state.totalEarned = state.balance;
           state.startDate = now;
@@ -1750,10 +1786,37 @@
       root.clearTimeout(saveThrottleTimer);
       saveThrottleTimer = null;
     }
+    if (priceSaveThrottleTimer) {
+      root.clearTimeout(priceSaveThrottleTimer);
+      priceSaveThrottleTimer = null;
+    }
     hasPendingSave = false;
+    hasPendingPriceSave = false;
     state.lastSeen = Date.now();
     const storage = getStorage();
     if (!storage) return;
+
+    const cleanHoldings = {};
+    ASSETS.forEach(function (asset) {
+      const h = state.holdings[asset.id];
+      if (!h) return;
+      const units = Number(h.units);
+      const avgEntry = Number(h.avgEntry);
+      if (Number.isFinite(units) && units >= 1 && Number.isFinite(avgEntry) && avgEntry >= 0) {
+        cleanHoldings[asset.id] = {
+          units: Math.floor(units),
+          avgEntry: Math.round(avgEntry * 100) / 100
+        };
+      }
+    });
+
+    const cleanLastPrices = {};
+    ASSETS.forEach(function (asset) {
+      const p = getCurrentAssetPrice(asset.id);
+      if (Number.isFinite(p) && p > 0) {
+        cleanLastPrices[asset.id] = Math.round(p * 100) / 100;
+      }
+    });
 
     try {
       const payload = JSON.stringify({
@@ -1763,6 +1826,8 @@
         totalTaps: state.totalTaps,
         totalEarned: state.totalEarned,
         upgrades: Object.assign({}, state.upgrades),
+        holdings: cleanHoldings,
+        lastPrices: cleanLastPrices,
         settings: Object.assign({}, state.settings),
         milestones: Object.assign({}, state.milestones),
         startDate: state.startDate,
@@ -1782,7 +1847,7 @@
   }
 
   /**
-   * Menyimpan payload Save Schema v2 ke localStorage dengan throttle trailing-edge.
+   * Menyimpan payload Save Schema v2 ke localStorage dengan throttle trailing-edge 500ms.
    */
   function saveState() {
     state.lastSeen = Date.now();
@@ -1796,6 +1861,22 @@
         writeSaveImmediate();
       }
     }, CONFIG.SAVE_THROTTLE_MS);
+  }
+
+  /**
+   * Menyimpan lastPrices ke localStorage dengan throttle 5 detik agar hemat I/O.
+   */
+  function saveMarketPricesThrottled() {
+    hasPendingPriceSave = true;
+    if (priceSaveThrottleTimer) {
+      return;
+    }
+    priceSaveThrottleTimer = root.setTimeout(function () {
+      priceSaveThrottleTimer = null;
+      if (hasPendingPriceSave) {
+        writeSaveImmediate();
+      }
+    }, CONFIG.PRICE_SAVE_THROTTLE_MS);
   }
 
   /**
