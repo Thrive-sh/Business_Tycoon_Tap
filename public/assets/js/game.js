@@ -1373,6 +1373,127 @@
   }
 
   /**
+   * Membeli aset secara atomik menggunakan saldo dompet pemain.
+   * Mengembalikan true jika transaksi berhasil, false jika dibatalkan.
+   */
+  function buyAsset(assetId, requestedQty) {
+    const asset = getAssetById(assetId);
+    if (!asset) return false;
+
+    const currentPrice = getCurrentAssetPrice(asset.id);
+    if (!Number.isFinite(currentPrice) || currentPrice <= 0) return false;
+
+    const existing = state.holdings[asset.id];
+    const oldUnits =
+      existing && Number.isFinite(Number(existing.units)) && Number(existing.units) > 0
+        ? Math.floor(Number(existing.units))
+        : 0;
+    const oldAvg =
+      existing && Number.isFinite(Number(existing.avgEntry)) && Number(existing.avgEntry) >= 0
+        ? Number(existing.avgEntry)
+        : 0;
+
+    const qty =
+      requestedQty !== undefined
+        ? Math.floor(Number(requestedQty))
+        : resolveTradeQuantities(currentPrice, oldUnits).buyQty;
+
+    if (!Number.isFinite(qty) || qty < 1) return false;
+
+    const cost = Math.round(qty * currentPrice * 100) / 100;
+    if (!Number.isFinite(cost) || cost <= 0 || state.balance < cost) {
+      return false;
+    }
+
+    const newUnits = oldUnits + qty;
+    const rawNewAvg = (oldUnits * oldAvg + qty * currentPrice) / newUnits;
+    const newAvg = Number.isFinite(rawNewAvg) ? Math.round(rawNewAvg * 100) / 100 : currentPrice;
+
+    state.balance = Math.max(0, Math.round((state.balance - cost) * 100) / 100);
+    state.holdings[asset.id] = {
+      units: newUnits,
+      avgEntry: newAvg
+    };
+
+    saveState();
+    renderStats();
+    renderUpgrades();
+    renderInvestingScreen();
+    if (state.selectedAssetId === asset.id) {
+      renderAssetDetailScreen();
+    }
+    triggerHaptic();
+    playCoinBlip();
+    showToast('Transaksi Investasi', 'Beli ' + formatIntegerID(qty) + ' ' + asset.name + ' berhasil');
+    return true;
+  }
+
+  /**
+   * Menjual aset yang dimiliki secara atomik dan menambahkannya ke saldo dompet pemain.
+   * Mengembalikan true jika transaksi berhasil, false jika dibatalkan.
+   */
+  function sellAsset(assetId, requestedQty) {
+    const asset = getAssetById(assetId);
+    if (!asset) return false;
+
+    const existing = state.holdings[asset.id];
+    const oldUnits =
+      existing && Number.isFinite(Number(existing.units)) && Number(existing.units) > 0
+        ? Math.floor(Number(existing.units))
+        : 0;
+    const oldAvg =
+      existing && Number.isFinite(Number(existing.avgEntry)) && Number(existing.avgEntry) >= 0
+        ? Number(existing.avgEntry)
+        : 0;
+
+    if (oldUnits < 1) return false;
+
+    const currentPrice = getCurrentAssetPrice(asset.id);
+    if (!Number.isFinite(currentPrice) || currentPrice <= 0) return false;
+
+    const qty =
+      requestedQty !== undefined
+        ? Math.floor(Number(requestedQty))
+        : resolveTradeQuantities(currentPrice, oldUnits).sellQty;
+
+    if (!Number.isFinite(qty) || qty < 1 || qty > oldUnits) {
+      return false;
+    }
+
+    const proceeds = Math.round(qty * currentPrice * 100) / 100;
+    if (!Number.isFinite(proceeds) || proceeds < 0) return false;
+
+    const realizedProfit = qty * (currentPrice - oldAvg);
+    state.balance = Math.round((state.balance + proceeds) * 100) / 100;
+    if (Number.isFinite(realizedProfit) && realizedProfit > 0) {
+      state.totalEarned = Math.round((state.totalEarned + realizedProfit) * 100) / 100;
+    }
+
+    const remainingUnits = oldUnits - qty;
+    if (remainingUnits <= 0) {
+      delete state.holdings[asset.id];
+    } else {
+      state.holdings[asset.id] = {
+        units: remainingUnits,
+        avgEntry: oldAvg
+      };
+    }
+
+    saveState();
+    renderStats();
+    renderUpgrades();
+    renderInvestingScreen();
+    if (state.selectedAssetId === asset.id) {
+      renderAssetDetailScreen();
+    }
+    checkMilestones();
+    triggerHaptic();
+    playCoinBlip();
+    showToast('Transaksi Investasi', 'Jual ' + formatIntegerID(qty) + ' ' + asset.name + ' berhasil');
+    return true;
+  }
+
+  /**
    * Membuka layar detail untuk aset tertentu.
    */
   function openAssetDetail(assetId) {
@@ -2254,6 +2375,22 @@
       });
     });
 
+    if (detailBuyBtn) {
+      detailBuyBtn.addEventListener('click', function () {
+        if (!detailBuyBtn.disabled && state.selectedAssetId) {
+          buyAsset(state.selectedAssetId);
+        }
+      });
+    }
+
+    if (detailSellBtn) {
+      detailSellBtn.addEventListener('click', function () {
+        if (!detailSellBtn.disabled && state.selectedAssetId) {
+          sellAsset(state.selectedAssetId);
+        }
+      });
+    }
+
     document.addEventListener('keydown', function (event) {
       if (
         event.key === 'Escape' &&
@@ -2535,6 +2672,8 @@
       flushSaveState: flushSaveState,
       resetAllData: resetAllData,
       buyUpgrade: buyUpgrade,
+      buyAsset: buyAsset,
+      sellAsset: sellAsset,
       processTap: processTap,
       runPassiveTick: runPassiveTick
     };
