@@ -1057,6 +1057,19 @@
     passiveIntervalId = window.setInterval(runPassiveTick, PASSIVE_TICK_MS);
   }
 
+  /**
+   * Mendaftarkan Service Worker untuk dukungan PWA luring.
+   */
+  function registerServiceWorker() {
+    if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js').catch(function () {
+          // Abaikan jika dijalankan dari protokol file:// lokal
+        });
+      });
+    }
+  }
+
   // Inisialisasi aplikasi
   function init() {
     setTabBadge('Earnings', 0);
@@ -1067,6 +1080,7 @@
     renderProfileStats();
     bindEvents();
     startPassiveIncomeLoop();
+    registerServiceWorker();
   }
 
   if (document.readyState === 'loading') {
