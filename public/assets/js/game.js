@@ -460,10 +460,13 @@
   let srAnnounceTimer = null;
   let toastHideTimer = null;
   let passiveIntervalId = null;
+  let priceIntervalId = null;
   let audioCtx = null;
   let hasPendingSave = false;
   let acknowledgedAffordableCount = 0;
   let unseenMilestonesCount = 0;
+  let investmentYieldCarry = 0;
+  let renderedListCategory = null;
 
   /**
    * Mengambil instance penyimpanan lokal yang tersedia.
@@ -711,7 +714,7 @@
   }
 
   /**
-   * Menginisialisasi harga pasar & riwayat awal untuk setiap aset di ASSETS.
+   * Menginisialisasi harga pasar & menghasilkan 60 titik riwayat mundur dengan random walk.
    */
   function initMarketData() {
     const now = Date.now();
@@ -723,14 +726,85 @@
           ? savedPrice
           : asset.initialPrice;
 
-      state.lastPrices[asset.id] = Math.round(basePrice * 100) / 100;
-      if (!Array.isArray(state.priceHistory[asset.id]) || state.priceHistory[asset.id].length === 0) {
-        state.priceHistory[asset.id] = [
-          { ts: now - CONFIG.PRICE_TICK_MS, price: state.lastPrices[asset.id] },
-          { ts: now, price: state.lastPrices[asset.id] }
-        ];
+      const roundedBase = Math.round(basePrice * 100) / 100;
+      state.lastPrices[asset.id] = roundedBase;
+
+      const points = new Array(CONFIG.HISTORY_MAX);
+      let cursorPrice = roundedBase;
+      points[CONFIG.HISTORY_MAX - 1] = { ts: now, price: cursorPrice };
+
+      for (let k = CONFIG.HISTORY_MAX - 1; k > 0; k -= 1) {
+        const step =
+          (Math.random() - CONFIG.RANDOM_WALK_CENTER) *
+          CONFIG.RANDOM_WALK_SPREAD *
+          asset.volatility;
+        const denom = 1 + step;
+        const prevRaw = denom > CONFIG.MIN_PRICE_FACTOR ? cursorPrice / denom : cursorPrice;
+        const clampedPrev = Math.max(prevRaw, minAllowed);
+        cursorPrice =
+          Math.round((Number.isFinite(clampedPrev) ? clampedPrev : roundedBase) * 100) / 100;
+        points[k - 1] = {
+          ts: now - (CONFIG.HISTORY_MAX - k) * CONFIG.PRICE_TICK_MS,
+          price: cursorPrice
+        };
+      }
+
+      state.priceHistory[asset.id] = points;
+    });
+  }
+
+  /**
+   * Menghitung total estimasi pendapatan per jam dari seluruh aset berimbal hasil (Saham & Properti).
+   */
+  function getTotalInvestmentHourlyYield() {
+    let total = 0;
+    ASSETS.forEach(function (asset) {
+      if (asset.yieldRate <= 0) return;
+      const holding = state.holdings[asset.id];
+      const units = holding && Number.isFinite(Number(holding.units)) ? Number(holding.units) : 0;
+      if (units <= 0) return;
+      const val = units * getCurrentAssetPrice(asset.id) * asset.yieldRate;
+      if (Number.isFinite(val) && val > 0) {
+        total += val;
       }
     });
+    return Number.isFinite(total) ? total : 0;
+  }
+
+  /**
+   * Satu siklus pergerakan harga pasar (setiap 3 detik) menggunakan random walk terukur.
+   */
+  function runPriceTick() {
+    const now = Date.now();
+    ASSETS.forEach(function (asset) {
+      const current = getCurrentAssetPrice(asset.id);
+      const minAllowed = asset.initialPrice * CONFIG.MIN_PRICE_FACTOR;
+      const change =
+        (Math.random() - CONFIG.RANDOM_WALK_CENTER) *
+        CONFIG.RANDOM_WALK_SPREAD *
+        asset.volatility;
+      const candidate = current * (1 + change);
+      const safeCandidate = Number.isFinite(candidate) ? candidate : current;
+      const nextPrice = Math.round(Math.max(safeCandidate, minAllowed) * 100) / 100;
+
+      state.lastPrices[asset.id] = nextPrice;
+
+      if (!Array.isArray(state.priceHistory[asset.id])) {
+        state.priceHistory[asset.id] = [];
+      }
+      state.priceHistory[asset.id].push({ ts: now, price: nextPrice });
+      while (state.priceHistory[asset.id].length > CONFIG.HISTORY_MAX) {
+        state.priceHistory[asset.id].shift();
+      }
+    });
+
+    if (hasDOM && document.visibilityState === 'visible' && state.activeTab === 'Investing') {
+      if (state.selectedAssetId) {
+        renderAssetDetailScreen();
+      } else {
+        renderInvestingScreen();
+      }
+    }
   }
 
   /**
@@ -866,61 +940,83 @@
       return a.category === cat;
     });
 
-    investAssetList.innerHTML = '';
-    categoryAssets.forEach(function (asset) {
+    if (
+      renderedListCategory !== cat ||
+      investAssetList.childElementCount !== categoryAssets.length
+    ) {
+      investAssetList.innerHTML = '';
+      categoryAssets.forEach(function (asset) {
+        const cardBtn = document.createElement('button');
+        cardBtn.type = 'button';
+        cardBtn.className = 'asset-card';
+        cardBtn.setAttribute('data-asset-id', asset.id);
+
+        const left = document.createElement('div');
+        left.className = 'asset-card__left';
+
+        const avatar = document.createElement('span');
+        avatar.className = 'asset-card__avatar';
+        avatar.style.backgroundColor = asset.color;
+        avatar.textContent = asset.symbol;
+
+        const meta = document.createElement('div');
+        meta.className = 'asset-card__meta';
+
+        const nameEl = document.createElement('span');
+        nameEl.className = 'asset-card__name';
+        nameEl.textContent = asset.name;
+
+        const ownedEl = document.createElement('span');
+        ownedEl.className = 'asset-card__owned';
+
+        meta.appendChild(nameEl);
+        meta.appendChild(ownedEl);
+        left.appendChild(avatar);
+        left.appendChild(meta);
+
+        const right = document.createElement('div');
+        right.className = 'asset-card__right';
+
+        const priceEl = document.createElement('span');
+        priceEl.className = 'asset-card__price';
+
+        const changeEl = document.createElement('span');
+        changeEl.className = 'asset-card__change';
+
+        right.appendChild(priceEl);
+        right.appendChild(changeEl);
+
+        cardBtn.appendChild(left);
+        cardBtn.appendChild(right);
+        investAssetList.appendChild(cardBtn);
+      });
+      renderedListCategory = cat;
+    }
+
+    categoryAssets.forEach(function (asset, idx) {
+      const cardBtn = investAssetList.children[idx];
+      if (!cardBtn) return;
       const holding = state.holdings[asset.id];
       const units = holding && Number.isFinite(Number(holding.units)) ? Number(holding.units) : 0;
       const currentPrice = getCurrentAssetPrice(asset.id);
       const changePct = getAssetChangePercent(asset.id);
       const isUp = changePct >= 0;
 
-      const cardBtn = document.createElement('button');
-      cardBtn.type = 'button';
-      cardBtn.className = 'asset-card';
-      cardBtn.setAttribute('data-asset-id', asset.id);
+      const ownedEl = cardBtn.querySelector('.asset-card__owned');
+      const priceEl = cardBtn.querySelector('.asset-card__price');
+      const changeEl = cardBtn.querySelector('.asset-card__change');
 
-      const left = document.createElement('div');
-      left.className = 'asset-card__left';
-
-      const avatar = document.createElement('span');
-      avatar.className = 'asset-card__avatar';
-      avatar.style.backgroundColor = asset.color;
-      avatar.textContent = asset.symbol;
-
-      const meta = document.createElement('div');
-      meta.className = 'asset-card__meta';
-
-      const nameEl = document.createElement('span');
-      nameEl.className = 'asset-card__name';
-      nameEl.textContent = asset.name;
-
-      const ownedEl = document.createElement('span');
-      ownedEl.className = 'asset-card__owned';
-      ownedEl.textContent = formatIntegerID(units) + ' ' + asset.unitLabel;
-
-      meta.appendChild(nameEl);
-      meta.appendChild(ownedEl);
-      left.appendChild(avatar);
-      left.appendChild(meta);
-
-      const right = document.createElement('div');
-      right.className = 'asset-card__right';
-
-      const priceEl = document.createElement('span');
-      priceEl.className = 'asset-card__price';
-      priceEl.textContent = formatRupiahCompact(currentPrice);
-      priceEl.title = formatRupiahFull(currentPrice);
-
-      const changeEl = document.createElement('span');
-      changeEl.className = 'asset-card__change ' + (isUp ? 'pnl--positive' : 'pnl--negative');
-      changeEl.textContent = formatSignedPercent(changePct);
-
-      right.appendChild(priceEl);
-      right.appendChild(changeEl);
-
-      cardBtn.appendChild(left);
-      cardBtn.appendChild(right);
-      investAssetList.appendChild(cardBtn);
+      if (ownedEl) {
+        ownedEl.textContent = formatIntegerID(units) + ' ' + asset.unitLabel;
+      }
+      if (priceEl) {
+        priceEl.textContent = formatRupiahCompact(currentPrice);
+        priceEl.title = formatRupiahFull(currentPrice);
+      }
+      if (changeEl) {
+        changeEl.className = 'asset-card__change ' + (isUp ? 'pnl--positive' : 'pnl--negative');
+        changeEl.textContent = formatSignedPercent(changePct);
+      }
     });
   }
 
@@ -1340,6 +1436,8 @@
     state.holdings = {};
     state.lastPrices = {};
     state.priceHistory = {};
+    investmentYieldCarry = 0;
+    renderedListCategory = null;
     initMarketData();
     state.settings = { sound: true, haptic: true };
     state.milestones = {};
@@ -1991,19 +2089,37 @@
   }
 
   /**
-   * Satu siklus pendapatan pasif per detik (hanya merender DOM jika tab terlihat).
+   * Satu siklus pendapatan pasif per detik (termasuk dividen Saham & sewa Properti).
    */
   function runPassiveTick() {
-    if (state.perSecond <= 0) return;
+    const hourlyYield = getTotalInvestmentHourlyYield();
+    const investPerSec = hourlyYield / CONFIG.SECONDS_PER_HOUR;
+    if (Number.isFinite(investPerSec) && investPerSec > 0) {
+      investmentYieldCarry += investPerSec;
+    }
 
-    state.balance = Math.round((state.balance + state.perSecond) * 100) / 100;
-    state.totalEarned = Math.round((state.totalEarned + state.perSecond) * 100) / 100;
+    const realizedInvest = Math.floor(investmentYieldCarry * 100) / 100;
+    if (realizedInvest > 0) {
+      investmentYieldCarry = Math.max(0, investmentYieldCarry - realizedInvest);
+    }
+
+    const totalGain = state.perSecond + realizedInvest;
+    if (!Number.isFinite(totalGain) || totalGain <= 0) return;
+
+    state.balance = Math.round((state.balance + totalGain) * 100) / 100;
+    state.totalEarned = Math.round((state.totalEarned + totalGain) * 100) / 100;
     saveState();
 
     if (hasDOM && document.visibilityState === 'visible') {
       renderStats();
       renderUpgrades();
-      if (state.activeTab === 'Profile') {
+      if (state.activeTab === 'Investing') {
+        if (state.selectedAssetId) {
+          renderAssetDetailScreen();
+        } else {
+          renderInvestingScreen();
+        }
+      } else if (state.activeTab === 'Profile') {
         renderProfileStats();
       }
       checkMilestones();
@@ -2018,6 +2134,16 @@
       root.clearInterval(passiveIntervalId);
     }
     passiveIntervalId = root.setInterval(runPassiveTick, CONFIG.PASSIVE_TICK_MS);
+  }
+
+  /**
+   * Memulai interval pergerakan harga pasar setiap 3 detik.
+   */
+  function startMarketPriceLoop() {
+    if (priceIntervalId) {
+      root.clearInterval(priceIntervalId);
+    }
+    priceIntervalId = root.setInterval(runPriceTick, CONFIG.PRICE_TICK_MS);
   }
 
   /**
@@ -2045,6 +2171,7 @@
     renderInvestingScreen();
     bindEvents();
     startPassiveIncomeLoop();
+    startMarketPriceLoop();
     registerServiceWorker();
   }
 
@@ -2074,6 +2201,9 @@
       calculateOfflineBonus: calculateOfflineBonus,
       derivePlayerCardId: derivePlayerCardId,
       getCategorySummary: getCategorySummary,
+      getTotalInvestmentHourlyYield: getTotalInvestmentHourlyYield,
+      initMarketData: initMarketData,
+      runPriceTick: runPriceTick,
       loadState: loadState,
       saveState: saveState,
       writeSaveImmediate: writeSaveImmediate,
