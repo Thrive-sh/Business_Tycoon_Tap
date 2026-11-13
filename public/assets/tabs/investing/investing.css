@@ -74,6 +74,7 @@
 }
 
 .panel {
+  flex-shrink: 0;
   background: var(--surface-white);
   border: 1px solid var(--border-light);
   border-radius: 16px;
@@ -519,6 +520,7 @@
 .shelf[data-shelf="Forex"] { --cat-accent: #7C3AED; }
 
 .shelf {
+  flex-shrink: 0;
   background: var(--surface-white);
   border: 1px solid var(--border-light);
   border-radius: 16px;
