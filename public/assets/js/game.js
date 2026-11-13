@@ -610,6 +610,7 @@
     activeTab: 'Earnings',
     activeInvestCategory: 'Saham',
     selectedAssetId: null,
+    ownedBusinesses: [],
     selectedQtyMode: '1'
   };
 
@@ -632,6 +633,7 @@
   const businessScreen = getEl('business-screen');
   const businessStartBtn = getEl('business-start-btn');
   const businessCompaniesSection = getEl('business-companies-section');
+  const businessCompanyList = getEl('business-company-list');
   const businessCategoryScreen = getEl('business-category-screen');
   const businessCategoryBack = getEl('business-category-back');
   const businessCategoryGrid = getEl('business-category-grid');
@@ -2021,6 +2023,18 @@
           });
         }
 
+        state.ownedBusinesses = Array.isArray(parsed.ownedBusinesses)
+          ? parsed.ownedBusinesses.filter(function (business) {
+              return business && typeof business === 'object' && typeof business.category === 'string' && business.category.trim();
+            }).map(function (business) {
+              return {
+                category: business.category.trim(),
+                count: Math.max(1, Math.floor(Number(business.count) || 1)),
+                incomePerHour: Math.max(0, Number(business.incomePerHour) || 0),
+                purchasedAt: Number(business.purchasedAt) || now
+              };
+            })
+          : [];
         state.holdings = {};
         state.lastPrices = {};
 
@@ -2146,6 +2160,7 @@
         totalEarned: state.totalEarned,
         upgrades: Object.assign({}, state.upgrades),
         holdings: cleanHoldings,
+        ownedBusinesses: Array.isArray(state.ownedBusinesses) ? state.ownedBusinesses : [],
         lastPrices: cleanLastPrices,
         settings: Object.assign({}, state.settings),
         milestones: Object.assign({}, state.milestones),
@@ -2196,6 +2211,52 @@
         writeSaveImmediate();
       }
     }, CONFIG.PRICE_SAVE_THROTTLE_MS);
+  }
+
+  /**
+   * Menampilkan hanya kategori usaha yang benar-benar dimiliki pemain.
+   * Kategori yang sekadar dibuka atau dipilih tidak dianggap sebagai pembelian.
+   */
+  function renderBusinessCompanies() {
+    if (!businessCompanyList) return;
+    businessCompanyList.innerHTML = '';
+    const owned = Array.isArray(state.ownedBusinesses) ? state.ownedBusinesses : [];
+    owned.forEach(function (business) {
+      const card = document.createElement('article');
+      card.className = 'business-company-card';
+      const top = document.createElement('div');
+      top.className = 'business-company-card__top';
+      const identity = document.createElement('div');
+      identity.className = 'business-company-card__identity';
+      const name = document.createElement('h3');
+      name.textContent = business.category;
+      const count = document.createElement('span');
+      count.textContent = formatIntegerID(business.count || 1) + ' perusahaan';
+      identity.appendChild(name);
+      identity.appendChild(count);
+      const icon = document.createElement('div');
+      icon.className = 'business-company-card__icon';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.textContent = business.category.slice(0, 1).toUpperCase();
+      const chevron = document.createElement('span');
+      chevron.className = 'business-company-card__chevron';
+      chevron.setAttribute('aria-hidden', 'true');
+      chevron.textContent = '›';
+      top.appendChild(icon);
+      top.appendChild(identity);
+      top.appendChild(chevron);
+      const income = document.createElement('div');
+      income.className = 'business-company-card__income';
+      const amount = document.createElement('strong');
+      amount.textContent = 'Rp' + formatCurrencyValue(business.incomePerHour || 0);
+      const unit = document.createElement('span');
+      unit.textContent = 'per jam';
+      income.appendChild(amount);
+      income.appendChild(unit);
+      card.appendChild(top);
+      card.appendChild(income);
+      businessCompanyList.appendChild(card);
+    });
   }
 
   /**
@@ -2663,6 +2724,7 @@
     } else if (tabName === 'Business' && businessScreen) {
       businessScreen.hidden = false;
       businessScreen.classList.add('screen--active');
+      renderBusinessCompanies();
     } else {
       const moduleInfo = CONFIG.MODULE_PREVIEWS[tabName] || CONFIG.MODULE_PREVIEWS.Business;
       if (previewTitle) {
