@@ -627,6 +627,7 @@
   const earningsScreen = getEl('earnings-screen');
   const investingScreen = getEl('investing-screen');
   const assetDetailScreen = getEl('asset-detail-screen');
+  const portfolioScreen = getEl('portfolio-screen');
   const previewScreen = getEl('preview-screen');
 
   const investWalletBalance = getEl('invest-wallet-balance');
@@ -635,6 +636,12 @@
   const investSummaryPnl = getEl('invest-summary-pnl');
   const investSummaryYield = getEl('invest-summary-yield');
   const investAssetList = getEl('invest-asset-list');
+  const investSummaryCard = getEl('invest-summary-card');
+  const portfolioBackBtn = getEl('portfolio-back-btn');
+  const portfolioTotalValue = getEl('portfolio-total-value');
+  const portfolioTotalPnl = getEl('portfolio-total-pnl');
+  const portfolioHoldingsCount = getEl('portfolio-holdings-count');
+  const portfolioHoldingsList = getEl('portfolio-holdings-list');
   const investSubtabs = hasDOM ? Array.from(document.querySelectorAll('.invest-subtab')) : [];
 
   const assetDetailBackBtn = getEl('asset-detail-back-btn');
@@ -1126,6 +1133,87 @@
       pnlPct: pnlPct,
       hourlyYield: Number.isFinite(hourlyYield) ? hourlyYield : 0
     };
+  }
+
+  /**
+   * Membuka layar portofolio yang berisi seluruh aset milik pemain.
+   */
+  function openPortfolio() {
+    if (!investingScreen || !portfolioScreen) return;
+    investingScreen.hidden = true;
+    investingScreen.classList.remove('screen--active');
+    portfolioScreen.hidden = false;
+    portfolioScreen.classList.add('screen--active');
+    renderPortfolio();
+  }
+
+  /**
+   * Menampilkan ringkasan nilai dan daftar aset yang benar-benar dimiliki pemain.
+   */
+  function renderPortfolio() {
+    if (!portfolioHoldingsList) return;
+    const holdings = [];
+    let totalValue = 0;
+    let totalCost = 0;
+
+    ASSETS.forEach(function (asset) {
+      const holding = state.holdings[asset.id];
+      const units = holding && Number.isFinite(Number(holding.units)) ? Number(holding.units) : 0;
+      if (units <= 0) return;
+      const avgEntry = holding && Number.isFinite(Number(holding.avgEntry)) ? Number(holding.avgEntry) : 0;
+      const marketPrice = getCurrentAssetPrice(asset.id);
+      const value = units * marketPrice;
+      const cost = units * avgEntry;
+      totalValue += value;
+      totalCost += cost;
+      holdings.push({ asset: asset, units: units, value: value, pnl: value - cost });
+    });
+
+    const pnl = totalValue - totalCost;
+    const pnlPct = totalCost > 0 ? (pnl / totalCost) * 100 : 0;
+    if (portfolioTotalValue) portfolioTotalValue.textContent = formatRupiahCompact(totalValue);
+    if (portfolioTotalPnl) {
+      portfolioTotalPnl.textContent = (pnl > 0 ? '+' : '') + formatRupiahCompact(pnl) + ' (' + formatSignedPercent(pnlPct) + ')';
+      portfolioTotalPnl.classList.toggle('pnl--positive', pnl >= 0);
+      portfolioTotalPnl.classList.toggle('pnl--negative', pnl < 0);
+    }
+    if (portfolioHoldingsCount) portfolioHoldingsCount.textContent = holdings.length + ' aset';
+    portfolioHoldingsList.innerHTML = '';
+
+    if (holdings.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'portfolio-empty';
+      empty.textContent = 'Belum ada saham atau aset yang dimiliki. Beli aset dari daftar Investasi untuk mulai membangun portofolio.';
+      portfolioHoldingsList.appendChild(empty);
+      return;
+    }
+
+    holdings.forEach(function (item) {
+      const card = document.createElement('article');
+      card.className = 'portfolio-holding-card';
+      const main = document.createElement('div');
+      main.className = 'portfolio-holding-card__main';
+      const name = document.createElement('strong');
+      name.className = 'portfolio-holding-card__name';
+      name.textContent = item.asset.name;
+      const meta = document.createElement('span');
+      meta.className = 'portfolio-holding-card__meta';
+      meta.textContent = item.asset.category + ' · ' + formatIntegerID(item.units) + ' ' + item.asset.unitLabel;
+      main.appendChild(name);
+      main.appendChild(meta);
+      const value = document.createElement('div');
+      value.className = 'portfolio-holding-card__value';
+      const market = document.createElement('strong');
+      market.textContent = formatRupiahCompact(item.value);
+      const profit = document.createElement('span');
+      profit.className = item.pnl >= 0 ? 'pnl--positive' : 'pnl--negative';
+      profit.textContent = (item.pnl > 0 ? '+' : '') + formatRupiahCompact(item.pnl);
+      value.appendChild(market);
+      value.appendChild(profit);
+      card.appendChild(main);
+      card.appendChild(value);
+      portfolioHoldingsList.appendChild(card);
+    });
   }
 
   /**
@@ -1737,6 +1825,10 @@
    */
   function closeAssetDetail() {
     state.selectedAssetId = null;
+    if (portfolioScreen) {
+      portfolioScreen.hidden = true;
+      portfolioScreen.classList.remove('screen--active');
+    }
     if (assetDetailScreen) {
       assetDetailScreen.hidden = true;
       assetDetailScreen.classList.remove('screen--active');
@@ -2660,6 +2752,30 @@
         }
       });
     });
+
+    if (investSummaryCard) {
+      investSummaryCard.addEventListener('click', openPortfolio);
+      investSummaryCard.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openPortfolio();
+        }
+      });
+    }
+
+    if (portfolioBackBtn) {
+      portfolioBackBtn.addEventListener('click', function () {
+        if (portfolioScreen) {
+          portfolioScreen.hidden = true;
+          portfolioScreen.classList.remove('screen--active');
+        }
+        if (investingScreen && state.activeTab === 'Investing') {
+          investingScreen.hidden = false;
+          investingScreen.classList.add('screen--active');
+          renderInvestingScreen();
+        }
+      });
+    }
 
     // Klik kartu aset pada daftar investasi -> buka layar detail
     if (investAssetList) {
