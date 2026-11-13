@@ -5,6 +5,8 @@ Simulasi bisnis ketuk layar *mobile-first* — **HTML5 + CSS3 + Vanilla JavaScri
 - **Produksi:** https://business-tycoon-tap.vercel.app
 - **Lisensi:** [MIT](./LICENSE)
 
+> **💱 Mata uang:** mata uang yang berlaku di game ini saat ini adalah **USD** (simbol `$`). Semua tampilan nominal (saldo, pendapatan, biaya upgrade, harga aset) dirender dengan awalan `$`. Helper `formatRupiahFull`/`formatRupiahCompact` di `core/format.js` masih tersedia tetapi **tidak dipakai untuk tampilan utama** — jangan menampilkan `Rp` pada fitur atau label baru. Beberapa teks lama di tab Usaha masih menampilkan `Rp189 T` (placeholder, akan diseragamkan ke USD kemudian). Keputusan memakai USD ini bersifat sementara sampai ada keputusan resmi.
+
 ---
 
 ## 1. Perintah
@@ -95,7 +97,7 @@ Hanya dalam tiga kasus ini, dan tetap dicatat di commit:
 
 - **Konstanta:** semua konstanta numerik tinggal di `CONFIG` (`core/config.js`); aset investasi di `core/assets.js`.
 - **Simpan:** tulis lewat mesin simpan di `core/state.js` (dual throttle 500 ms / 5 dtk, *flush* saat tab disembunyikan). Jangan menulis `localStorage` langsung.
-- **Format angka:** gunakan helper di `core/format.js` (mis. `formatRupiahFull`, `formatCompact`, `formatSignedPercent`) — jangan format manual di modul tab.
+- **Format angka:** gunakan helper di `core/format.js` (mis. `formatCurrencyValue`, `formatCompact`, `formatSignedPercent`) — jangan format manual di modul tab. Mata uang tampilan: **USD** (lihat catatan di bagian atas).
 - **Aksesibilitas:** hormati `prefers-reduced-motion`, sediakan `:focus-visible`, beri `aria-label` pada kontrol tanpa teks, `aria-hidden` untuk ikon dekoratif.
 - **Bahasa UI:** Bahasa Indonesia.
 - **Gambar PNG/JPG:** hanya untuk foto/ilustrasi; kompres dulu, beri `width`/`height` + `loading="lazy"`, `alt` yang bermakna. Ikon antarmuka tetap SVG.
