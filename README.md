@@ -1,97 +1,107 @@
 # Business Tycoon Tap
 
-Simulasi bisnis ketuk layar (*mobile-first*) berbasis web murni (**HTML5, CSS3, Vanilla JavaScript**) dengan dukungan pemasangan **PWA** dan mode luring (*offline*).
+Simulasi bisnis ketuk layar *mobile-first* — **HTML5 + CSS3 + Vanilla JavaScript (ES Modules)**, **PWA** dengan mode luring, tanpa *framework* dan tanpa *dependency* runtime.
 
-## Tautan Produksi
+- **Produksi:** https://business-tycoon-tap.vercel.app
+- **Lisensi:** [MIT](./LICENSE)
 
-- **Vercel Production:** https://business-tycoon-tap.vercel.app
-- **GitHub Pages:** https://thrive-sh.github.io/Business_Tycoon_Tap/
+---
 
-## Fitur Utama
+## 1. Perintah
 
-- **Executive Black-Gold Precious Card:** Kartu saldo utama 100% Inline SVG & CSS murni (permukaan dua-rona diagonal *Matte Obsidian & Satin Gunmetal*, filigri 8-untai emas-amber, Chip EMV perak metalik, ikon Contactless NFC, tipografi perak emboss, emblem 3-pilar `TCB`, serta kilau spekular `.is-glinting` saat ketukan).
-- **Bursa Investasi Live (Saham, Properti, Kripto, Forex):** 33 aset dengan simulasi pergerakan harga `random walk` setiap 3 detik, grafik garis Canvas 2D mulus (60 titik, DPR-scaled), transaksi atomik `[1][10][100][Maks]`, kalkulasi rata-rata beli (`avgEntry`) & P&L *real-time*, serta dividen saham dan pendapatan sewa properti pasif. Kategori Saham memakai emiten nyata (Amazon, Nvidia, Tesla, Google, Microsoft, Apple, Meta, Netflix) dengan logo vektor masing-masing.
-- **Siklus Ekonomi Ketukan & 3 Tingkat Peningkatan:** Sarung Tangan (`+$1,00/ketuk`), Mesin Ketuk (`+$5,00/ketuk`), dan Tim Otomatis (`+$25,00/ketuk` & `+$10,00/dtk`) dengan eskalasi biaya `baseCost * 1.15^level`.
-- **Pendapatan Pasif & Penghasilan Luring:** Dihitung otomatis dari `lastSeen` (efisiensi `50%`, batas maksimal `2 jam`) dan hanya merender DOM saat tab aktif terlihat.
-- **Save Schema v2 & Dual Throttle (500ms / 5 dtk):** Menyimpan `holdings` dan `lastPrices` tanpa membebani ruang `localStorage`, migrasi otomatis dari format simpanan v1, statistik profil, konfirmasi reset dua langkah, serta *flush* seketika saat tab disembunyikan/ditutup.
-- **Umpan Balik, Aksesibilitas & PWA:** Bunyi blip koin sintetis (*Web Audio API*), getar sentuh (`navigator.vibrate`), navigasi *keyboard* penuh, dukungan `prefers-reduced-motion`, ikon vektor SVG `<symbol>`, serta `Service Worker` *cache-first*.
-
-## Struktur Proyek
-
-```text
-.
-├── .github/
-│   └── workflows/
-│       └── static.yml          # Alur CI (check + test) & rilis GitHub Pages
-├── public/                     # Direktori aplikasi web publik (siap tayang)
-│   ├── assets/
-│   │   ├── core/               # Fondasi bersama (dipakai semua tab):
-│   │   │   ├── main.js         # Entry point ES Module (init, routing tab, loop pasif)
-│   │   │   ├── config.js       # CONFIG terpusat (konstanta & 33 aset di assets.js)
-│   │   │   ├── state.js        # State tunggal + mesin simpan (Save Schema v2)
-│   │   │   └── …               # util DOM, format angka, audio/haptic, lencana, milestone, pratinjau
-│   │   ├── tabs/               # Satu folder per tab — semua berkas tab tinggal di sini:
-│   │   │   ├── earnings/       # Tab Pendapatan (.html markup, .css, .js)
-│   │   │   ├── investing/      # Tab Investasi (.html — 3 layar: pasar, detail aset, portofolio)
-│   │   │   ├── business/       # Tab Usaha (.html — dashboard + pilih kategori)
-│   │   │   ├── items/          # Tab Item (.js — memakai pratinjau modul bersama)
-│   │   │   └── profile/        # Tab Profil (.html — modal reset; panel statistik di shell)
-│   │   └── icons/
-│   │       ├── icon-192.png    # Ikon PWA 192x192
-│   │       └── icon-512.png    # Ikon PWA 512x512
-│   ├── index.template.html     # SUMBER index.html — jangan edit index.html langsung
-│   ├── index.html              # HASIL GENERATE (npm run build) — jangan diedit manual
-│   ├── manifest.webmanifest    # Metadata pemasangan aplikasi PWA
-│   └── sw.js                   # Service Worker cache-first mode luring
-├── scripts/
-│   ├── build.js                # Perakit index.html dari template + partial tab
-│   └── lint.js                 # Pemeriksa konsistensi aset, JSON, CSS & CONFIG
-├── tests/
-│   └── smoke.test.js           # Pengujian otomatis format angka, migrasi & throttle
-├── .gitignore
-├── LICENSE
-├── package.json
-├── README.md
-└── vercel.json                 # Konfigurasi direktori publik & header keamanan Vercel
+```bash
+npm run dev     # Peladen lokal sederhana (http://localhost:8080), root = public/
+npm run build   # Merakit public/index.html dari index.template.html + partial tab
+npm run lint    # Cek sinkron index.html, JSON, SVG sprite, aksesibilitas, magic number
+npm test        # Smoke test (Node test runner, ESM)
 ```
 
-## Menjalankan Proyek Secara Lokal
+**Jangan pernah mengedit `public/index.html` secara manual.** File itu adalah *hasil generate* dari `scripts/build.js`. Edit sumbernya (`public/index.template.html` dan/atau `public/assets/tabs/<tab>/<tab>.html`), lalu jalankan `npm run build` dan commit hasilnya bersama sumbernya. `npm run lint` akan gagal bila keduanya drift.
 
-Prasyarat: **Node.js >= 18** (dan `python3` untuk peladen HTTP lokal sederhana).
+## 2. Struktur Proyek
 
-1. **Kloning repositori:**
-   ```bash
-   git clone https://github.com/Thrive-sh/Business_Tycoon_Tap.git
-   cd Business_Tycoon_Tap
-   ```
+```text
+├── .github/workflows/static.yml   # CI (check + test) & rilis GitHub Pages
+├── public/
+│   ├── assets/
+│   │   ├── core/                  # Fondasi bersama SEMUA tab
+│   │   │   ├── main.js            #   Entry point (init, routing tab, loop pasif & harga)
+│   │   │   ├── config.js          #   CONFIG terpusat (SATU-SATUNYA tempat konstanta numerik)
+│   │   │   ├── assets.js          #   Data 33 aset investasi
+│   │   │   ├── state.js           #   State tunggal + mesin simpan (Save Schema v2)
+│   │   │   ├── dom.js / format.js #   Util DOM & format angka (Rupiah, compact, %, dll.)
+│   │   │   ├── feedback.js / badges.js / milestones.js / preview.js
+│   │   │   └── base.css / preview.css / responsive.css
+│   │   ├── tabs/                  # SATU FOLDER PER TAB — semua berkas tab tinggal di sini
+│   │   │   ├── earnings/          #   Pendapatan: earnings.html + .css + .js
+│   │   │   ├── investing/         #   Investasi: investing.html (3 layar) + .css + .js
+│   │   │   ├── business/          #   Usaha: business.html + .css + .js
+│   │   │   ├── items/             #   Item: items.js (memakai preview-screen bersama)
+│   │   │   └── profile/           #   Profil: profile.html + .css + .js
+│   │   └── icons/                 # Ikon PWA (PNG)
+│   ├── index.template.html        # SUMBER index.html (shell + bottom nav + SVG sprite)
+│   ├── index.html                 # HASIL GENERATE (jangan diedit manual)
+│   ├── manifest.webmanifest       # Metadata PWA
+│   └── sw.js                      # Service Worker cache-first
+├── scripts/build.js               # Perakit index.html
+├── scripts/lint.js                # Pemeriksa statis
+└── tests/smoke.test.js            # Smoke test otomatis
+```
 
-2. **Jalankan peladen pengembangan lokal:**
-   ```bash
-   npm run dev
-   ```
-   Buka `http://localhost:8080` pada peramban (disarankan mode tampilan seluler Android `360x800` atau `412x915`).
+## 3. ATURAN UTAMA — Satu Tab = Satu Folder
 
-3. **Setelah mengubah markup apa pun** (`index.template.html` atau `assets/tabs/**/*.html`), rakit ulang `index.html` dan sertakan hasilnya pada commit:
-   ```bash
-   npm run build
-   ```
-   `npm run lint` akan gagal bila `public/index.html` tidak sinkron dengan sumbernya.
+| Perintah user … | … berarti bekerja HANYA di |
+|---|---|
+| "Update **Pendapatan** / tab Earnings / ketuk / upgrade / kartu saldo" | `public/assets/tabs/earnings/` |
+| "Update **Investasi** / tab Investing / bursa / aset / detail / portofolio" | `public/assets/tabs/investing/` |
+| "Update **Usaha** / tab Business / bisnis / kategori usaha" | `public/assets/tabs/business/` |
+| "Update **Item** / tab Items / toko" | `public/assets/tabs/items/` |
+| "Update **Profil** / tab Profile / statistik / reset data" | `public/assets/tabs/profile/` |
 
-4. **Jalankan pemeriksaan statis (lint) dan pengujian:**
-   ```bash
-   npm run lint
-   npm test
-   ```
+Layer yang dimiliki tiap folder tab: `*.html` (markup layar tab), `*.css`, `*.js`. Entry point, CONFIG, state, dan util bersama **bukan** milik tab mana pun.
 
-## Panduan Kontribusi
+## 4. Jika User Memerintahkan "Update Tab …"
 
-- Pertahankan pemisahan berkas aplikasi di dalam `public/` (ES Modules per tab di `assets/tabs/`, fondasi bersama di `assets/core/`) tanpa *framework* eksternal.
-- **Jangan pernah mengedit `public/index.html` secara manual** — edit `public/index.template.html` atau partial `assets/tabs/<tab>/<tab>.html`, lalu jalankan `npm run build` dan commit hasilnya. Tab Item sengaja memakai pratinjau modul bersama di shell (tidak punya markup sendiri).
-- Seluruh ikon antarmuka wajib menggunakan vektor SVG pada `<symbol>` di `public/index.html` (tanpa emoji standar).
-- Letakkan seluruh konstanta numerik baru di dalam objek `CONFIG` pada `public/assets/core/config.js`.
-- Markup bersama semua tab (bottom navigation, SVG symbol sprite, preview-screen, roadmap modal, milestone toast) tetap di `index.template.html`.
-- Pastikan `npm run lint` dan `npm test` lulus sebelum membuka *Pull Request*.
+Ikuti langkah ini berurutan, tanpa penyimpangan:
 
-## Lisensi
+1. **Identifikasi tab** dari perintahnya (tabel di Bagian 3). Berhenti dulu bila ambigu dan tanyakan.
+2. **Edit hanya file di dalam folder tab** tersebut. Jangan menyentuh file tab lain.
+3. **Markup:** edit `tabs/<tab>/<tab>.html` (bukan `index.html`!). Setelah mengubah markup, jalankan `npm run build` dan commit hasil `public/index.html` juga.
+4. **Konstanta numerik baru** (biaya, tarif, durasi, dll.) **wajib** masuk `public/assets/core/config.js` — `lint` menolak magic number di modul lain.
+5. **Ikon baru:** tambahkan sebagai `<symbol>` di sprite `public/index.template.html`, lalu `npm run build`; ikon UI harus SVG, bukan PNG.
+6. **File statis baru** (gambar/ilustrasi — taruh di folder tab atau `public/assets/images/`): daftarkan di `CORE_ASSETS` pada `public/sw.js` dan naikkan `CACHE_NAME` bila harus tersedia saat offline.
+7. **Verifikasi:** `npm run lint` dan `npm test` harus lulus. Bila gagal, perbaiki sampai hijau sebelum commit.
+8. **Commit & push** ke branch aktif; setelah push, **selalu tampilkan URL preview deployment branch Vercel di chat** ke user.
+9. **Balas user dalam Bahasa Indonesia.**
 
-Dirilis di bawah [MIT License](./LICENSE).
+### Kapan boleh keluar dari folder tab?
+
+Hanya dalam tiga kasus ini, dan tetap dicatat di commit:
+
+- **Fondasi bersama** (`public/assets/core/`) — misal ada CONFIG baru atau format angka yang dipakai banyak tab.
+- **Markup shell bersama** (`public/index.template.html`: bottom navigation, SVG sprite, preview-screen, roadmap modal, milestone toast) — hanya untuk hal lintas tab; lalu `npm run build`.
+- **Service worker** (`public/sw.js`) — bila daftar precache berubah; naikkan `CACHE_NAME`.
+
+### Yang TIDAK boleh dilakukan
+
+- ❌ Mengedit `public/index.html` manual.
+- ❌ Menambah *framework* / *library* / dependensi runtime.
+- ❌ Mengubah struktur Save Schema (`localStorage` key `business_simulator_save_v1`, versi 2) atau menghapus migrasi v1 → v2 — pemain nyata menyimpan progres di situ.
+- ❌ Mengubah pengaturan Vercel, *environment variables*, atau *workflow* GitHub tanpa **persetujuan eksplisit** user.
+- ❌ Pindah branch / push ke branch lain; kerja selalu di branch aktif.
+- ❌ Memulai fitur besar tanpa persetujuan (modul Usaha dan katalog Item masih dalam tahap perencanaan).
+
+## 5. Aturan Kode
+
+- **Konstanta:** semua konstanta numerik tinggal di `CONFIG` (`core/config.js`); aset investasi di `core/assets.js`.
+- **Simpan:** tulis lewat mesin simpan di `core/state.js` (dual throttle 500 ms / 5 dtk, *flush* saat tab disembunyikan). Jangan menulis `localStorage` langsung.
+- **Format angka:** gunakan helper di `core/format.js` (mis. `formatRupiahFull`, `formatCompact`, `formatSignedPercent`) — jangan format manual di modul tab.
+- **Aksesibilitas:** hormati `prefers-reduced-motion`, sediakan `:focus-visible`, beri `aria-label` pada kontrol tanpa teks, `aria-hidden` untuk ikon dekoratif.
+- **Bahasa UI:** Bahasa Indonesia.
+- **Gambar PNG/JPG:** hanya untuk foto/ilustrasi; kompres dulu, beri `width`/`height` + `loading="lazy"`, `alt` yang bermakna. Ikon antarmuka tetap SVG.
+
+## 6. Pengujian & Kualitas
+
+- `npm run lint` — memverifikasi: `index.html` sinkron dengan sumber generate, JSON valid, SVG `<use>` cocok dengan `<symbol>`, ikon PWA ada, `prefers-reduced-motion` & `:focus-visible` ada, tidak ada magic number di modul non-`core`.
+- `npm test` — smoke test: skema simpan v1→v2, format angka, kalkulasi biaya upgrade, batas offline 2 jam, buy/sell, jumlah 33 aset investasi.
+- CI: `.github/workflows/static.yml` — menjalankan syntax check, `npm run lint`, dan `npm test` pada push/PR ke `main`.
