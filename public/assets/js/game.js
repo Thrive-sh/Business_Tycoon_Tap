@@ -632,6 +632,10 @@
   const businessScreen = getEl('business-screen');
   const businessStartBtn = getEl('business-start-btn');
   const businessCompaniesSection = getEl('business-companies-section');
+  const businessCategoryScreen = getEl('business-category-screen');
+  const businessCategoryBack = getEl('business-category-back');
+  const businessCategoryGrid = getEl('business-category-grid');
+  let selectedBusinessCategory = null;
 
   const investWalletBalance = getEl('invest-wallet-balance');
   const investSummaryLabel = getEl('invest-summary-label');
@@ -2636,6 +2640,10 @@
       businessScreen.hidden = true;
       businessScreen.classList.remove('screen--active');
     }
+    if (businessCategoryScreen) {
+      businessCategoryScreen.hidden = true;
+      businessCategoryScreen.classList.remove('screen--active');
+    }
     if (investingScreen) {
       investingScreen.hidden = true;
       investingScreen.classList.remove('screen--active');
@@ -2787,9 +2795,46 @@
       });
     }
 
-    if (businessStartBtn && businessCompaniesSection) {
+    if (businessStartBtn && businessCategoryScreen) {
       businessStartBtn.addEventListener('click', function () {
-        businessCompaniesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (businessScreen) {
+          businessScreen.hidden = true;
+          businessScreen.classList.remove('screen--active');
+        }
+        businessCategoryScreen.hidden = false;
+        businessCategoryScreen.classList.add('screen--active');
+        if (businessCategoryGrid) {
+          businessCategoryGrid.querySelectorAll('.business-category-card').forEach(function (card) {
+            card.classList.remove('is-selected');
+            card.setAttribute('aria-pressed', 'false');
+          });
+        }
+      });
+    }
+
+    if (businessCategoryBack) {
+      businessCategoryBack.addEventListener('click', function () {
+        if (businessCategoryScreen) {
+          businessCategoryScreen.hidden = true;
+          businessCategoryScreen.classList.remove('screen--active');
+        }
+        if (businessScreen && state.activeTab === 'Business') {
+          businessScreen.hidden = false;
+          businessScreen.classList.add('screen--active');
+        }
+      });
+    }
+
+    if (businessCategoryGrid) {
+      businessCategoryGrid.addEventListener('click', function (event) {
+        const card = event.target.closest('[data-business-category]');
+        if (!card) return;
+        selectedBusinessCategory = card.getAttribute('data-business-category');
+        businessCategoryGrid.querySelectorAll('.business-category-card').forEach(function (item) {
+          const selected = item === card;
+          item.classList.toggle('is-selected', selected);
+          item.setAttribute('aria-pressed', selected ? 'true' : 'false');
+        });
       });
     }
 
