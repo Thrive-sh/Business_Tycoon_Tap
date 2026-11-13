@@ -25,24 +25,26 @@ Simulasi bisnis ketuk layar (*mobile-first*) berbasis web murni (**HTML5, CSS3, 
 │       └── static.yml          # Alur CI (check + test) & rilis GitHub Pages
 ├── public/                     # Direktori aplikasi web publik (siap tayang)
 │   ├── assets/
-│   │   ├── core/               # Fondasi bersama: base/preview/responsive CSS,
-│   │   │                       # util DOM, CONFIG terpusat, 33 aset investasi,
-│   │   │                       # format angka, state & mesin simpan (Save Schema v2),
-│   │   │                       # umpan balik audio/haptic, lencana, milestone & pratinjau modul
-│   │   ├── tabs/               # Modul per tab (CSS + JS masing-masing):
-│   │   │   ├── earnings/       # Tab Pendapatan (ketuk, upgrade, bank card)
-│   │   │   ├── investing/      # Tab Investasi (pasar live, detail aset, portofolio)
-│   │   │   ├── business/       # Tab Usaha
-│   │   │   ├── items/          # Tab Item
-│   │   │   └── profile/        # Tab Profil (statistik & reset data)
-│   │   ├── icons/
-│   │   │   ├── icon-192.png    # Ikon PWA 192x192
-│   │   │   └── icon-512.png    # Ikon PWA 512x512
-│   │   └── main.js             # Entry point ES Module (init, routing tab, loop pasif)
-│   ├── index.html              # Antarmuka utama, SVG symbol sprite & modal
+│   │   ├── core/               # Fondasi bersama (dipakai semua tab):
+│   │   │   ├── main.js         # Entry point ES Module (init, routing tab, loop pasif)
+│   │   │   ├── config.js       # CONFIG terpusat (konstanta & 33 aset di assets.js)
+│   │   │   ├── state.js        # State tunggal + mesin simpan (Save Schema v2)
+│   │   │   └── …               # util DOM, format angka, audio/haptic, lencana, milestone, pratinjau
+│   │   ├── tabs/               # Satu folder per tab — semua berkas tab tinggal di sini:
+│   │   │   ├── earnings/       # Tab Pendapatan (.html markup, .css, .js)
+│   │   │   ├── investing/      # Tab Investasi (.html — 3 layar: pasar, detail aset, portofolio)
+│   │   │   ├── business/       # Tab Usaha (.html — dashboard + pilih kategori)
+│   │   │   ├── items/          # Tab Item (.js — memakai pratinjau modul bersama)
+│   │   │   └── profile/        # Tab Profil (.html — modal reset; panel statistik di shell)
+│   │   └── icons/
+│   │       ├── icon-192.png    # Ikon PWA 192x192
+│   │       └── icon-512.png    # Ikon PWA 512x512
+│   ├── index.template.html     # SUMBER index.html — jangan edit index.html langsung
+│   ├── index.html              # HASIL GENERATE (npm run build) — jangan diedit manual
 │   ├── manifest.webmanifest    # Metadata pemasangan aplikasi PWA
 │   └── sw.js                   # Service Worker cache-first mode luring
 ├── scripts/
+│   ├── build.js                # Perakit index.html dari template + partial tab
 │   └── lint.js                 # Pemeriksa konsistensi aset, JSON, CSS & CONFIG
 ├── tests/
 │   └── smoke.test.js           # Pengujian otomatis format angka, migrasi & throttle
@@ -69,7 +71,13 @@ Prasyarat: **Node.js >= 18** (dan `python3` untuk peladen HTTP lokal sederhana).
    ```
    Buka `http://localhost:8080` pada peramban (disarankan mode tampilan seluler Android `360x800` atau `412x915`).
 
-3. **Jalankan pemeriksaan statis (lint) dan pengujian:**
+3. **Setelah mengubah markup apa pun** (`index.template.html` atau `assets/tabs/**/*.html`), rakit ulang `index.html` dan sertakan hasilnya pada commit:
+   ```bash
+   npm run build
+   ```
+   `npm run lint` akan gagal bila `public/index.html` tidak sinkron dengan sumbernya.
+
+4. **Jalankan pemeriksaan statis (lint) dan pengujian:**
    ```bash
    npm run lint
    npm test
@@ -77,9 +85,11 @@ Prasyarat: **Node.js >= 18** (dan `python3` untuk peladen HTTP lokal sederhana).
 
 ## Panduan Kontribusi
 
-- Pertahankan pemisahan berkas aplikasi di dalam `public/` (`index.html` + ES Modules per tab di `assets/core/` dan `assets/tabs/`) tanpa *framework* eksternal.
+- Pertahankan pemisahan berkas aplikasi di dalam `public/` (ES Modules per tab di `assets/tabs/`, fondasi bersama di `assets/core/`) tanpa *framework* eksternal.
+- **Jangan pernah mengedit `public/index.html` secara manual** — edit `public/index.template.html` atau partial `assets/tabs/<tab>/<tab>.html`, lalu jalankan `npm run build` dan commit hasilnya. Tab Item sengaja memakai pratinjau modul bersama di shell (tidak punya markup sendiri).
 - Seluruh ikon antarmuka wajib menggunakan vektor SVG pada `<symbol>` di `public/index.html` (tanpa emoji standar).
 - Letakkan seluruh konstanta numerik baru di dalam objek `CONFIG` pada `public/assets/core/config.js`.
+- Markup bersama semua tab (bottom navigation, SVG symbol sprite, preview-screen, roadmap modal, milestone toast) tetap di `index.template.html`.
 - Pastikan `npm run lint` dan `npm test` lulus sebelum membuka *Pull Request*.
 
 ## Lisensi

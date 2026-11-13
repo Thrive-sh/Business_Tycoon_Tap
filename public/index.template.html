@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1B202C">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Business Tycoon Tap — Dasbor Pendapatan</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <link rel="stylesheet" href="assets/core/base.css">
+  <link rel="stylesheet" href="assets/core/preview.css">
+  <link rel="stylesheet" href="assets/tabs/earnings/earnings.css">
+  <link rel="stylesheet" href="assets/tabs/investing/investing.css">
+  <link rel="stylesheet" href="assets/tabs/business/business.css">
+  <link rel="stylesheet" href="assets/tabs/profile/profile.css">
+  <link rel="stylesheet" href="assets/core/responsive.css">
+</head>
+<body>
+  <!-- SUMBER TUNGGAL IKON VEKTOR (SVG SYMBOL SPRITE) -->
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+    <symbol id="icon-investing" viewBox="0 0 24 24" fill="none">
+      <path d="M3 17L9 11L13 15L21 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M16 7H21V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M4 20H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.55" />
+    </symbol>
+    <symbol id="icon-business" viewBox="0 0 24 24" fill="none">
+      <path d="M4 21V4.5C4 3.94772 4.44772 3.5 5 3.5H13C13.5523 3.5 14 3.94772 14 4.5V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M14 9.5H19C19.5523 9.5 20 9.94772 20 10.5V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M2.5 21H21.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      <path d="M7.5 7.5H10.5M7.5 11H10.5M7.5 14.5H10.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      <path d="M16.5 13H17.5M16.5 16.5H17.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      <path d="M9 21V18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+    </symbol>
+    <symbol id="icon-earnings" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" fill="var(--coin-bg-fill, transparent)" stroke="var(--coin-bg-stroke, currentColor)" stroke-width="2" />
+      <circle cx="12" cy="12" r="7.6" fill="none" stroke="var(--coin-ring-stroke, transparent)" stroke-width="1" />
+      <path
+        d="M12 6.8V17.2M14.3 9.4C14.3 8.25 13.3 7.6 12 7.6C10.65 7.6 9.7 8.25 9.7 9.4C9.7 10.55 10.65 11.05 12 11.5C13.35 11.95 14.3 12.45 14.3 13.65C14.3 14.85 13.3 15.55 12 15.55C10.6 15.55 9.65 14.85 9.65 13.65"
+        stroke="var(--coin-symbol-stroke, currentColor)"
+        stroke-width="1.9"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </symbol>
+    <symbol id="icon-items" viewBox="0 0 24 24" fill="none">
+      <path d="M12 2.8L20 7.3V16.7L12 21.2L4 16.7V7.3L12 2.8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+      <path d="M4 7.3L12 11.8L20 7.3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M12 11.8V21.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      <path d="M8 5.05L16 9.55" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+    </symbol>
+    <symbol id="icon-profile" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="8" r="3.8" stroke="currentColor" stroke-width="2" />
+      <path d="M4.8 20.2C4.8 16.5 7.9 14.2 12 14.2C16.1 14.2 19.2 16.5 19.2 20.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+    </symbol>
+    <symbol id="icon-award" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="9" r="5.5" stroke="currentColor" stroke-width="2" />
+      <path d="M9 13.8L7.5 21L12 18.6L16.5 21L15 13.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </symbol>
+    <symbol id="icon-arrow-left" viewBox="0 0 24 24" fill="none">
+      <path d="M19 12H5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M11.5 18.5L5 12L11.5 5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+    </symbol>
+
+    <!-- Logo emiten saham (merek nyata, disederhanakan sebagai vektor) -->
+    <symbol id="icon-stock-amazon" viewBox="0 0 512 512">
+      <path d="M48.48,378.73a300.52,300.52,0,0,0,152.89,95.92,262.57,262.57,0,0,0,159.3-17.25,225.52,225.52,0,0,0,66.79-47,6.36,6.36,0,0,0-2-8.53,11.76,11.76,0,0,0-8-.05,401.92,401.92,0,0,1-116.55,39.34,358.13,358.13,0,0,1-127.29-8.83,446.73,446.73,0,0,1-119.1-60.49,5,5,0,0,0-6.06,6.9Z" fill="#FF9900" />
+      <path d="M387.15,388.44a168.11,168.11,0,0,1,48.94-2.23l.67.13a10,10,0,0,1,7.37,12.05A204.71,204.71,0,0,1,429,444.47a2.55,2.55,0,0,0,1.66,3.18,2.51,2.51,0,0,0,2.23-.37A83.31,83.31,0,0,0,464,382.86a12.44,12.44,0,0,0-10.22-13.22A95.75,95.75,0,0,0,384.91,384a2.55,2.55,0,0,0-.57,3.55A2.52,2.52,0,0,0,387.15,388.44Z" fill="#FF9900" />
+      <path d="M304.24,324.92a164,164,0,0,1-28.92,25.3A135.16,135.16,0,0,1,208.63,369a99.49,99.49,0,0,1-57.49-19.85,97.25,97.25,0,0,1-27.36-100.28,112.35,112.35,0,0,1,65.3-69.06,367.67,367.67,0,0,1,104.7-15.55V127A37.82,37.82,0,0,0,261,94.72a59.9,59.9,0,0,0-31.17,4.08,48.89,48.89,0,0,0-27.13,34.67,12,12,0,0,1-12.58,6.72l-50.9-4.5a11.38,11.38,0,0,1-8.38-10.16,103.66,103.66,0,0,1,36.61-63.45A143.86,143.86,0,0,1,257.85,32a146.24,146.24,0,0,1,84.27,27.67,86.82,86.82,0,0,1,30.7,70.22V258.8a84.46,84.46,0,0,0,8,31.28l15.87,23.23a13,13,0,0,1,0,11.23L349.7,364.25a12.5,12.5,0,0,1-12.68-.44A244.84,244.84,0,0,1,304.24,324.92Zm-10.6-116.83a257.68,257.68,0,0,0-44,2.89A63,63,0,0,0,208,242.54a63,63,0,0,0,3.07,54,40.6,40.6,0,0,0,47.11,12.19,78.61,78.61,0,0,0,35.46-55.58V208.09" fill="#232F3E" />
+    </symbol>
+    <symbol id="icon-stock-nvidia" viewBox="0 0 24 24">
+      <path d="M8.948 8.798v-1.43a6.7 6.7 0 0 1 .424-.018c3.922-.124 6.493 3.374 6.493 3.374s-2.774 3.851-5.75 3.851c-.398 0-.787-.062-1.158-.185v-4.346c1.528.185 1.837.857 2.747 2.385l2.04-1.714s-1.492-1.952-4-1.952a6.016 6.016 0 0 0-.796.035m0-4.735v2.138l.424-.027c5.45-.185 9.01 4.47 9.01 4.47s-4.08 4.964-8.33 4.964c-.37 0-.733-.035-1.095-.097v1.325c.3.035.61.062.91.062 3.957 0 6.82-2.023 9.593-4.408.459.371 2.34 1.263 2.73 1.652-2.633 2.208-8.772 3.984-12.253 3.984-.335 0-.653-.018-.971-.053v1.864H24V4.063zm0 10.326v1.131c-3.657-.654-4.673-4.46-4.673-4.46s1.758-1.944 4.673-2.262v1.237H8.94c-1.528-.186-2.73 1.245-2.73 1.245s.68 2.412 2.739 3.11M2.456 10.9s2.164-3.197 6.5-3.533V6.201C4.153 6.59 0 10.653 0 10.653s2.35 6.802 8.948 7.42v-1.237c-4.84-.6-6.492-5.936-6.492-5.936z" fill="#76B900" />
+    </symbol>
+    <symbol id="icon-stock-tesla" viewBox="0 0 24 24" fill="none">
+      <path d="M12 3.2C8.45 3.2 5.05 3.7 2 4.65l1.15 2.25C5.7 6.12 8.75 5.7 12 5.7s6.3.42 8.85 1.2L22 4.65c-3.05-.95-6.45-1.45-10-1.45Z" fill="#E82127"/>
+      <path d="M9.05 7.05 12 20.8l2.95-13.75a19.5 19.5 0 0 0-5.9 0Z" fill="#E82127"/>
+    </symbol>
+    <symbol id="icon-stock-google" viewBox="0 0 24 24" fill="none">
+      <path d="M23.49 12.27C23.49 11.48 23.42 10.73 23.3 10H12V14.51H18.47C18.18 15.99 17.33 17.24 16.07 18.09V21.1H19.93C22.19 19.02 23.49 15.95 23.49 12.27Z" fill="#4285F4" />
+      <path d="M12 24C15.24 24 17.95 22.92 19.93 21.1L16.07 18.09C14.99 18.81 13.62 19.25 12 19.25C8.87 19.25 6.22 17.14 5.27 14.29H1.29V17.38C3.26 21.3 7.32 24 12 24Z" fill="#34A853" />
+      <path d="M5.27 14.29C5.02 13.57 4.88 12.8 4.88 12C4.88 11.2 5.02 10.43 5.27 9.71V6.62H1.29C0.47 8.24 0 10.06 0 12C0 13.94 0.47 15.76 1.29 17.38L5.27 14.29Z" fill="#FBBC05" />
+      <path d="M12 4.75C13.77 4.75 15.35 5.36 16.6 6.55L20.02 3.13C17.95 1.19 15.24 0 12 0C7.32 0 3.26 2.69 1.29 6.62L5.27 9.71C6.22 6.86 8.87 4.75 12 4.75Z" fill="#EA4335" />
+    </symbol>
+    <symbol id="icon-stock-microsoft" viewBox="0 0 24 24" fill="none">
+      <rect x="1.5" y="1.5" width="9.5" height="9.5" fill="#F25022"/>
+      <rect x="13" y="1.5" width="9.5" height="9.5" fill="#7FBA00"/>
+      <rect x="1.5" y="13" width="9.5" height="9.5" fill="#00A4EF"/>
+      <rect x="13" y="13" width="9.5" height="9.5" fill="#FFB900"/>
+    </symbol>
+    <symbol id="icon-stock-apple" viewBox="0 0 24 24" fill="none">
+      <path d="M12.152 6.896C11.204 6.896 9.737 5.818 8.192 5.856C6.152 5.883 4.282 7.039 3.231 8.87C1.114 12.545 2.685 17.973 4.75 20.96C5.763 22.414 6.958 24.05 8.542 23.999C10.062 23.934 10.632 23.012 12.477 23.012C14.308 23.012 14.827 23.999 16.437 23.96C18.074 23.934 19.113 22.48 20.113 21.012C21.269 19.324 21.749 17.687 21.775 17.597C21.736 17.584 18.593 16.376 18.555 12.74C18.529 9.7 21.035 8.246 21.152 8.181C19.723 6.091 17.529 5.857 16.762 5.805C14.762 5.649 13.087 6.895 12.152 6.896ZM15.53 3.83C16.373 2.818 16.93 1.403 16.775 0C15.568 0.052 14.113 0.805 13.243 1.818C12.463 2.714 11.789 4.156 11.97 5.532C13.308 5.636 14.685 4.844 15.53 3.83Z" fill="#1D1D1F" />
+    </symbol>
+    <symbol id="icon-stock-meta" viewBox="0 0 24 24" fill="none">
+      <path d="M2.8 13.1c.65-4.05 2.45-7.05 4.95-7.05 2.3 0 4.25 3.2 6.05 7.05 1.8 3.85 3.1 6.85 5.15 6.85 1.55 0 2.4-1.75 2.4-4.15 0-2.65-.8-5.15-2.25-7.15" stroke="#0081FB" stroke-width="2.45" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M21.2 10.9c-.65 4.05-2.45 7.05-4.95 7.05-2.3 0-4.25-3.2-6.05-7.05C8.4 7.05 7.1 4.05 5.05 4.05 3.5 4.05 2.65 5.8 2.65 8.2c0 2.65.8 5.15 2.25 7.15" stroke="#0081FB" stroke-width="2.45" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-stock-netflix" viewBox="0 0 24 24" fill="none">
+      <path d="M6 3H9.4L14.6 14V3H18V21H14.6L9.4 10V21H6V3Z" fill="#E50914" />
+    </symbol>
+    <symbol id="icon-stock-amd" viewBox="0 0 24 24"><path d="M13 3h8v8l-3-3-5 5-3-3 5-5-2-2ZM3 13h8l-8 8v-8Z" fill="#ED1C24"/></symbol>
+    <symbol id="icon-stock-tsmc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#C8102E"/><path d="M6 8h12M12 8v10m-4-5h8" stroke="#fff" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="icon-stock-jpmorgan" viewBox="0 0 24 24"><path d="M4 4h16v5H9v3h8v4H9v4H4V4Z" fill="#117ACA"/></symbol>
+    <symbol id="icon-stock-berkshire" viewBox="0 0 24 24"><path d="M6 3h9a5 5 0 0 1 2 9 5 5 0 0 1-2 9H6V3Zm5 4v4h3a2 2 0 0 0 0-4h-3Zm0 8v3h4a1.5 1.5 0 0 0 0-3h-4Z" fill="#1D3557"/></symbol>
+    <symbol id="icon-stock-walmart" viewBox="0 0 24 24"><g fill="#0071CE"><path d="M11 1h2v7h-2zM11 16h2v7h-2zM1 11h7v2H1zM16 11h7v2h-7zM4 4l1.4-1.4 5 5L9 9zM14 14l1.4-1.4 5 5-1.4 1.4zM18.6 2.6 20 4l-5 5-1.4-1.4zM4 20l-1.4-1.4 5-5L9 15z"/></g></symbol>
+    <symbol id="icon-stock-cocacola" viewBox="0 0 24 24"><path d="M5 7c2-3 6-4 10-2 3 1 4 4 2 6-2 2-6 1-8 3-2 1-1 3 1 3 2 1 5 0 7-2" fill="none" stroke="#F40009" stroke-width="3" stroke-linecap="round"/></symbol>
+    <symbol id="icon-stock-toyota" viewBox="0 0 24 24"><g fill="none" stroke="#EB0A1E" stroke-width="2.2"><ellipse cx="12" cy="12" rx="10" ry="8"/><ellipse cx="12" cy="12" rx="4" ry="7"/><path d="M3 10h18"/></g></symbol>
+    <symbol id="icon-stock-samsung" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="11" ry="8" transform="rotate(-12 12 12)" fill="#1428A0"/><path d="M6 14c2-4 4-4 6-1s4 3 6-2" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="icon-stock-alibaba" viewBox="0 0 24 24"><path d="M3 12c0-5 5-8 9-4l3 3 3-3c3-3 6-1 6 3 0 4-3 6-7 6H9c-4 0-6-2-6-5Z" fill="none" stroke="#FF6A00" stroke-width="2.5" stroke-linecap="round"/></symbol>
+    <symbol id="icon-stock-mcdonalds" viewBox="0 0 24 24"><path d="M3 20C4 4 9 4 12 20 15 4 20 4 21 20" fill="none" stroke="#FFC72C" stroke-width="3.2" stroke-linecap="round"/></symbol>
+    <symbol id="icon-stock-visa" viewBox="0 0 24 24"><path d="m3 6 4 12h4l6-12h-4l-4 8-2-8H3Zm13 0-3 12h4l3-12h-4Z" fill="#1A1F71"/></symbol>
+    <symbol id="icon-stock-exxonmobil" viewBox="0 0 24 24"><path d="m5 5 14 14M19 5 5 19" stroke="#ED1C24" stroke-width="4" stroke-linecap="square"/><path d="M9 5h10v4" fill="none" stroke="#00529B" stroke-width="2"/></symbol>
+  </svg>
+
+  <div class="app-shell" id="app-shell">
+    <!-- Pengumuman pembaca layar ter-throttle agar tidak spam saat ketuk cepat -->
+    <div id="sr-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- @include:earnings -->
+    <!-- @include:investing -->
+    <!-- @include:business -->
+    <!-- ==================== LAYAR PRATINJAU MODUL LAIN ==================== -->
+    <section class="screen" id="preview-screen" aria-label="Pratinjau Modul" hidden>
+      <div class="preview-header">
+        <div class="preview-header__meta">
+          <span class="preview-header__label">Saldo Tersimpan</span>
+          <span class="preview-header__balance" id="preview-balance-display">$ 0,00</span>
+        </div>
+      </div>
+
+      <div class="preview-body">
+        <div class="preview-card">
+          <div class="preview-card__icon-wrap" id="preview-icon-container" aria-hidden="true"></div>
+          <span class="preview-card__tag">Dalam Pengembangan</span>
+          <h1 class="preview-card__title" id="preview-title">Usaha — Dalam Pengembangan</h1>
+          <p class="preview-card__desc" id="preview-description">
+            Modul ini sedang dikerjakan secara bertahap. Berikut rencana fitur yang disiapkan:
+          </p>
+
+          <div class="preview-progress">
+            <div class="preview-progress__top">
+              <span>Progres Modul</span>
+              <span id="preview-progress-label">15%</span>
+            </div>
+            <div
+              class="preview-progress__track"
+              id="preview-progressbar"
+              role="progressbar"
+              aria-label="Progres pengembangan modul"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="15"
+            >
+              <div class="preview-progress__bar" id="preview-progress-fill" style="width: 15%;"></div>
+            </div>
+          </div>
+
+          <ul class="preview-features" id="preview-features-list"></ul>
+
+          <!-- Panel Statistik Dasar & Reset Data (Khusus Tab Profile) -->
+          <div class="profile-panel" id="profile-panel" hidden>
+            <h2 class="profile-panel__heading">Statistik Pemain</h2>
+            <dl class="profile-stats">
+              <div class="profile-stats__item">
+                <dt>Total Ketukan</dt>
+                <dd id="stat-total-taps">0</dd>
+              </div>
+              <div class="profile-stats__item">
+                <dt>Total Pendapatan</dt>
+                <dd id="stat-total-earned">$ 0,00</dd>
+              </div>
+              <div class="profile-stats__item">
+                <dt>Mulai Bermain</dt>
+                <dd id="stat-start-date">-</dd>
+              </div>
+              <div class="profile-stats__item">
+                <dt>Pencapaian Terbuka</dt>
+                <dd id="stat-milestones">0 / 6</dd>
+              </div>
+            </dl>
+
+            <div class="profile-settings" aria-label="Pengaturan Suara dan Getar">
+              <div class="profile-settings__row">
+                <span class="profile-settings__label" id="label-toggle-sound">Suara Koin</span>
+                <button
+                  type="button"
+                  class="toggle-switch"
+                  id="toggle-sound-btn"
+                  role="switch"
+                  aria-checked="true"
+                  aria-labelledby="label-toggle-sound"
+                >
+                  <span class="toggle-switch__text" id="toggle-sound-text">AKTIF</span>
+                </button>
+              </div>
+              <div class="profile-settings__row">
+                <span class="profile-settings__label" id="label-toggle-haptic">Getar Sentuh</span>
+                <button
+                  type="button"
+                  class="toggle-switch"
+                  id="toggle-haptic-btn"
+                  role="switch"
+                  aria-checked="true"
+                  aria-labelledby="label-toggle-haptic"
+                >
+                  <span class="toggle-switch__text" id="toggle-haptic-text">AKTIF</span>
+                </button>
+              </div>
+            </div>
+
+            <button type="button" class="danger-btn" id="open-reset-modal-btn">
+              Reset Semua Data
+            </button>
+          </div>
+
+          <div class="preview-actions">
+            <button type="button" class="preview-card__btn" id="back-to-earnings-btn">
+              Kembali ke Pendapatan
+            </button>
+            <button type="button" class="preview-card__btn preview-card__btn--secondary" id="open-roadmap-btn">
+              Lihat Peta Jalan
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODAL PETA JALAN RENCANA PENGEMBANGAN -->
+    <div class="modal-backdrop" id="roadmap-modal" role="dialog" aria-modal="true" aria-labelledby="roadmap-modal-title" hidden>
+      <div class="modal-dialog">
+        <h2 class="modal-dialog__title" id="roadmap-modal-title">Peta Jalan Pengembangan</h2>
+        <p class="modal-dialog__body">
+          Urutan rilis fitur <span lang="en">Business Tycoon Tap</span> yang sedang dikerjakan:
+        </p>
+        <ul class="roadmap-list">
+          <li><strong>Tahap 1 (Aktif):</strong> Siklus ekonomi ketukan, 3 tingkat peningkatan, dan pendapatan pasif dasar.</li>
+          <li><strong>Tahap 2 (Aktif):</strong> Bursa Investasi (Saham, Properti, Kripto, Forex), statistik profil, dan mode luring.</li>
+          <li><strong>Tahap 3:</strong> Pembukaan unit usaha ritel dan korporasi pada modul Usaha.</li>
+          <li><strong>Tahap 4:</strong> Katalog koleksi aset prestisius pada modul Toko.</li>
+        </ul>
+        <div class="modal-dialog__actions">
+          <button type="button" class="preview-card__btn" id="close-roadmap-btn">Tutup</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- @include:profile -->
+    <!-- TOAST NOTIFIKASI PENCAPAIAN (MILESTONE) -->
+    <div class="milestone-toast" id="milestone-toast" role="status" aria-live="polite" hidden>
+      <span class="milestone-toast__icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <use href="#icon-award"></use>
+        </svg>
+      </span>
+      <div class="milestone-toast__content">
+        <span class="milestone-toast__label">Pencapaian Baru</span>
+        <strong class="milestone-toast__title" id="milestone-toast-title">-</strong>
+      </div>
+    </div>
+
+    <!-- ==================== 3. BAGIAN BAWAH: BOTTOM NAVIGATION BAR ==================== -->
+    <nav class="bottom-nav" aria-label="Navigasi Utama">
+      <!-- Tab 1: Investasi -->
+      <button type="button" class="nav-tab" data-tab="Investing" aria-label="Tab Investasi">
+        <span class="nav-tab__icon-box">
+          <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-investing"></use>
+          </svg>
+        </span>
+        <span class="nav-tab__label">Investasi</span>
+      </button>
+
+      <!-- Tab 2: Usaha -->
+      <button type="button" class="nav-tab" data-tab="Business" aria-label="Tab Usaha">
+        <span class="nav-tab__icon-box">
+          <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-business"></use>
+          </svg>
+        </span>
+        <span class="nav-tab__label">Usaha</span>
+      </button>
+
+      <!-- Tab 3: Pendapatan -->
+      <button
+        type="button"
+        class="nav-tab nav-tab--active"
+        data-tab="Earnings"
+        aria-current="page"
+        aria-label="Tab Pendapatan"
+        style="--coin-bg-fill:#F97316;--coin-bg-stroke:#F97316;--coin-ring-stroke:rgba(255,255,255,0.32);--coin-symbol-stroke:#FFFFFF;"
+      >
+        <span class="nav-tab__icon-box">
+          <svg class="nav-svg nav-svg--coin" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-earnings"></use>
+          </svg>
+          <span class="nav-badge" data-nav-badge="Earnings" hidden aria-hidden="true"></span>
+        </span>
+        <span class="nav-tab__label">Pendapatan</span>
+      </button>
+
+      <!-- Tab 4: Toko -->
+      <button type="button" class="nav-tab" data-tab="Items" aria-label="Tab Toko">
+        <span class="nav-tab__icon-box">
+          <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-items"></use>
+          </svg>
+        </span>
+        <span class="nav-tab__label">Toko</span>
+      </button>
+
+      <!-- Tab 5: Profil -->
+      <button type="button" class="nav-tab" data-tab="Profile" aria-label="Tab Profil">
+        <span class="nav-tab__icon-box">
+          <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-profile"></use>
+          </svg>
+          <span class="nav-badge" data-nav-badge="Profile" hidden aria-hidden="true"></span>
+        </span>
+        <span class="nav-tab__label">Profil</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <script type="module" src="assets/core/main.js"></script>
+</body>
+</html>

@@ -325,6 +325,18 @@
 
     </main>
 
+    <!-- MODAL SAMBUTAN PENDAPATAN LURING (OFFLINE EARNINGS) -->
+    <div class="modal-backdrop" id="offline-modal" role="dialog" aria-modal="true" aria-labelledby="offline-modal-title" hidden>
+      <div class="modal-dialog">
+        <h2 class="modal-dialog__title" id="offline-modal-title">Selamat datang kembali, +$ 0,00</h2>
+        <p class="modal-dialog__body" id="offline-modal-desc">
+          Tim Otomatis Anda tetap bekerja selama Anda tidak aktif (efisiensi 50%, maksimal 2 jam).
+        </p>
+        <div class="modal-dialog__actions">
+          <button type="button" class="preview-card__btn" id="close-offline-modal-btn">Lanjutkan</button>
+        </div>
+      </div>
+    </div>
     <!-- ==================== LAYAR INVESTASI (4 KATEGORI) ==================== -->
     <section class="screen" id="investing-screen" aria-label="Dasbor Investasi" hidden>
       <header class="invest-header">
@@ -499,7 +511,6 @@
         </div>
       </div>
     </section>
-
     <!-- ==================== DASHBOARD USAHA ==================== -->
     <section class="screen business-screen" id="business-screen" aria-label="Dashboard Usaha" hidden>
       <header class="business-header">
@@ -637,7 +648,6 @@
         </div>
       </div>
     </section>
-
     <!-- ==================== LAYAR PRATINJAU MODUL LAIN ==================== -->
     <section class="screen" id="preview-screen" aria-label="Pratinjau Modul" hidden>
       <div class="preview-header">
@@ -780,20 +790,6 @@
         </div>
       </div>
     </div>
-
-    <!-- MODAL SAMBUTAN PENDAPATAN LURING (OFFLINE EARNINGS) -->
-    <div class="modal-backdrop" id="offline-modal" role="dialog" aria-modal="true" aria-labelledby="offline-modal-title" hidden>
-      <div class="modal-dialog">
-        <h2 class="modal-dialog__title" id="offline-modal-title">Selamat datang kembali, +$ 0,00</h2>
-        <p class="modal-dialog__body" id="offline-modal-desc">
-          Tim Otomatis Anda tetap bekerja selama Anda tidak aktif (efisiensi 50%, maksimal 2 jam).
-        </p>
-        <div class="modal-dialog__actions">
-          <button type="button" class="preview-card__btn" id="close-offline-modal-btn">Lanjutkan</button>
-        </div>
-      </div>
-    </div>
-
     <!-- TOAST NOTIFIKASI PENCAPAIAN (MILESTONE) -->
     <div class="milestone-toast" id="milestone-toast" role="status" aria-live="polite" hidden>
       <span class="milestone-toast__icon">
@@ -871,6 +867,6 @@
 
   </div>
 
-  <script type="module" src="assets/main.js"></script>
+  <script type="module" src="assets/core/main.js"></script>
 </body>
 </html>

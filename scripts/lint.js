@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { assembleIndexHtml } from './build.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -14,15 +15,24 @@ function readText(relPath) {
   JSON.parse(raw);
 });
 
-// 2. Pastikan indeks HTML bebas merek dunia nyata (Trademark-Safe) & memiliki referensi SVG/aset konsisten
-const html = readText('public/index.html');
+// 2. Pastikan index.html (hasil generate) selalu sinkron dengan template + partial tab
+const assembled = assembleIndexHtml();
+const currentIndex = readText('public/index.html');
+if (assembled !== currentIndex) {
+  throw new Error(
+    'public/index.html tidak sinkron dengan index.template.html + partial tab. Jalankan: npm run build'
+  );
+}
+
+// 3. Pastikan indeks HTML bebas merek dunia nyata (Trademark-Safe) & memiliki referensi SVG/aset konsisten
+const html = currentIndex;
 if (/\b(Danamon|JCB)\b/i.test(html) || html.includes('05/26')) {
   throw new Error('Merek kartu dunia nyata atau detail kedaluwarsa lama masih ditemukan di public/index.html.');
 }
 if (!html.includes('rel="manifest"')) {
   throw new Error('Tautan manifest PWA belum ada di public/index.html.');
 }
-if (!html.includes('assets/core/base.css') || !html.includes('assets/main.js')) {
+if (!html.includes('assets/core/base.css') || !html.includes('assets/core/main.js')) {
   throw new Error('Jalur aset CSS inti/JS terstruktur belum terpasang di public/index.html.');
 }
 if (html.includes('assets/js/game.js') || html.includes('assets/css/style.css')) {
@@ -43,14 +53,14 @@ usedSymbols.forEach(function (symId) {
   }
 });
 
-// 3. Pastikan berkas ikon PWA tersedia di public/assets/icons/
+// 4. Pastikan berkas ikon PWA tersedia di public/assets/icons/
 ['public/assets/icons/icon-192.png', 'public/assets/icons/icon-512.png'].forEach(function (iconPath) {
   if (!fs.existsSync(path.join(ROOT, iconPath))) {
     throw new Error('Berkas ikon tidak ditemukan: ' + iconPath);
   }
 });
 
-// 4. Pastikan aksesibilitas dasar tersedia pada gabungan berkas CSS (dipecah per folder)
+// 5. Pastikan aksesibilitas dasar tersedia pada gabungan berkas CSS (dipecah per folder)
 const cssFiles = [
   'public/assets/core/base.css',
   'public/assets/core/preview.css',
@@ -68,10 +78,11 @@ if (!allCss.includes(':focus-visible')) {
   throw new Error('Aturan :focus-visible belum ada di berkas CSS.');
 }
 
-// 5. Pastikan tidak ada magic number di luar blok deklarasi CONFIG/ASSETS (kecuali 0, 1, 100)
+// 6. Pastikan tidak ada magic number di luar blok deklarasi CONFIG/ASSETS (kecuali 0, 1, 100)
 //    CONFIG dan ASSETS sengaja dikecualikan karena seluruh konstanta tinggal di sana.
 const jsFiles = [
-  'public/assets/main.js',
+  'public/assets/core/main.js',
+  'scripts/build.js',
   'public/assets/core/dom.js',
   'public/assets/core/format.js',
   'public/assets/core/state.js',

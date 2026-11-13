@@ -47,7 +47,7 @@ const [configMod, assetsMod, formatMod, stateMod, earningsMod, investingMod, pro
     import('../public/assets/tabs/earnings/earnings.js'),
     import('../public/assets/tabs/investing/investing.js'),
     import('../public/assets/tabs/profile/profile.js'),
-    import('../public/assets/main.js')
+    import('../public/assets/core/main.js')
   ]);
 const game = Object.assign(
   {},

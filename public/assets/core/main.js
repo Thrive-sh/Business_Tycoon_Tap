@@ -4,9 +4,9 @@
    serta migrasi penyimpanan Save Schema v1 -> v2.
    ========================================================================== */
 
-import { CONFIG } from './core/config.js';
-import { ASSETS } from './core/assets.js';
-import { hasDOM, root, getEl } from './core/dom.js';
+import { CONFIG } from './config.js';
+import { ASSETS } from './assets.js';
+import { hasDOM, root, getEl } from './dom.js';
 import {
   state,
   runtime,
@@ -15,10 +15,10 @@ import {
   writeSaveImmediate,
   flushSaveState,
   saveState
-} from './core/state.js';
-import { setTabBadge } from './core/badges.js';
-import { checkMilestones } from './core/milestones.js';
-import { hideModulePreview, renderModulePreview, bindPreviewEvents } from './core/preview.js';
+} from './state.js';
+import { setTabBadge } from './badges.js';
+import { checkMilestones } from './milestones.js';
+import { hideModulePreview, renderModulePreview, bindPreviewEvents } from './preview.js';
 import {
   renderBankCardIdentity,
   renderStats,
@@ -28,7 +28,7 @@ import {
   recalculatePerSecond,
   showOfflineWelcomeModal,
   bindEarningsEvents
-} from './tabs/earnings/earnings.js';
+} from '../tabs/earnings/earnings.js';
 import {
   initMarketData,
   getTotalInvestmentHourlyYield,
@@ -36,10 +36,10 @@ import {
   renderInvestingScreen,
   renderAssetDetailScreen,
   bindInvestingEvents
-} from './tabs/investing/investing.js';
-import { renderBusinessCompanies, bindBusinessEvents } from './tabs/business/business.js';
-import { renderItemsTab } from './tabs/items/items.js';
-import { renderProfileStats, bindProfileEvents } from './tabs/profile/profile.js';
+} from '../tabs/investing/investing.js';
+import { renderBusinessCompanies, bindBusinessEvents } from '../tabs/business/business.js';
+import { renderItemsTab } from '../tabs/items/items.js';
+import { renderProfileStats, bindProfileEvents } from '../tabs/profile/profile.js';
 
 const earningsScreen = getEl('earnings-screen');
 const investingScreen = getEl('investing-screen');
