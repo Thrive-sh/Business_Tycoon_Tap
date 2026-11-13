@@ -494,6 +494,108 @@
       </div>
     </section>
 
+    <!-- ==================== DASHBOARD USAHA ==================== -->
+    <section class="screen business-screen" id="business-screen" aria-label="Dashboard Usaha" hidden>
+      <header class="business-header">
+        <h1 class="business-header__title">Usaha</h1>
+      </header>
+
+      <div class="business-dashboard-scroll" id="business-dashboard-scroll">
+        <section class="business-revenue-card" aria-label="Total pendapatan usaha per jam">
+          <span class="business-revenue-card__value">Rp189 T</span>
+          <span class="business-revenue-card__label">Total pendapatan per jam</span>
+          <span class="business-revenue-card__caption">Seluruh unit usaha yang dikelola</span>
+        </section>
+
+        <div class="business-market-ticker" aria-label="Pergerakan sektor usaha">
+          <div class="business-market-ticker__track">
+            <span>Pabrik: ↑2,4%</span><span>Taksi: ↓2,1%</span><span>Logistik: ↑2,7%</span><span>Teknologi: ↓0,8%</span><span>Konstruksi: ↑1,6%</span><span>Energi: ↑3,2%</span>
+          </div>
+        </div>
+
+        <div class="business-action-wrap">
+          <button type="button" class="business-start-btn" id="business-start-btn">Memulai bisnis</button>
+        </div>
+
+        <section class="business-sector-legend" aria-label="Kategori usaha">
+          <div class="business-sector-legend__item"><span class="business-sector-dot business-sector-dot--factory"></span>Pabrik</div>
+          <div class="business-sector-legend__item"><span class="business-sector-dot business-sector-dot--taxi"></span>Taksi</div>
+          <div class="business-sector-legend__item"><span class="business-sector-dot business-sector-dot--logistics"></span>Pengiriman</div>
+          <div class="business-sector-legend__item"><span class="business-sector-dot business-sector-dot--build"></span>Konstruksi</div>
+          <div class="business-sector-legend__item"><span class="business-sector-dot business-sector-dot--tech"></span>Teknologi</div>
+        </section>
+
+        <section class="business-chart-section" aria-label="Komposisi pendapatan perusahaan">
+          <div class="business-donut-wrap">
+            <svg class="business-donut" viewBox="0 0 220 220" role="img" aria-label="Diagram komposisi: Perusahaan Listrik 72,5 persen, Toko 26,8 persen, Pabrik 0,7 persen">
+              <circle class="business-donut__track" cx="110" cy="110" r="76"></circle>
+              <circle class="business-donut__segment business-donut__segment--power" cx="110" cy="110" r="76" pathLength="100" stroke-dasharray="72.5 27.5" stroke-dashoffset="0"></circle>
+              <circle class="business-donut__segment business-donut__segment--store" cx="110" cy="110" r="76" pathLength="100" stroke-dasharray="26.8 73.2" stroke-dashoffset="-72.5"></circle>
+              <circle class="business-donut__segment business-donut__segment--factory" cx="110" cy="110" r="76" pathLength="100" stroke-dasharray="0.7 99.3" stroke-dashoffset="-99.3"></circle>
+              <text x="110" y="105" class="business-donut__center-value">72,5%</text>
+              <text x="110" y="124" class="business-donut__center-label">Energi</text>
+            </svg>
+            <div class="business-chart-label business-chart-label--factory"><span>Pabrik</span><strong>0,7%</strong></div>
+            <div class="business-chart-label business-chart-label--store"><span>Toko</span><strong>26,8%</strong></div>
+            <div class="business-chart-label business-chart-label--power"><span>Perusahaan Listrik</span><strong>72,5%</strong></div>
+          </div>
+        </section>
+
+        <section class="business-companies-section" id="business-companies-section">
+          <div class="business-section-heading">
+            <h2>Perusahaan saya</h2>
+            <span>Portofolio usaha</span>
+          </div>
+
+          <div class="business-company-list">
+            <article class="business-company-card">
+              <div class="business-company-card__top">
+                <div class="business-company-card__icon business-company-card__icon--factory" aria-hidden="true">
+                  <svg viewBox="0 0 48 48"><path d="M5 40V19l12 7V18l12 8V12h8v28H5Z" fill="#F4B942" stroke="#344054" stroke-width="2" stroke-linejoin="round"/><path d="M29 12V5h7v7M12 31h5m5 0h5m5 0h5" stroke="#344054" stroke-width="2" stroke-linecap="round"/><path d="M32 5c-3-3 3-4 0-7" fill="none" stroke="#98A2B3" stroke-width="2"/></svg>
+                </div>
+                <div class="business-company-card__identity"><h3>Pabrik</h3><span>150 perusahaan</span></div>
+                <span class="business-company-card__chevron" aria-hidden="true">›</span>
+              </div>
+              <div class="business-company-card__income"><strong>Rp1,29 T</strong><span>per jam</span></div>
+            </article>
+
+            <article class="business-company-card">
+              <div class="business-company-card__top">
+                <div class="business-company-card__icon business-company-card__icon--taxi" aria-hidden="true">
+                  <svg viewBox="0 0 48 48"><path d="m10 25 4-10h20l5 10 3 4v9H6v-9l4-4Z" fill="#F5C542" stroke="#344054" stroke-width="2" stroke-linejoin="round"/><path d="m17 15 3-6h9l4 6M8 28h32M13 35h5m12 0h5" stroke="#344054" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="37" r="3" fill="#344054"/><circle cx="34" cy="37" r="3" fill="#344054"/></svg>
+                </div>
+                <div class="business-company-card__identity"><h3>Taksi</h3><span>85 perusahaan</span></div>
+                <span class="business-company-card__chevron" aria-hidden="true">›</span>
+              </div>
+              <div class="business-company-card__income"><strong>Rp820 M</strong><span>per jam</span></div>
+            </article>
+
+            <article class="business-company-card">
+              <div class="business-company-card__top">
+                <div class="business-company-card__icon business-company-card__icon--logistics" aria-hidden="true">
+                  <svg viewBox="0 0 48 48"><path d="M5 12h24v23H5z" fill="#8BC5E8" stroke="#344054" stroke-width="2"/><path d="M29 20h8l7 8v7H29z" fill="#D9EAF7" stroke="#344054" stroke-width="2"/><circle cx="14" cy="37" r="4" fill="#344054"/><circle cx="36" cy="37" r="4" fill="#344054"/><path d="M34 23v7h8" fill="none" stroke="#344054" stroke-width="2"/></svg>
+                </div>
+                <div class="business-company-card__identity"><h3>Pengiriman</h3><span>42 perusahaan</span></div>
+                <span class="business-company-card__chevron" aria-hidden="true">›</span>
+              </div>
+              <div class="business-company-card__income"><strong>Rp560 M</strong><span>per jam</span></div>
+            </article>
+
+            <article class="business-company-card">
+              <div class="business-company-card__top">
+                <div class="business-company-card__icon business-company-card__icon--build" aria-hidden="true">
+                  <svg viewBox="0 0 48 48"><path d="M8 41V19l12-9 12 9v22H8Z" fill="#F4C66A" stroke="#344054" stroke-width="2"/><path d="M32 41V7h8v34M16 25h8v8h-8z" fill="#E6A23C" stroke="#344054" stroke-width="2"/><path d="M36 7V3h10" fill="none" stroke="#344054" stroke-width="2"/></svg>
+                </div>
+                <div class="business-company-card__identity"><h3>Konstruksi</h3><span>28 perusahaan</span></div>
+                <span class="business-company-card__chevron" aria-hidden="true">›</span>
+              </div>
+              <div class="business-company-card__income"><strong>Rp430 M</strong><span>per jam</span></div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </section>
+
     <!-- ==================== LAYAR PRATINJAU MODUL LAIN ==================== -->
     <section class="screen" id="preview-screen" aria-label="Pratinjau Modul" hidden>
       <div class="preview-header">
