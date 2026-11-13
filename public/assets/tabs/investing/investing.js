@@ -306,6 +306,54 @@ export function renderPortfolio() {
 /**
  * Merender layar utama Investasi (4 sub-tab, kartu ringkasan, dan daftar aset).
  */
+
+/**
+ * Membangun sparkline mini (SVG polyline + area fill) dari riwayat harga aset.
+ * Mengembalikan null bila data belum cukup; seluruh angka dihitung saat runtime.
+ */
+function buildSparklineMarkup(assetId, isUp) {
+  const history = Array.isArray(state.priceHistory[assetId]) ? state.priceHistory[assetId] : [];
+  const prices = history
+    .slice(-CONFIG.HISTORY_MAX)
+    .map(function (entry) {
+      return Number(entry && entry.price);
+    })
+    .filter(function (price) {
+      return Number.isFinite(price) && price > 0;
+    });
+  if (prices.length < CONFIG.SPARKLINE_MIN_POINTS) return '';
+
+  const width = CONFIG.SPARKLINE_WIDTH;
+  const height = CONFIG.SPARKLINE_HEIGHT;
+  const pad = CONFIG.SPARKLINE_VIEWBOX_PADDING;
+  const min = Math.min.apply(null, prices);
+  const max = Math.max.apply(null, prices);
+  const range = max - min;
+  const usableWidth = width - pad - pad;
+  const usableHeight = height - pad - pad;
+  const stepX = usableWidth / (prices.length - 1);
+
+  const line = prices
+    .map(function (price, idx) {
+      const ratio = range > 0 ? (price - min) / range : CONFIG.SPARKLINE_FLAT_RATIO;
+      const x = pad + stepX * idx;
+      const y = pad + (1 - ratio) * usableHeight;
+      return x.toFixed(1) + ',' + y.toFixed(1);
+    })
+    .join(' ');
+  const area = '0,' + String(height) + ' ' + line + ' ' + String(width) + ',' + String(height);
+  const tone = isUp ? 'up' : 'down';
+
+  return (
+    '<svg viewBox="0 0 ' + String(width) + ' ' + String(height) +
+    '" class="asset-card__spark-svg asset-card__spark-svg--' + tone +
+    '" aria-hidden="true" focusable="false">' +
+    '<polygon class="spark-fill" points="' + area + '"></polygon>' +
+    '<polyline class="spark-line" points="' + line + '"></polyline>' +
+    '</svg>'
+  );
+}
+
 export function renderInvestingScreen() {
   if (!investingScreen) return;
   const cat = state.activeInvestCategory;
@@ -370,7 +418,7 @@ export function renderInvestingScreen() {
     categoryAssets.forEach(function (asset) {
       const cardBtn = document.createElement('button');
       cardBtn.type = 'button';
-      cardBtn.className = 'asset-card';
+      cardBtn.className = 'asset-card asset-card--cat-' + asset.category;
       cardBtn.setAttribute('data-asset-id', asset.id);
 
       const left = document.createElement('div');
@@ -396,11 +444,22 @@ export function renderInvestingScreen() {
       nameEl.className = 'asset-card__name';
       nameEl.textContent = asset.name;
 
+      const ownedRow = document.createElement('span');
+      ownedRow.className = 'asset-card__owned-row';
+
+      const ownedBadge = document.createElement('span');
+      ownedBadge.className = 'asset-card__owned-badge';
+      ownedBadge.textContent = '✓ DIMILIKI';
+      ownedBadge.hidden = true;
+
       const ownedEl = document.createElement('span');
       ownedEl.className = 'asset-card__owned';
 
+      ownedRow.appendChild(ownedBadge);
+      ownedRow.appendChild(ownedEl);
+
       meta.appendChild(nameEl);
-      meta.appendChild(ownedEl);
+      meta.appendChild(ownedRow);
       left.appendChild(avatar);
       left.appendChild(meta);
 
@@ -416,7 +475,12 @@ export function renderInvestingScreen() {
       right.appendChild(priceEl);
       right.appendChild(changeEl);
 
+      const chart = document.createElement('span');
+      chart.className = 'asset-card__spark';
+      chart.setAttribute('aria-hidden', 'true');
+
       cardBtn.appendChild(left);
+      cardBtn.appendChild(chart);
       cardBtn.appendChild(right);
       investAssetList.appendChild(cardBtn);
     });
@@ -433,19 +497,37 @@ export function renderInvestingScreen() {
     const isUp = changePct >= 0;
 
     const ownedEl = cardBtn.querySelector('.asset-card__owned');
+    const ownedBadge = cardBtn.querySelector('.asset-card__owned-badge');
     const priceEl = cardBtn.querySelector('.asset-card__price');
     const changeEl = cardBtn.querySelector('.asset-card__change');
+    const sparkEl = cardBtn.querySelector('.asset-card__spark');
 
+    const hasUnits = units > 0;
+    cardBtn.classList.toggle('asset-card--owned', hasUnits);
+    if (ownedBadge) {
+      ownedBadge.hidden = !hasUnits;
+    }
     if (ownedEl) {
       ownedEl.textContent = formatIntegerID(units) + ' ' + asset.unitLabel;
     }
+    if (sparkEl) {
+      sparkEl.innerHTML = buildSparklineMarkup(asset.id, isUp);
+    }
     if (priceEl) {
+      const previousRaw = cardBtn.dataset.prevPrice;
+      const previousPrice = previousRaw ? Number(previousRaw) : Number.NaN;
+      if (Number.isFinite(previousPrice) && previousPrice > 0 && previousPrice !== currentPrice) {
+        cardBtn.classList.remove('asset-card--flash-up', 'asset-card--flash-down');
+        void cardBtn.offsetWidth;
+        cardBtn.classList.add(currentPrice > previousPrice ? 'asset-card--flash-up' : 'asset-card--flash-down');
+      }
+      cardBtn.dataset.prevPrice = String(currentPrice);
       priceEl.textContent = formatRupiahCompact(currentPrice);
       priceEl.title = formatRupiahFull(currentPrice);
     }
     if (changeEl) {
       changeEl.className = 'asset-card__change ' + (isUp ? 'pnl--positive' : 'pnl--negative');
-      changeEl.textContent = formatSignedPercent(changePct);
+      changeEl.textContent = (isUp ? '▲ ' : '▼ ') + formatSignedPercent(changePct);
     }
   });
 }

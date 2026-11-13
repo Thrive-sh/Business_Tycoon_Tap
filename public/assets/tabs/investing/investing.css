@@ -205,22 +205,29 @@
   appearance: none;
   width: 100%;
   text-align: left;
-  padding: 12px 14px;
+  padding: 12px 14px 12px 16px;
   border-radius: 16px;
   background-color: var(--surface-white);
   border: 1px solid var(--border-light);
-  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.04);
+  box-shadow: inset 4px 0 0 var(--cat-accent, #CBD5E1), 0 3px 10px rgba(15, 23, 42, 0.04);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   cursor: pointer;
   touch-action: manipulation;
-  transition: transform 0.12s ease, border-color 0.15s ease;
+  transition: transform 0.12s ease, border-color 0.15s ease, box-shadow 0.2s ease;
 }
 
+.asset-card--cat-Saham { --cat-accent: #2563EB; }
+.asset-card--cat-Properti { --cat-accent: #059669; }
+.asset-card--cat-Kripto { --cat-accent: #EA580C; }
+.asset-card--cat-Forex { --cat-accent: #7C3AED; }
+
 .asset-card:active {
-  transform: scale(0.985);
+  transform: scale(0.98);
+  border-color: rgba(245, 158, 11, 0.55);
+  box-shadow: inset 4px 0 0 var(--cat-accent, #CBD5E1), 0 0 0 3px rgba(245, 158, 11, 0.22), 0 6px 14px rgba(15, 23, 42, 0.08);
 }
 
 .asset-card__left {
@@ -272,11 +279,35 @@
   white-space: nowrap;
 }
 
+.asset-card__owned-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.asset-card__owned-badge {
+  flex-shrink: 0;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  color: #7C2D12;
+  background: linear-gradient(180deg, #FDE68A 0%, #FCD34D 100%);
+  border: 1px solid #D4A72C;
+  border-radius: 999px;
+  padding: 1px 7px;
+  line-height: 1.4;
+}
+
 .asset-card__owned {
   font-size: 12px;
   font-weight: 500;
   color: var(--text-muted-strong);
   font-variant-numeric: tabular-nums;
+}
+
+.asset-card--owned .asset-card__avatar {
+  box-shadow: 0 0 0 2px #F59E0B;
 }
 
 .asset-card__right {
@@ -287,17 +318,79 @@
   flex-shrink: 0;
 }
 
+.asset-card__spark {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.asset-card__spark svg {
+  width: 64px;
+  height: 26px;
+  display: block;
+  overflow: visible;
+}
+
+.spark-line {
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.spark-fill {
+  stroke: none;
+}
+
+.asset-card__spark-svg--up .spark-line { stroke: var(--positive-text); }
+.asset-card__spark-svg--down .spark-line { stroke: var(--negative-text); }
+.asset-card__spark-svg--up .spark-fill { fill: var(--positive-text); fill-opacity: 0.14; }
+.asset-card__spark-svg--down .spark-fill { fill: var(--negative-text); fill-opacity: 0.14; }
+
 .asset-card__price {
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--text-dark);
   font-variant-numeric: tabular-nums;
 }
 
 .asset-card__change {
-  font-size: 12px;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 999px;
   font-variant-numeric: tabular-nums;
+}
+
+.asset-card__change.pnl--positive {
+  color: var(--positive-text);
+  background-color: rgba(5, 150, 105, 0.12);
+}
+
+.asset-card__change.pnl--negative {
+  color: var(--negative-text);
+  background-color: rgba(220, 38, 38, 0.12);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .asset-card--flash-up .asset-card__price { animation: price-flash-up 0.8s ease-out; }
+  .asset-card--flash-down .asset-card__price { animation: price-flash-down 0.8s ease-out; }
+
+  @keyframes price-flash-up {
+    0% { color: var(--positive-text); }
+    100% { color: var(--text-dark); }
+  }
+
+  @keyframes price-flash-down {
+    0% { color: var(--negative-text); }
+    100% { color: var(--text-dark); }
+  }
+}
+
+@media (max-width: 349px) {
+  .asset-card__spark { display: none; }
 }
 
 /* Layar Detail Aset & Grafik Canvas */
