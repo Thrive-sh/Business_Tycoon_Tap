@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1B202C">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Business Tycoon Tap — Dasbor Pendapatan</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <!-- SUMBER TUNGGAL IKON VEKTOR (SVG SYMBOL SPRITE) -->
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+    <symbol id="icon-investing" viewBox="0 0 24 24" fill="none">
+      <path d="M3 17L9 11L13 15L21 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M16 7H21V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M4 20H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.55" />
+    </symbol>
+    <symbol id="icon-business" viewBox="0 0 24 24" fill="none">
+      <path d="M4 21V4.5C4 3.94772 4.44772 3.5 5 3.5H13C13.5523 3.5 14 3.94772 14 4.5V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M14 9.5H19C19.5523 9.5 20 9.94772 20 10.5V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M2.5 21H21.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      <path d="M7.5 7.5H10.5M7.5 11H10.5M7.5 14.5H10.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      <path d="M16.5 13H17.5M16.5 16.5H17.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      <path d="M9 21V18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+    </symbol>
+    <symbol id="icon-earnings" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" fill="var(--coin-bg-fill, transparent)" stroke="var(--coin-bg-stroke, currentColor)" stroke-width="2" />
+      <circle cx="12" cy="12" r="7.6" fill="none" stroke="var(--coin-ring-stroke, transparent)" stroke-width="1" />
+      <path
+        d="M12 6.8V17.2M14.3 9.4C14.3 8.25 13.3 7.6 12 7.6C10.65 7.6 9.7 8.25 9.7 9.4C9.7 10.55 10.65 11.05 12 11.5C13.35 11.95 14.3 12.45 14.3 13.65C14.3 14.85 13.3 15.55 12 15.55C10.6 15.55 9.65 14.85 9.65 13.65"
+        stroke="var(--coin-symbol-stroke, currentColor)"
+        stroke-width="1.9"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </symbol>
+    <symbol id="icon-items" viewBox="0 0 24 24" fill="none">
+      <path d="M12 2.8L20 7.3V16.7L12 21.2L4 16.7V7.3L12 2.8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+      <path d="M4 7.3L12 11.8L20 7.3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M12 11.8V21.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      <path d="M8 5.05L16 9.55" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+    </symbol>
+    <symbol id="icon-profile" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="8" r="3.8" stroke="currentColor" stroke-width="2" />
+      <path d="M4.8 20.2C4.8 16.5 7.9 14.2 12 14.2C16.1 14.2 19.2 16.5 19.2 20.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+    </symbol>
+    <symbol id="icon-award" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="9" r="5.5" stroke="currentColor" stroke-width="2" />
+      <path d="M9 13.8L7.5 21L12 18.6L16.5 21L15 13.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </symbol>
+    <symbol id="icon-arrow-left" viewBox="0 0 24 24" fill="none">
+      <path d="M19 12H5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M11.5 18.5L5 12L11.5 5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+    </symbol>
+  </svg>
+
+  <div class="app-shell" id="app-shell">
+    <!-- Pengumuman pembaca layar ter-throttle agar tidak spam saat ketuk cepat -->
+    <div id="sr-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- ==================== LAYAR UTAMA: TAB EARNINGS ==================== -->
+    <main class="screen screen--active" id="earnings-screen" aria-label="Dasbor Pendapatan">
+
+      <!-- 1. BAGIAN ATAS: TOP HEADER CARD CONTAINER -->
+      <header class="top-header-container">
+        <!-- Kartu Saldo Utama: Executive Black-Gold Precious Card -->
+        <div class="bank-card" id="bank-card" aria-label="Kartu Saldo Utama">
+          <!-- Layer 0: Artwork Latar Dua-Rona Diagonal & Gelombang Filigri Emas -->
+          <svg class="bank-card__artwork" viewBox="0 0 380 228" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs>
+              <linearGradient id="obsidianBase" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#16181E" />
+                <stop offset="100%" stop-color="#0D0F13" />
+              </linearGradient>
+              <linearGradient id="gunmetalSplit" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#272B35" />
+                <stop offset="52%" stop-color="#1F222B" />
+                <stop offset="100%" stop-color="#2F3440" />
+              </linearGradient>
+              <radialGradient id="warmAmbientSheen" cx="76%" cy="24%" r="58%">
+                <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.09" />
+                <stop offset="100%" stop-color="#F59E0B" stop-opacity="0" />
+              </radialGradient>
+              <linearGradient id="copperRibbon" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#B84A24" />
+                <stop offset="50%" stop-color="#E06829" />
+                <stop offset="100%" stop-color="#9A3412" />
+              </linearGradient>
+              <linearGradient id="brassRibbon" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#9B741F" />
+                <stop offset="50%" stop-color="#D4A72C" />
+                <stop offset="100%" stop-color="#9E7822" />
+              </linearGradient>
+              <linearGradient id="goldStrand" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#F59E0B" />
+                <stop offset="52%" stop-color="#FDE047" />
+                <stop offset="100%" stop-color="#D97706" />
+              </linearGradient>
+            </defs>
+
+            <!-- Permukaan Dasar Dua-Rona Diagonal -->
+            <rect width="380" height="228" fill="url(#obsidianBase)" />
+            <polygon points="104,0 380,0 380,228 234,228" fill="url(#gunmetalSplit)" />
+            <line x1="104" y1="0" x2="234" y2="228" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
+            <rect width="380" height="228" fill="url(#warmAmbientSheen)" />
+
+            <!-- Ornamen Gelombang Pita Tembaga & Kuningan -->
+            <path
+              d="M -12 114 C 58 108, 126 150, 214 172 C 278 186, 334 164, 392 134"
+              stroke="url(#copperRibbon)"
+              stroke-width="3.8"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <path
+              d="M -12 136 C 52 104, 110 92, 170 112 C 236 134, 304 166, 392 158"
+              stroke="url(#brassRibbon)"
+              stroke-width="3.1"
+              fill="none"
+              stroke-linecap="round"
+            />
+
+            <!-- 8 Untai Filigri Emas-Amber Harmonik -->
+            <g stroke="url(#goldStrand)" fill="none" stroke-linecap="round">
+              <path d="M -12 122 C 56 118, 126 132, 176 114 C 218 99, 258 54, 314 96 C 346 120, 368 138, 392 146" stroke-width="1.45" opacity="0.95" />
+              <path d="M -12 132 C 58 126, 128 130, 178 112 C 220 97, 261 60, 316 101 C 348 124, 370 140, 392 148" stroke-width="1.36" opacity="0.90" />
+              <path d="M -12 142 C 60 134, 130 128, 179 110 C 222 94, 264 66, 318 106 C 350 128, 371 142, 392 150" stroke-width="1.28" opacity="0.86" />
+              <path d="M -12 152 C 62 142, 132 126, 181 108 C 224 92, 266 73, 320 111 C 351 131, 372 144, 392 151" stroke-width="1.20" opacity="0.81" />
+              <path d="M -12 162 C 64 150, 134 124, 182 107 C 226 91, 269 79, 322 116 C 352 134, 373 146, 392 153" stroke-width="1.14" opacity="0.76" />
+              <path d="M -12 172 C 66 158, 136 122, 184 105 C 228 89, 271 85, 324 121 C 354 137, 374 148, 392 155" stroke-width="1.08" opacity="0.72" />
+              <path d="M -12 182 C 68 166, 138 120, 185 104 C 230 88, 274 92, 326 125 C 355 140, 375 150, 392 156" stroke-width="1.01" opacity="0.67" />
+              <path d="M -12 192 C 70 174, 140 118, 186 102 C 232 86, 276 98, 328 130 C 356 143, 376 152, 392 158" stroke-width="0.95" opacity="0.62" />
+            </g>
+          </svg>
+
+          <!-- Zona 1: Header Kartu (Brand Geometris Perak & Tier) -->
+          <div class="bank-card__header">
+            <div class="bank-card__brand">
+              <svg class="bank-card__brand-wing" viewBox="0 0 76 12" aria-hidden="true">
+                <defs>
+                  <linearGradient id="brandSilverWing" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#E2E8F0" />
+                    <stop offset="65%" stop-color="#CBD5E1" />
+                    <stop offset="100%" stop-color="#94A3B8" />
+                  </linearGradient>
+                </defs>
+                <polygon points="0,2 54,2 76,10 10,10" fill="url(#brandSilverWing)" />
+                <polygon points="0,2 54,2 59,4 3,4" fill="#F8FAFC" opacity="0.55" />
+              </svg>
+              <span class="bank-card__issuer" lang="en">TYCOON</span>
+            </div>
+            <div class="bank-card__tier">
+              <span class="bank-card__tier-label" lang="en">PRECIOUS</span>
+            </div>
+          </div>
+
+          <!-- Zona 2: Baris Chip EMV Perak Metalik, Nomor Samar & Ikon Contactless NFC -->
+          <div class="bank-card__chip-row">
+            <div class="bank-card__chip-group">
+              <svg class="bank-card__chip" viewBox="0 0 44 32" aria-hidden="true">
+                <defs>
+                  <linearGradient id="emvSilverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#F8FAFC" />
+                    <stop offset="36%" stop-color="#CBD5E1" />
+                    <stop offset="72%" stop-color="#94A3B8" />
+                    <stop offset="100%" stop-color="#E2E8F0" />
+                  </linearGradient>
+                </defs>
+                <rect x="0.75" y="0.75" width="42.5" height="30.5" rx="5" fill="url(#emvSilverGrad)" stroke="#475569" stroke-width="0.9" />
+                <rect x="16.5" y="5.5" width="11" height="21" rx="5.5" fill="none" stroke="#475569" stroke-width="0.9" />
+                <line x1="22" y1="0.75" x2="22" y2="5.5" stroke="#475569" stroke-width="0.9" />
+                <line x1="22" y1="26.5" x2="22" y2="31.25" stroke="#475569" stroke-width="0.9" />
+                <line x1="0.75" y1="11" x2="16.5" y2="11" stroke="#475569" stroke-width="0.9" />
+                <line x1="0.75" y1="16" x2="16.5" y2="16" stroke="#475569" stroke-width="0.9" />
+                <line x1="0.75" y1="21" x2="16.5" y2="21" stroke="#475569" stroke-width="0.9" />
+                <line x1="27.5" y1="11" x2="43.25" y2="11" stroke="#475569" stroke-width="0.9" />
+                <line x1="27.5" y1="16" x2="43.25" y2="16" stroke="#475569" stroke-width="0.9" />
+                <line x1="27.5" y1="21" x2="43.25" y2="21" stroke="#475569" stroke-width="0.9" />
+              </svg>
+              <span class="bank-card__number">•••• •••• •••• 7439</span>
+            </div>
+
+            <div class="bank-card__nfc" aria-hidden="true">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M 4.4 7.7 A 3.8 3.8 0 0 1 4.4 12.3" stroke="#E2E8F0" stroke-width="1.8" stroke-linecap="round" />
+                <path d="M 7.7 5.8 A 6.5 6.5 0 0 1 7.7 14.2" stroke="#E2E8F0" stroke-width="1.8" stroke-linecap="round" />
+                <path d="M 11.0 4.0 A 9.2 9.2 0 0 1 11.0 16.0" stroke="#E2E8F0" stroke-width="1.8" stroke-linecap="round" />
+                <path d="M 14.3 2.2 A 11.9 11.9 0 0 1 14.3 17.8" stroke="#E2E8F0" stroke-width="1.8" stroke-linecap="round" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Zona 3: Fokus Saldo Utama HUD Game -->
+          <div class="bank-card__balance-section">
+            <span class="bank-card__label" lang="en">BALANCE</span>
+            <div class="bank-card__balance" id="balance-display" aria-live="polite">$ 0,00</div>
+          </div>
+
+          <!-- Zona 4: Footer Kartu (Nama Emboss, Valid Thru & Emblem 3-Pilar Perak TCB) -->
+          <div class="bank-card__footer">
+            <div class="bank-card__holder-group">
+              <span class="bank-card__holder" lang="en">TYCOON EXECUTIVE</span>
+              <span class="bank-card__valid"><span class="bank-card__valid-tag" lang="en">VALID<br>THRU</span>05/29</span>
+            </div>
+            <div class="bank-card__network" aria-hidden="true">
+              <svg viewBox="0 0 48 32" aria-hidden="true">
+                <defs>
+                  <linearGradient id="tcbPillarGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#E2E8F0" />
+                    <stop offset="100%" stop-color="#94A3B8" />
+                  </linearGradient>
+                </defs>
+                <path d="M 6.5 3 H 15 V 24 A 5 5 0 0 1 10 29 H 1.5 V 8 A 5 5 0 0 1 6.5 3 Z" fill="url(#tcbPillarGrad)" />
+                <path d="M 22.25 3 H 30.75 V 24 A 5 5 0 0 1 25.75 29 H 17.25 V 8 A 5 5 0 0 1 22.25 3 Z" fill="url(#tcbPillarGrad)" />
+                <path d="M 38 3 H 46.5 V 24 A 5 5 0 0 1 41.5 29 H 33 V 8 A 5 5 0 0 1 38 3 Z" fill="url(#tcbPillarGrad)" />
+                <text x="8.25" y="19.5" text-anchor="middle" fill="#14171F" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" font-weight="800">T</text>
+                <text x="24" y="19.5" text-anchor="middle" fill="#14171F" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" font-weight="800">C</text>
+                <text x="39.75" y="19.5" text-anchor="middle" fill="#14171F" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" font-weight="800">B</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kotak Pendapatan Per Ketukan -->
+        <div class="per-click-box" aria-label="Pendapatan per ketukan">
+          <span class="per-click-box__value" id="per-click-display">$ 1,00 per ketuk</span>
+        </div>
+      </header>
+
+      <!-- 2. BAGIAN TENGAH: INTERACTIVE TAP AREA -->
+      <section class="tap-area" id="tap-area" role="button" tabindex="0" aria-label="Area ketuk untuk mendapatkan uang">
+        <div class="tap-area__center" id="tap-prompt">
+          <!-- Ikon Inline SVG: Tangan Menunjuk Lingkaran Ketuk -->
+          <div class="tap-hand-wrapper" id="tap-hand-icon">
+            <svg class="tap-hand-svg" viewBox="0 0 80 88" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <!-- Busur Riak Ketuk Luar -->
+              <path class="tap-ring-outer" d="M 20.6 30.2 A 17 17 0 1 1 51.4 30.2" stroke="#D97706" stroke-opacity="0.38" stroke-width="2" stroke-linecap="round" />
+              <!-- Lingkaran Ketuk Dalam -->
+              <path class="tap-ring-inner" d="M 27 29.3 A 11 11 0 1 1 45 29.3" stroke="#D97706" stroke-width="2.3" stroke-linecap="round" />
+              <!-- Siluet Garis Tangan Menunjuk -->
+              <path
+                d="M 31 54.5 V 23 A 5 5 0 0 1 41 23 V 46.5
+                   M 41 38.5 A 4.25 4.25 0 0 1 49.5 38.5 V 48.5
+                   M 49.5 41.5 A 4.25 4.25 0 0 1 58 41.5 V 50.5
+                   M 58 44.5 A 4 4 0 0 1 66 44.5 V 56.5
+                   C 66 68.5 57.5 77 45.5 77
+                   H 36.5
+                   C 31.5 77 28.5 71 25 64.5
+                   L 18.2 53
+                   A 4.1 4.1 0 0 1 25.3 48.8
+                   L 31 54.5"
+                stroke="#1E2538"
+                stroke-width="2.3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <p class="tap-area__hint">Ketuk area ini untuk mendapatkan uang</p>
+        </div>
+
+        <!-- Layer Kontainer Angka Melayang & Efek Riak Sentuhan -->
+        <div class="tap-effects-layer" id="tap-effects-layer" aria-hidden="true"></div>
+      </section>
+
+      <!-- 2B. PANEL PENINGKATAN PER-KETUK -->
+      <section class="upgrades-panel" aria-label="Daftar Peningkatan">
+        <div class="upgrades-panel__header">
+          <h2 class="upgrades-panel__title">Peningkatan Pendapatan</h2>
+        </div>
+        <div class="upgrades-list" id="upgrades-list"></div>
+      </section>
+
+    </main>
+
+    <!-- ==================== LAYAR INVESTASI (4 KATEGORI) ==================== -->
+    <section class="screen" id="investing-screen" aria-label="Dasbor Investasi" hidden>
+      <header class="invest-header">
+        <div class="invest-header__top">
+          <h1 class="invest-header__title">Investasi</h1>
+          <div class="invest-header__wallet" aria-label="Saldo tersedia">
+            <span class="invest-header__wallet-label">Saldo:</span>
+            <strong class="invest-header__wallet-value" id="invest-wallet-balance">Rp0,00</strong>
+          </div>
+        </div>
+
+        <!-- 4 Sub-Tab Kategori Investasi -->
+        <div class="invest-subtabs" role="group" aria-label="Kategori Investasi">
+          <button
+            type="button"
+            class="invest-subtab invest-subtab--active"
+            data-invest-cat="Saham"
+            aria-pressed="true"
+            aria-current="true"
+          >
+            Saham
+          </button>
+          <button
+            type="button"
+            class="invest-subtab"
+            data-invest-cat="Properti"
+            aria-pressed="false"
+          >
+            Properti
+          </button>
+          <button
+            type="button"
+            class="invest-subtab"
+            data-invest-cat="Kripto"
+            aria-pressed="false"
+          >
+            Kripto
+          </button>
+          <button
+            type="button"
+            class="invest-subtab"
+            data-invest-cat="Forex"
+            aria-pressed="false"
+          >
+            Forex
+          </button>
+        </div>
+      </header>
+
+      <div class="invest-body">
+        <!-- Kartu Ringkasan Kategori -->
+        <div class="invest-summary-card" id="invest-summary-card">
+          <span class="invest-summary-card__label" id="invest-summary-label">Total nilai saham</span>
+          <div class="invest-summary-card__total" id="invest-summary-total">Rp0,00</div>
+          <div class="invest-summary-card__pnl pnl--positive" id="invest-summary-pnl">
+            Rp0,00 (+0,00%) sepanjang waktu
+          </div>
+          <div class="invest-summary-card__yield" id="invest-summary-yield-row">
+            <span class="invest-summary-card__yield-label">Estimasi pendapatan per jam</span>
+            <strong class="invest-summary-card__yield-value" id="invest-summary-yield">Rp0,00</strong>
+          </div>
+        </div>
+
+        <!-- Daftar Aset per Kategori -->
+        <div class="invest-asset-list" id="invest-asset-list" aria-label="Daftar Aset Investasi"></div>
+      </div>
+    </section>
+
+    <!-- ==================== LAYAR DETAIL ASET INVESTASI ==================== -->
+    <section class="screen" id="asset-detail-screen" aria-label="Detail Aset Investasi" hidden>
+      <header class="detail-header">
+        <button
+          type="button"
+          class="detail-back-btn"
+          id="asset-detail-back-btn"
+          aria-label="Kembali ke daftar investasi"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-arrow-left"></use>
+          </svg>
+        </button>
+        <div class="detail-header__info">
+          <h1 class="detail-header__title" id="detail-asset-name">Aset</h1>
+          <span class="detail-header__subtitle" id="detail-asset-category">Saham</span>
+        </div>
+        <div class="detail-header__wallet">
+          <span class="detail-header__wallet-label">Saldo</span>
+          <strong class="detail-header__wallet-value" id="detail-wallet-balance">Rp0,00</strong>
+        </div>
+      </header>
+
+      <div class="detail-body" id="detail-body">
+        <div class="detail-price-box">
+          <div class="detail-price-box__main">
+            <div class="detail-price-box__current" id="detail-market-price-hero">Rp0,00</div>
+            <span class="detail-price-box__live">Live · update 3 dtk</span>
+          </div>
+          <div class="detail-price-box__change pnl--positive" id="detail-price-change">+0,00%</div>
+        </div>
+
+        <div class="detail-chart-card" id="detail-chart-card">
+          <canvas id="asset-price-canvas" class="detail-chart-canvas" aria-label="Grafik riwayat harga aset"></canvas>
+        </div>
+
+        <div class="detail-trade-card" id="detail-trade-card">
+          <div class="detail-qty-row" role="group" aria-label="Pilih jumlah unit transaksi">
+            <button type="button" class="qty-chip qty-chip--active" data-trade-qty="1" aria-pressed="true">1</button>
+            <button type="button" class="qty-chip" data-trade-qty="10" aria-pressed="false">10</button>
+            <button type="button" class="qty-chip" data-trade-qty="100" aria-pressed="false">100</button>
+            <button type="button" class="qty-chip" data-trade-qty="max" aria-pressed="false">Maks</button>
+          </div>
+          <div class="detail-trade-notice" id="detail-trade-notice" aria-live="polite"></div>
+          <div class="detail-trade-actions">
+            <button type="button" class="trade-btn trade-btn--sell" id="detail-sell-btn" disabled>JUAL</button>
+            <button type="button" class="trade-btn trade-btn--buy" id="detail-buy-btn">BELI</button>
+          </div>
+        </div>
+
+        <div class="detail-stats-card">
+          <h2 class="detail-stats-card__heading">Rincian Kepemilikan</h2>
+          <dl class="detail-stats-list">
+            <div class="detail-stats-list__row">
+              <dt>Dimiliki</dt>
+              <dd id="detail-owned-units">0 lembar</dd>
+            </div>
+            <div class="detail-stats-list__row">
+              <dt>Harga pasar</dt>
+              <dd id="detail-market-price">Rp0,00</dd>
+            </div>
+            <div class="detail-stats-list__row">
+              <dt>Harga rata-rata beli</dt>
+              <dd id="detail-avg-entry">—</dd>
+            </div>
+            <div class="detail-stats-list__row">
+              <dt>Nilai pasar</dt>
+              <dd id="detail-market-value">Rp0,00</dd>
+            </div>
+            <div class="detail-stats-list__row">
+              <dt>Total biaya</dt>
+              <dd id="detail-total-cost">Rp0,00</dd>
+            </div>
+            <div class="detail-stats-list__row">
+              <dt>Untung / rugi belum terealisasi</dt>
+              <dd id="detail-unrealized-pnl" class="pnl--positive">Rp0,00 (+0,00%)</dd>
+            </div>
+            <div class="detail-stats-list__row" id="detail-yield-row">
+              <dt>Pendapatan</dt>
+              <dd id="detail-hourly-yield">Rp0,00/jam</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== LAYAR PRATINJAU MODUL LAIN ==================== -->
+    <section class="screen" id="preview-screen" aria-label="Pratinjau Modul" hidden>
+      <div class="preview-header">
+        <div class="preview-header__meta">
+          <span class="preview-header__label">Saldo Tersimpan</span>
+          <span class="preview-header__balance" id="preview-balance-display">$ 0,00</span>
+        </div>
+      </div>
+
+      <div class="preview-body">
+        <div class="preview-card">
+          <div class="preview-card__icon-wrap" id="preview-icon-container" aria-hidden="true"></div>
+          <span class="preview-card__tag">Dalam Pengembangan</span>
+          <h1 class="preview-card__title" id="preview-title">Usaha — Dalam Pengembangan</h1>
+          <p class="preview-card__desc" id="preview-description">
+            Modul ini sedang dikerjakan secara bertahap. Berikut rencana fitur yang disiapkan:
+          </p>
+
+          <div class="preview-progress">
+            <div class="preview-progress__top">
+              <span>Progres Modul</span>
+              <span id="preview-progress-label">15%</span>
+            </div>
+            <div
+              class="preview-progress__track"
+              id="preview-progressbar"
+              role="progressbar"
+              aria-label="Progres pengembangan modul"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="15"
+            >
+              <div class="preview-progress__bar" id="preview-progress-fill" style="width: 15%;"></div>
+            </div>
+          </div>
+
+          <ul class="preview-features" id="preview-features-list"></ul>
+
+          <!-- Panel Statistik Dasar & Reset Data (Khusus Tab Profile) -->
+          <div class="profile-panel" id="profile-panel" hidden>
+            <h2 class="profile-panel__heading">Statistik Pemain</h2>
+            <dl class="profile-stats">
+              <div class="profile-stats__item">
+                <dt>Total Ketukan</dt>
+                <dd id="stat-total-taps">0</dd>
+              </div>
+              <div class="profile-stats__item">
+                <dt>Total Pendapatan</dt>
+                <dd id="stat-total-earned">$ 0,00</dd>
+              </div>
+              <div class="profile-stats__item">
+                <dt>Mulai Bermain</dt>
+                <dd id="stat-start-date">-</dd>
+              </div>
+              <div class="profile-stats__item">
+                <dt>Pencapaian Terbuka</dt>
+                <dd id="stat-milestones">0 / 6</dd>
+              </div>
+            </dl>
+
+            <div class="profile-settings" aria-label="Pengaturan Suara dan Getar">
+              <div class="profile-settings__row">
+                <span class="profile-settings__label" id="label-toggle-sound">Suara Koin</span>
+                <button
+                  type="button"
+                  class="toggle-switch"
+                  id="toggle-sound-btn"
+                  role="switch"
+                  aria-checked="true"
+                  aria-labelledby="label-toggle-sound"
+                >
+                  <span class="toggle-switch__text" id="toggle-sound-text">AKTIF</span>
+                </button>
+              </div>
+              <div class="profile-settings__row">
+                <span class="profile-settings__label" id="label-toggle-haptic">Getar Sentuh</span>
+                <button
+                  type="button"
+                  class="toggle-switch"
+                  id="toggle-haptic-btn"
+                  role="switch"
+                  aria-checked="true"
+                  aria-labelledby="label-toggle-haptic"
+                >
+                  <span class="toggle-switch__text" id="toggle-haptic-text">AKTIF</span>
+                </button>
+              </div>
+            </div>
+
+            <button type="button" class="danger-btn" id="open-reset-modal-btn">
+              Reset Semua Data
+            </button>
+          </div>
+
+          <div class="preview-actions">
+            <button type="button" class="preview-card__btn" id="back-to-earnings-btn">
+              Kembali ke Pendapatan
+            </button>
+            <button type="button" class="preview-card__btn preview-card__btn--secondary" id="open-roadmap-btn">
+              Lihat Peta Jalan
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODAL PETA JALAN RENCANA PENGEMBANGAN -->
+    <div class="modal-backdrop" id="roadmap-modal" role="dialog" aria-modal="true" aria-labelledby="roadmap-modal-title" hidden>
+      <div class="modal-dialog">
+        <h2 class="modal-dialog__title" id="roadmap-modal-title">Peta Jalan Pengembangan</h2>
+        <p class="modal-dialog__body">
+          Urutan rilis fitur <span lang="en">Business Tycoon Tap</span> yang sedang dikerjakan:
+        </p>
+        <ul class="roadmap-list">
+          <li><strong>Tahap 1 (Aktif):</strong> Siklus ekonomi ketukan, 3 tingkat peningkatan, dan pendapatan pasif dasar.</li>
+          <li><strong>Tahap 2 (Aktif):</strong> Bursa Investasi (Saham, Properti, Kripto, Forex), statistik profil, dan mode luring.</li>
+          <li><strong>Tahap 3:</strong> Pembukaan unit usaha ritel dan korporasi pada modul Usaha.</li>
+          <li><strong>Tahap 4:</strong> Katalog koleksi aset prestisius pada modul Toko.</li>
+        </ul>
+        <div class="modal-dialog__actions">
+          <button type="button" class="preview-card__btn" id="close-roadmap-btn">Tutup</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI DUA LANGKAH: RESET SEMUA DATA -->
+    <div class="modal-backdrop" id="reset-modal" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title" hidden>
+      <div class="modal-dialog">
+        <h2 class="modal-dialog__title" id="reset-modal-title">Reset Semua Data?</h2>
+        <p class="modal-dialog__body">
+          Tindakan ini akan menghapus seluruh saldo, tingkat peningkatan, dan riwayat statistik secara permanen.
+        </p>
+        <label class="reset-confirm-check" for="reset-confirm-checkbox">
+          <input type="checkbox" id="reset-confirm-checkbox">
+          <span>Saya mengerti seluruh progres akan dihapus dan tidak dapat dikembalikan.</span>
+        </label>
+        <div class="modal-dialog__actions">
+          <button type="button" class="preview-card__btn preview-card__btn--secondary" id="cancel-reset-btn">Batal</button>
+          <button type="button" class="danger-btn danger-btn--solid" id="confirm-reset-btn" disabled>Hapus Permanen</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL SAMBUTAN PENDAPATAN LURING (OFFLINE EARNINGS) -->
+    <div class="modal-backdrop" id="offline-modal" role="dialog" aria-modal="true" aria-labelledby="offline-modal-title" hidden>
+      <div class="modal-dialog">
+        <h2 class="modal-dialog__title" id="offline-modal-title">Selamat datang kembali, +$ 0,00</h2>
+        <p class="modal-dialog__body" id="offline-modal-desc">
+          Tim Otomatis Anda tetap bekerja selama Anda tidak aktif (efisiensi 50%, maksimal 2 jam).
+        </p>
+        <div class="modal-dialog__actions">
+          <button type="button" class="preview-card__btn" id="close-offline-modal-btn">Lanjutkan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFIKASI PENCAPAIAN (MILESTONE) -->
+    <div class="milestone-toast" id="milestone-toast" role="status" aria-live="polite" hidden>
+      <span class="milestone-toast__icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <use href="#icon-award"></use>
+        </svg>
+      </span>
+      <div class="milestone-toast__content">
+        <span class="milestone-toast__label">Pencapaian Baru</span>
+        <strong class="milestone-toast__title" id="milestone-toast-title">-</strong>
+      </div>
+    </div>
+
+    <!-- ==================== 3. BAGIAN BAWAH: BOTTOM NAVIGATION BAR ==================== -->
+    <nav class="bottom-nav" aria-label="Navigasi Utama">
+      <!-- Tab 1: Investasi -->
+      <button type="button" class="nav-tab" data-tab="Investing" aria-label="Tab Investasi">
+        <span class="nav-tab__icon-box">
+          <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-investing"></use>
+          </svg>
+        </span>
+        <span class="nav-tab__label">Investasi</span>
+      </button>
+
+      <!-- Tab 2: Usaha -->
+      <button type="button" class="nav-tab" data-tab="Business" aria-label="Tab Usaha">
+        <span class="nav-tab__icon-box">
+          <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-business"></use>
+          </svg>
+        </span>
+        <span class="nav-tab__label">Usaha</span>
+      </button>
+
+      <!-- Tab 3: Pendapatan -->
+      <button
+        type="button"
+        class="nav-tab nav-tab--active"
+        data-tab="Earnings"
+        aria-current="page"
+        aria-label="Tab Pendapatan"
+        style="--coin-bg-fill:#F97316;--coin-bg-stroke:#F97316;--coin-ring-stroke:rgba(255,255,255,0.32);--coin-symbol-stroke:#FFFFFF;"
+      >
+        <span class="nav-tab__icon-box">
+          <svg class="nav-svg nav-svg--coin" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-earnings"></use>
+          </svg>
+          <span class="nav-badge" data-nav-badge="Earnings" hidden aria-hidden="true"></span>
+        </span>
+        <span class="nav-tab__label">Pendapatan</span>
+      </button>
+
+      <!-- Tab 4: Toko -->
+      <button type="button" class="nav-tab" data-tab="Items" aria-label="Tab Toko">
+        <span class="nav-tab__icon-box">
+          <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-items"></use>
+          </svg>
+        </span>
+        <span class="nav-tab__label">Toko</span>
+      </button>
+
+      <!-- Tab 5: Profil -->
+      <button type="button" class="nav-tab" data-tab="Profile" aria-label="Tab Profil">
+        <span class="nav-tab__icon-box">
+          <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-profile"></use>
+          </svg>
+          <span class="nav-badge" data-nav-badge="Profile" hidden aria-hidden="true"></span>
+        </span>
+        <span class="nav-tab__label">Profil</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <script src="assets/js/game.js"></script>
+</body>
+</html>

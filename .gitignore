@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Build & Coverage
+coverage/
+dist/
+
+# Vercel
+.vercel/
+
+# Environment & Logs
+.env
+.env.*
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

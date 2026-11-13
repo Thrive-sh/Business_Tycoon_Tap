@@ -1,0 +1,15 @@
+{
+  "name": "business-tycoon-tap",
+  "version": "2.0.0",
+  "description": "Simulasi bisnis ketuk layar mobile-first berbasis web (HTML, CSS, Vanilla JS, PWA).",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "dev": "python3 -m http.server 8080 --directory public",
+    "lint": "node --check public/assets/js/game.js && node --check public/sw.js && node scripts/lint.js",
+    "test": "node --test tests/smoke.test.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
