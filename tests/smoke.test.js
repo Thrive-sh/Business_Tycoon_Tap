@@ -85,11 +85,11 @@ test('Executive Black-Gold Precious Card: struktur SVG, branding fiktif, dan beb
   assert.ok(css.includes('.bank-card__balance--ultra-compact'));
 });
 
-test('INV-02 & INV-03: 18 aset investasi valid, 60 titik riwayat awal, dan tick harga finite', function () {
+test('INV-02 & INV-03: 21 aset investasi valid, 60 titik riwayat awal, dan tick harga finite', function () {
   mockStorage.clear();
   game.resetAllData();
 
-  assert.equal(game.ASSETS.length, 18);
+  assert.equal(game.ASSETS.length, 21);
   const byCategory = { Saham: 0, Properti: 0, Kripto: 0, Forex: 0 };
   game.ASSETS.forEach(function (asset) {
     byCategory[asset.category] += 1;
@@ -101,7 +101,7 @@ test('INV-02 & INV-03: 18 aset investasi valid, 60 titik riwayat awal, dan tick 
     });
   });
 
-  assert.deepEqual(byCategory, { Saham: 5, Properti: 4, Kripto: 5, Forex: 4 });
+  assert.deepEqual(byCategory, { Saham: 8, Properti: 4, Kripto: 5, Forex: 4 });
 
   // Jalankan beberapa tick harga 3 detik dan pastikan semua tetap finite dan dibatasi 60 titik
   for (let i = 0; i < 5; i += 1) {
@@ -118,51 +118,50 @@ test('INV-03 & INV-05: buyAsset/sellAsset atomik, weighted avgEntry, hapus saat 
   mockStorage.clear();
   game.resetAllData();
 
-  // Set harga deterministik untuk pengujian TeknoNusa
-  game.state.lastPrices.saham_teknonusa = 25000;
-  game.state.balance = 100000;
+  // Set harga deterministik untuk pengujian Apple
+  game.state.lastPrices.saham_apple = 100000;
+  game.state.balance = 1000000;
 
-  // Gagal beli 10 lembar karena butuh Rp250.000 (atomik: saldo & holdings tidak berubah)
-  assert.equal(game.buyAsset('saham_teknonusa', 10), false);
-  assert.equal(game.state.balance, 100000);
-  assert.equal(game.state.holdings.saham_teknonusa, undefined);
+  // Gagal beli 20 lembar karena butuh Rp2.000.000 (atomik: saldo & holdings tidak berubah)
+  assert.equal(game.buyAsset('saham_apple', 20), false);
+  assert.equal(game.state.balance, 1000000);
+  assert.equal(game.state.holdings.saham_apple, undefined);
 
-  // Beli 2 lembar @ Rp25.000 = Rp50.000
-  assert.equal(game.buyAsset('saham_teknonusa', 2), true);
-  assert.equal(game.state.balance, 50000);
-  assert.deepEqual(game.state.holdings.saham_teknonusa, { units: 2, avgEntry: 25000 });
+  // Beli 2 lembar @ Rp100.000 = Rp200.000
+  assert.equal(game.buyAsset('saham_apple', 2), true);
+  assert.equal(game.state.balance, 800000);
+  assert.deepEqual(game.state.holdings.saham_apple, { units: 2, avgEntry: 100000 });
 
-  // Harga naik ke Rp30.000, beli 1 lembar lagi -> avgEntry = (2*25000 + 1*30000)/3 = 26666,67
-  game.state.balance = 100000;
-  game.state.lastPrices.saham_teknonusa = 30000;
-  assert.equal(game.buyAsset('saham_teknonusa', 1), true);
-  assert.equal(game.state.balance, 70000);
-  assert.equal(game.state.holdings.saham_teknonusa.units, 3);
-  assert.equal(game.state.holdings.saham_teknonusa.avgEntry, 26666.67);
+  // Harga naik ke Rp150.000, beli 1 lembar lagi -> avgEntry = (2*100000 + 1*150000)/3 = 116666,67
+  game.state.lastPrices.saham_apple = 150000;
+  assert.equal(game.buyAsset('saham_apple', 1), true);
+  assert.equal(game.state.balance, 650000);
+  assert.equal(game.state.holdings.saham_apple.units, 3);
+  assert.equal(game.state.holdings.saham_apple.avgEntry, 116666.67);
 
-  // Ringkasan kategori Saham: nilai 3 * 30000 = 90000, yieldPerHour = 90000 * 0.004 = Rp360/jam (Rp0,10/dtk)
+  // Ringkasan kategori Saham: nilai 3 * 150000 = 450000, yieldPerHour = 450000 * 0.004 = Rp1.800/jam (Rp0,50/dtk)
   const summary = game.getCategorySummary('Saham');
-  assert.equal(summary.totalValue, 90000);
-  assert.equal(summary.hourlyYield, 360);
+  assert.equal(summary.totalValue, 450000);
+  assert.equal(summary.hourlyYield, 1800);
   assert.ok(Number.isFinite(summary.pnlPct) && summary.pnlValue > 0);
 
-  // Tick pasif 1 detik menyalurkan dividen Rp360 / 3600 = Rp0,10 ke saldo pemain
+  // Tick pasif 1 detik menyalurkan dividen Rp1.800 / 3600 = Rp0,50 ke saldo pemain
   const balBeforePassive = game.state.balance;
   game.runPassiveTick();
-  assert.equal(game.state.balance, Math.round((balBeforePassive + 0.1) * 100) / 100);
+  assert.equal(game.state.balance, Math.round((balBeforePassive + 0.5) * 100) / 100);
 
   // Gagal jual lebih banyak dari yang dimiliki
-  assert.equal(game.sellAsset('saham_teknonusa', 5), false);
-  assert.equal(game.state.holdings.saham_teknonusa.units, 3);
+  assert.equal(game.sellAsset('saham_apple', 5), false);
+  assert.equal(game.state.holdings.saham_apple.units, 3);
 
   // Jual sebagian (1 lembar): avgEntry tetap sama
-  assert.equal(game.sellAsset('saham_teknonusa', 1), true);
-  assert.equal(game.state.holdings.saham_teknonusa.units, 2);
-  assert.equal(game.state.holdings.saham_teknonusa.avgEntry, 26666.67);
+  assert.equal(game.sellAsset('saham_apple', 1), true);
+  assert.equal(game.state.holdings.saham_apple.units, 2);
+  assert.equal(game.state.holdings.saham_apple.avgEntry, 116666.67);
 
   // Jual sisa 2 lembar -> entry dihapus bersih dari holdings
-  assert.equal(game.sellAsset('saham_teknonusa', 2), true);
-  assert.equal(game.state.holdings.saham_teknonusa, undefined);
+  assert.equal(game.sellAsset('saham_apple', 2), true);
+  assert.equal(game.state.holdings.saham_apple, undefined);
 });
 
 test('INV-06: loadState migrasi v1 ke v2 dan persistensi holdings + lastPrices tanpa array riwayat', function () {

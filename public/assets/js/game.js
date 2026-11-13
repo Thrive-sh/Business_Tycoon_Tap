@@ -5,63 +5,104 @@
 (function () {
   'use strict';
 
-  // Definisi 18 aset investasi fiktif & instrumen pasar (Saham, Properti, Kripto, Forex)
+  // Definisi 21 aset investasi & instrumen pasar (Saham, Properti, Kripto, Forex)
   const ASSETS = Object.freeze([
-    // 1. Saham (yield dividen per jam)
+    // 1. Saham (emiten nyata, yield dividen per jam; harga dalam Rupiah)
     {
-      id: 'saham_teknonusa',
-      name: 'TeknoNusa',
+      id: 'saham_amazon',
+      name: 'Amazon',
       category: 'Saham',
-      initialPrice: 25000,
+      initialPrice: 2916000,
+      volatility: 0.012,
+      yieldRate: 0,
+      color: '#FF9900',
+      symbol: 'AMZN',
+      unitLabel: 'lembar',
+      iconId: 'icon-stock-amazon'
+    },
+    {
+      id: 'saham_nvidia',
+      name: 'Nvidia',
+      category: 'Saham',
+      initialPrice: 1944000,
+      volatility: 0.020,
+      yieldRate: 0.0003,
+      color: '#76B900',
+      symbol: 'NVDA',
+      unitLabel: 'lembar',
+      iconId: 'icon-stock-nvidia'
+    },
+    {
+      id: 'saham_tesla',
+      name: 'Tesla',
+      category: 'Saham',
+      initialPrice: 4050000,
+      volatility: 0.028,
+      yieldRate: 0,
+      color: '#E82127',
+      symbol: 'TSLA',
+      unitLabel: 'lembar',
+      iconId: 'icon-stock-tesla'
+    },
+    {
+      id: 'saham_google',
+      name: 'Google',
+      category: 'Saham',
+      initialPrice: 2916000,
+      volatility: 0.011,
+      yieldRate: 0.0004,
+      color: '#4285F4',
+      symbol: 'GOOGL',
+      unitLabel: 'lembar',
+      iconId: 'icon-stock-google'
+    },
+    {
+      id: 'saham_microsoft',
+      name: 'Microsoft',
+      category: 'Saham',
+      initialPrice: 6804000,
+      volatility: 0.009,
+      yieldRate: 0.0007,
+      color: '#F25022',
+      symbol: 'MSFT',
+      unitLabel: 'lembar',
+      iconId: 'icon-stock-microsoft'
+    },
+    {
+      id: 'saham_apple',
+      name: 'Apple',
+      category: 'Saham',
+      initialPrice: 3726000,
       volatility: 0.010,
       yieldRate: 0.004,
-      color: '#EA580C',
-      symbol: 'TN',
-      unitLabel: 'lembar'
+      color: '#A2AAAD',
+      symbol: 'AAPL',
+      unitLabel: 'lembar',
+      iconId: 'icon-stock-apple'
     },
     {
-      id: 'saham_bankartha',
-      name: 'BankArtha',
+      id: 'saham_meta',
+      name: 'Meta',
       category: 'Saham',
-      initialPrice: 8500,
-      volatility: 0.008,
-      yieldRate: 0.003,
-      color: '#D97706',
-      symbol: 'BA',
-      unitLabel: 'lembar'
+      initialPrice: 9720000,
+      volatility: 0.016,
+      yieldRate: 0.0003,
+      color: '#0081FB',
+      symbol: 'META',
+      unitLabel: 'lembar',
+      iconId: 'icon-stock-meta'
     },
     {
-      id: 'saham_energiku',
-      name: 'EnergiKu',
+      id: 'saham_netflix',
+      name: 'Netflix',
       category: 'Saham',
-      initialPrice: 12000,
-      volatility: 0.012,
-      yieldRate: 0.005,
-      color: '#16A34A',
-      symbol: 'EK',
-      unitLabel: 'lembar'
-    },
-    {
-      id: 'saham_pangansehat',
-      name: 'PanganSehat',
-      category: 'Saham',
-      initialPrice: 5200,
-      volatility: 0.007,
-      yieldRate: 0.003,
-      color: '#65A30D',
-      symbol: 'PS',
-      unitLabel: 'lembar'
-    },
-    {
-      id: 'saham_mediakita',
-      name: 'MediaKita',
-      category: 'Saham',
-      initialPrice: 3800,
-      volatility: 0.015,
-      yieldRate: 0.006,
-      color: '#DB2777',
-      symbol: 'MK',
-      unitLabel: 'lembar'
+      initialPrice: 10530000,
+      volatility: 0.017,
+      yieldRate: 0,
+      color: '#E50914',
+      symbol: 'NFLX',
+      unitLabel: 'lembar',
+      iconId: 'icon-stock-netflix'
     },
 
     // 2. Properti (yield sewa per jam)
@@ -994,8 +1035,16 @@
 
         const avatar = document.createElement('span');
         avatar.className = 'asset-card__avatar';
-        avatar.style.backgroundColor = asset.color;
-        avatar.textContent = asset.symbol;
+        if (asset.iconId) {
+          avatar.classList.add('asset-card__avatar--logo');
+          avatar.innerHTML =
+            '<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#' +
+            asset.iconId +
+            '"></use></svg>';
+        } else {
+          avatar.style.backgroundColor = asset.color;
+          avatar.textContent = asset.symbol;
+        }
 
         const meta = document.createElement('div');
         meta.className = 'asset-card__meta';
