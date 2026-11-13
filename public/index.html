@@ -366,7 +366,7 @@
 
       <div class="invest-body">
         <!-- Kartu Ringkasan Kategori -->
-        <div class="invest-summary-card" id="invest-summary-card">
+        <div class="invest-summary-card" id="invest-summary-card" role="button" tabindex="0" aria-label="Buka portofolio investasi dan lihat aset yang dimiliki">
           <span class="invest-summary-card__label" id="invest-summary-label">Total nilai saham</span>
           <div class="invest-summary-card__total" id="invest-summary-total">Rp0,00</div>
           <div class="invest-summary-card__pnl pnl--positive" id="invest-summary-pnl">
@@ -380,6 +380,31 @@
 
         <!-- Daftar Aset per Kategori -->
         <div class="invest-asset-list" id="invest-asset-list" aria-label="Daftar Aset Investasi"></div>
+      </div>
+    </section>
+
+    <!-- ==================== LAYAR PORTOFOLIO INVESTASI ==================== -->
+    <section class="screen" id="portfolio-screen" aria-label="Portofolio Investasi" hidden>
+      <header class="detail-header">
+        <button type="button" class="detail-back-btn" id="portfolio-back-btn" aria-label="Kembali ke investasi">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-arrow-left"></use></svg>
+        </button>
+        <div class="detail-header__info">
+          <h1 class="detail-header__title">Portofolio</h1>
+          <span class="detail-header__subtitle">Aset yang dimiliki</span>
+        </div>
+      </header>
+      <div class="portfolio-body">
+        <section class="portfolio-overview">
+          <span class="portfolio-overview__label">Total nilai portofolio</span>
+          <strong class="portfolio-overview__value" id="portfolio-total-value">Rp0,00</strong>
+          <span class="portfolio-overview__pnl" id="portfolio-total-pnl">Rp0,00 (0,00%)</span>
+        </section>
+        <div class="portfolio-section-heading">
+          <h2>Saham dan aset milik pemain</h2>
+          <span id="portfolio-holdings-count">0 aset</span>
+        </div>
+        <div class="portfolio-holdings-list" id="portfolio-holdings-list" aria-live="polite"></div>
       </div>
     </section>
 
