@@ -629,6 +629,9 @@
   const assetDetailScreen = getEl('asset-detail-screen');
   const portfolioScreen = getEl('portfolio-screen');
   const previewScreen = getEl('preview-screen');
+  const businessScreen = getEl('business-screen');
+  const businessStartBtn = getEl('business-start-btn');
+  const businessCompaniesSection = getEl('business-companies-section');
 
   const investWalletBalance = getEl('invest-wallet-balance');
   const investSummaryLabel = getEl('invest-summary-label');
@@ -2629,6 +2632,10 @@
     earningsScreen.classList.remove('screen--active');
     previewScreen.hidden = true;
     previewScreen.classList.remove('screen--active');
+    if (businessScreen) {
+      businessScreen.hidden = true;
+      businessScreen.classList.remove('screen--active');
+    }
     if (investingScreen) {
       investingScreen.hidden = true;
       investingScreen.classList.remove('screen--active');
@@ -2645,6 +2652,9 @@
       investingScreen.hidden = false;
       investingScreen.classList.add('screen--active');
       renderInvestingScreen();
+    } else if (tabName === 'Business' && businessScreen) {
+      businessScreen.hidden = false;
+      businessScreen.classList.add('screen--active');
     } else {
       const moduleInfo = CONFIG.MODULE_PREVIEWS[tabName] || CONFIG.MODULE_PREVIEWS.Business;
       if (previewTitle) {
@@ -2774,6 +2784,12 @@
           investingScreen.classList.add('screen--active');
           renderInvestingScreen();
         }
+      });
+    }
+
+    if (businessStartBtn && businessCompaniesSection) {
+      businessStartBtn.addEventListener('click', function () {
+        businessCompaniesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     }
 
