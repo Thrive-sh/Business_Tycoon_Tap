@@ -7,6 +7,8 @@ Simulasi bisnis ketuk layar *mobile-first* — **HTML5 + CSS3 + Vanilla JavaScri
 
 > **💱 Mata uang:** mata uang yang berlaku di game ini saat ini adalah **USD** (simbol `$`). Semua tampilan nominal (saldo, pendapatan, biaya upgrade, harga aset) dirender dengan awalan `$`. Helper `formatRupiahFull`/`formatRupiahCompact` di `core/format.js` masih tersedia tetapi **tidak dipakai untuk tampilan utama** — jangan menampilkan `Rp` pada fitur atau label baru. Beberapa teks lama di tab Usaha masih menampilkan `Rp189 T` (placeholder, akan diseragamkan ke USD kemudian). Keputusan memakai USD ini bersifat sementara sampai ada keputusan resmi.
 
+> **🗣️ Bahasa:** game ini **wajib berbahasa Indonesia penuh** — **tidak boleh ada satu kata Bahasa Inggris pun** yang tampil ke pemain. Berlaku untuk semua teks: UI, tombol, label, badge, judul, toast, notifikasi, pesan error, `aria-label`, `title`, `alt`, placeholder, dokumen (README, manifest). Detail & daftar pelanggaran yang masih ada: lihat Bagian 5A. Identifier teknis (nama variabel/fungsi/kelas CSS) bukan bahasa game dan tidak dihitung.
+
 ---
 
 ## 1. Perintah
@@ -92,6 +94,7 @@ Hanya dalam tiga kasus ini, dan tetap dicatat di commit:
 - ❌ Mengubah pengaturan Vercel, *environment variables*, atau *workflow* GitHub tanpa **persetujuan eksplisit** user.
 - ❌ Pindah branch / push ke branch lain; kerja selalu di branch aktif.
 - ❌ Memulai fitur besar tanpa persetujuan (modul Usaha dan katalog Item masih dalam tahap perencanaan).
+- ❌ Menambahkan satu kata pun Bahasa Inggris ke UI, teks aksesibilitas, atau dokumen — lihat **Bagian 5A**.
 
 ## 5. Aturan Kode
 
@@ -99,8 +102,48 @@ Hanya dalam tiga kasus ini, dan tetap dicatat di commit:
 - **Simpan:** tulis lewat mesin simpan di `core/state.js` (dual throttle 500 ms / 5 dtk, *flush* saat tab disembunyikan). Jangan menulis `localStorage` langsung.
 - **Format angka:** gunakan helper di `core/format.js` (mis. `formatCurrencyValue`, `formatCompact`, `formatSignedPercent`) — jangan format manual di modul tab. Mata uang tampilan: **USD** (lihat catatan di bagian atas).
 - **Aksesibilitas:** hormati `prefers-reduced-motion`, sediakan `:focus-visible`, beri `aria-label` pada kontrol tanpa teks, `aria-hidden` untuk ikon dekoratif.
-- **Bahasa UI:** Bahasa Indonesia.
+- **Bahasa UI:** Bahasa Indonesia penuh — lihat aturan nol toleransi di **Bagian 5A**.
 - **Gambar PNG/JPG:** hanya untuk foto/ilustrasi; kompres dulu, beri `width`/`height` + `loading="lazy"`, `alt` yang bermakna. Ikon antarmuka tetap SVG.
+
+## 5A. ATURAN UTAMA — Bahasa Indonesia Penuh (Nol Toleransi Bahasa Inggris)
+
+**Game ini wajib berbahasa Indonesia penuh. Tidak boleh ada Bahasa Inggris sedikit pun di teks yang menyentuh pemain atau dokumen publik.**
+
+**Berlaku untuk (wajib Indonesia):**
+
+- Semua teks UI yang tampil ke pemain: judul, label, tombol, badge, chip, status, menu, toast, notifikasi, pesan error/empty-state, teks bantuan.
+- Teks aksesibilitas: `aria-label`, `aria-description`, `alt`, `title`, teks yang diumumkan pembaca layar.
+- Teks dinamis di JS (mis. `showToast`, `textContent`) — harus Indonesia; jangan ketik string tampilan berbahasa Inggris di modul mana pun.
+- Dokumen publik: README, `manifest.webmanifest` (`name`/`short_name`/`description`), `<title>`, meta description/OG.
+- Konversi angka tetap gaya Indonesia (`1.000,00`), simbol `$` untuk mata uang USD.
+
+**Pengecualian yang diizinkan:**
+
+- Merek/produk: `Business Tycoon Tap` (nama game) dan nama perusahaan/emiten di data aset (mis. `Apple`, `Amazon`).
+- Kode mata uang internasional: `USD`; simbol `$`.
+- Serapan baku KBBI yang sudah lazim dipakai (mis. `terminal`, `portofolio`, `pasif`, `kripto`, `ekuitas`). Ragu? Pakai kata Indonesia murni (`Dasbor`, `Alokasi`, `Langsung`, dsb).
+- Identifier teknis: nama variabel, fungsi, tipe, kelas CSS, id HTML, komentar teknis **bukan bahasa game** dan tidak dihitung — namun komentar teknis direkomendasikan tetap Bahasa Indonesia seperti sisa repo.
+
+**Penegakan (sebelum commit):**
+
+1. Baca ulang diff; cari kata Inggris di teks tampilan.
+2. `npm run lint` tetap wajib hijau (tidak mengecek bahasa — ini tanggung jawab reviewer/manusia).
+3. PR/commit yang menambahkan teks Inggris di UI **harus ditolak**.
+
+**Pelanggaran yang MASIH ADA (harus diseragamkan — jangan ditambah lagi):**
+
+*Dasbor Investasi (commit `e3f622f`):*
+
+- `investing.html`: `TERMINAL PORTOFOLIO` → usul `DASBOR PORTOFOLIO`; `LIVE · USD` → `LANGSUNG · USD`; `TOTAL PORTFOLIO VALUE` → `TOTAL NILAI PORTOFOLIO`; `LIVE · 3s` → `LANGSUNG · 3 dtk`; judul panel `Asset Allocation` → `Alokasi Aset`; `TOTAL PORTOFOLIO` (tetap — `portofolio` serapan); `TOP ALLOCATION` → `ALOKASI TERBESAR`; `TOTAL VALUE` (donut) → `TOTAL NILAI`; `DISTRIBUTION BY ASSET CLASS` → `DISTRIBUSI PER KELAS ASET`; `Allocation Breakdown` → `Rincian Alokasi`; `WEIGHT / SHARE` → `BOBOT / PORSI`.
+- `investing.html` (rak, `aria-label` sudah Indonesia — OK) — periksa ulang `GESER` (Indonesia, OK).
+- `investing.js` (`CATEGORY_META` subjudul): `Equities` → `Ekuitas`; `Real Estate` → `Real Estat`; `Digital Assets` → `Aset Digital`; `Currency` → `Mata Uang`.
+- Layar detail aset: `Live · update 3 dtk` → mis. `Langsung · tiap 3 dtk`.
+
+*Konfigurasi:*
+
+- `core/config.js` — `INVEST_SUMMARY_LABELS.Kripto`: `Total nilai kriptocurrency` → `Total nilai kripto`.
+
+*Catatan:* identifier (`heroPortfolioBtn`, `.alloc-row`, dst.) sengaja tidak diubah — bukan bahasa game. Brand `Business Tycoon Tap`, kode `USD`, dan format angka bukan pelanggaran.
 
 ## 6. Pengujian & Kualitas
 
