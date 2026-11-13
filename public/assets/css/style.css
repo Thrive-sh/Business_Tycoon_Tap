@@ -2050,3 +2050,34 @@ input:focus-visible,
   .business-donut { width: 184px; height: 184px; }
   .business-sector-legend { gap: 14px; }
 }
+
+
+/* ==========================================================================
+   BUSINESS CATEGORY SELECTOR
+   ========================================================================== */
+.business-category-screen { background: #FFF7FC; color: #101014; }
+.business-category-topbar { display: flex; align-items: center; height: 112px; flex: 0 0 112px; padding: 0 22px; background: #BFCFD2; }
+.business-category-back { display: grid; place-items: center; width: 54px; height: 54px; margin-left: -8px; border: 0; border-radius: 50%; background: transparent; color: #15191D; cursor: pointer; }
+.business-category-back svg { width: 38px; height: 38px; }
+.business-category-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 39px 20px 34px; scrollbar-width: none; }
+.business-category-scroll::-webkit-scrollbar { display: none; }
+.business-category-title { margin: 0 0 46px; text-align: center; font-size: clamp(22px, 6vw, 29px); line-height: 1.2; font-weight: 800; letter-spacing: -.6px; }
+.business-category-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 16px; align-items: stretch; }
+.business-category-card { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; min-height: 185px; padding: 17px 17px 16px; border: 2px solid transparent; border-radius: 17px; background: #C1D2D4; color: #101418; text-align: left; cursor: pointer; transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+.business-category-card:active { transform: scale(.985); }
+.business-category-card.is-selected { border-color: #9B5B78; box-shadow: 0 0 0 3px rgba(155,91,120,.14); }
+.business-category-card__art { display: grid; place-items: center; align-self: center; width: 92px; height: 88px; margin: 0 auto 8px; }
+.business-category-card__art svg { width: 82px; height: 82px; overflow: visible; }
+.business-category-card__name { display: block; width: 100%; min-height: 24px; margin: 0 0 10px; font-size: 16px; line-height: 1.35; font-weight: 800; overflow-wrap: anywhere; }
+.business-category-card__price-label { display: block; margin-bottom: 3px; font-size: 14px; line-height: 1.35; font-weight: 500; }
+.business-category-card__price { display: block; width: 100%; font-size: 14px; line-height: 1.4; font-weight: 500; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+@media (max-width: 360px) {
+  .business-category-scroll { padding-left: 14px; padding-right: 14px; }
+  .business-category-grid { gap: 13px 11px; }
+  .business-category-card { min-height: 174px; padding: 14px 13px; }
+  .business-category-card__name { font-size: 15px; }
+  .business-category-card__price, .business-category-card__price-label { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .business-category-card { transition: none; }
+}
