@@ -232,7 +232,7 @@
     },
     {
       id: 'saham_mcdonalds',
-      name: 'McDonald\\'s',
+      name: 'McDonald\'s',
       category: 'Saham',
       initialPrice: 4350000,
       volatility: 0.011,
