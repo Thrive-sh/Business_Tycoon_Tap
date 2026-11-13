@@ -30,7 +30,7 @@ jobs:
           node-version: "20"
 
       - name: Check JS syntax
-        run: node --check public/assets/js/game.js && node --check public/sw.js
+        run: npm run lint
 
       - name: Run static lint
         run: npm run lint
