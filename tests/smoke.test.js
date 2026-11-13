@@ -62,19 +62,27 @@ test('formatCurrencyValue, formatRupiah*, dan formatSignedPercent anti-NaN/Infin
   assert.equal(game.formatSignedPercent(Infinity), '+0,00%');
 });
 
-test('INV-01: tema putih-orange bersih dari warna teal/navy/biru lama', function () {
+test('Executive Black-Gold Precious Card: struktur SVG, branding fiktif, dan bebas merek nyata', function () {
   const rootDir = path.resolve(__dirname, '..');
   const html = fs.readFileSync(path.join(rootDir, 'public/index.html'), 'utf8');
   const css = fs.readFileSync(path.join(rootDir, 'public/assets/css/style.css'), 'utf8');
-  const manifest = fs.readFileSync(path.join(rootDir, 'public/manifest.webmanifest'), 'utf8');
 
-  const forbidden = /#228B88|#1A235A|#2563EB/i;
-  assert.equal(forbidden.test(html), false, 'index.html tidak boleh memuat warna tema lama');
-  assert.equal(forbidden.test(css), false, 'style.css tidak boleh memuat warna tema lama');
-  assert.equal(forbidden.test(manifest), false, 'manifest.webmanifest tidak boleh memuat warna tema lama');
+  assert.equal(/\b(Danamon|JCB)\b/i.test(html), false, 'index.html harus bebas merek nyata');
+  assert.ok(html.includes('content="#1B202C"'), 'meta theme-color harus #1B202C');
+  assert.ok(html.includes('id="bank-card"'), 'Elemen #bank-card wajib ada');
+  assert.ok(html.includes('TYCOON'), 'Institusi fiktif TYCOON wajib ada');
+  assert.ok(html.includes('PRECIOUS'), 'Tier PRECIOUS wajib ada');
+  assert.ok(html.includes('TYCOON EXECUTIVE'), 'Pemegang kartu TYCOON EXECUTIVE wajib ada');
+  assert.ok(html.includes('05/29'), 'Valid thru 05/29 wajib ada');
+  assert.ok(html.includes('id="balance-display"') && html.includes('aria-live="polite"'));
+  assert.ok(html.includes('id="per-click-display"'));
+  assert.ok(html.includes('id="preview-balance-display"'));
 
-  assert.ok(html.includes('KARTU UTAMA'), 'Kartu utama harus tetap ada');
-  assert.equal(html.includes('05/26'), false, 'Tanggal kedaluwarsa 05/26 tidak boleh muncul');
+  assert.ok(css.includes('--header-grad-start: #242A38'));
+  assert.ok(css.includes('--accent-gold: #F59E0B'));
+  assert.ok(css.includes('.bank-card.is-glinting::before'));
+  assert.ok(css.includes('.bank-card__balance--compact'));
+  assert.ok(css.includes('.bank-card__balance--ultra-compact'));
 });
 
 test('INV-02 & INV-03: 18 aset investasi valid, 60 titik riwayat awal, dan tick harga finite', function () {

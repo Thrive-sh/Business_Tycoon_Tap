@@ -15,10 +15,10 @@ function readText(relPath) {
   JSON.parse(raw);
 });
 
-// 2. Pastikan indeks HTML memiliki referensi SVG sprite & aset yang konsisten
+// 2. Pastikan indeks HTML bebas merek dunia nyata (Trademark-Safe) & memiliki referensi SVG/aset konsisten
 const html = readText('public/index.html');
-if (html.includes('7439') || html.includes('05/26')) {
-  throw new Error('Detail kartu statis lama masih ditemukan di public/index.html.');
+if (/\b(Danamon|JCB)\b/i.test(html) || html.includes('05/26')) {
+  throw new Error('Merek kartu dunia nyata atau detail kedaluwarsa lama masih ditemukan di public/index.html.');
 }
 if (!html.includes('rel="manifest"')) {
   throw new Error('Tautan manifest PWA belum ada di public/index.html.');

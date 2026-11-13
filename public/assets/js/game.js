@@ -250,6 +250,7 @@
     SOUND_GAIN_END: 0.001,
     TOAST_DURATION_MS: 3200,
     PULSE_DURATION_MS: 240,
+    CARD_GLINT_DURATION_MS: 420,
     BALANCE_COMPACT_LEN: 14,
     BALANCE_ULTRA_COMPACT_LEN: 18,
     TAP_CENTER_DIVISOR: 2,
@@ -274,12 +275,12 @@
     CHART_LABEL_OFFSET_TOP_Y: 13,
     CHART_LABEL_OFFSET_BOTTOM_Y: 6,
     CHART_X_LABEL_OFFSET_Y: 16,
-    CHART_STROKE_COLOR: '#F97316',
+    CHART_STROKE_COLOR: '#D97706',
     CHART_DOT_BG_COLOR: '#FFFFFF',
-    CHART_FILL_TOP: 'rgba(249, 115, 22, 0.25)',
-    CHART_FILL_BOTTOM: 'rgba(249, 115, 22, 0.0)',
-    CHART_GRID_COLOR: 'rgba(249, 115, 22, 0.16)',
-    CHART_LABEL_COLOR: '#78716C',
+    CHART_FILL_TOP: 'rgba(245, 158, 11, 0.24)',
+    CHART_FILL_BOTTOM: 'rgba(245, 158, 11, 0.0)',
+    CHART_GRID_COLOR: 'rgba(148, 163, 184, 0.22)',
+    CHART_LABEL_COLOR: '#5B6678',
     CHART_FONT: '600 10px Inter, system-ui, -apple-system, sans-serif',
     DEFAULT_TRADE_QTY: '1',
     THOUSANDS_GROUP_REGEX: /\B(?=(\d{3})+(?!\d))/g,
@@ -404,6 +405,7 @@
   };
 
   // Referensi elemen DOM
+  const bankCard = getEl('bank-card');
   const balanceDisplay = getEl('balance-display');
   const playerCardId = getEl('player-card-id');
   const previewBalanceDisplay = getEl('preview-balance-display');
@@ -487,6 +489,7 @@
 
   let lastTouchTimestamp = 0;
   let pulseCleanupTimer = null;
+  let cardGlintTimer = null;
   let saveThrottleTimer = null;
   let priceSaveThrottleTimer = null;
   let srAnnounceTimer = null;
@@ -662,7 +665,7 @@
     if (srAnnounceTimer) return;
     srAnnounceTimer = root.setTimeout(function () {
       srAnnounceTimer = null;
-      srAnnouncer.textContent = 'Saldo saat ini Rp' + formatCurrencyValue(state.balance);
+      srAnnouncer.textContent = 'Saldo saat ini $ ' + formatCurrencyValue(state.balance);
     }, CONFIG.SR_ANNOUNCE_THROTTLE_MS);
   }
 
@@ -1584,7 +1587,7 @@
   function showOfflineWelcomeModal(bonus, seconds) {
     if (!offlineModal || !offlineModalTitle || bonus <= 0) return;
     offlineModalTitle.textContent =
-      'Selamat datang kembali, +' + formatRupiahCompact(bonus);
+      'Selamat datang kembali, +$' + formatCurrencyValue(bonus);
     if (offlineModalDesc) {
       const minutes = Math.max(1, Math.round(seconds / CONFIG.SECONDS_PER_MINUTE));
       offlineModalDesc.textContent =
@@ -1887,8 +1890,8 @@
       statTotalTaps.textContent = formatIntegerID(state.totalTaps);
     }
     if (statTotalEarned) {
-      const fullEarned = formatRupiahFull(state.totalEarned);
-      statTotalEarned.textContent = formatRupiahCompact(state.totalEarned);
+      const fullEarned = '$ ' + formatFullCurrencyValue(state.totalEarned);
+      statTotalEarned.textContent = '$ ' + formatCurrencyValue(state.totalEarned);
       statTotalEarned.title = fullEarned;
       statTotalEarned.setAttribute('aria-label', fullEarned);
     }
@@ -2025,14 +2028,14 @@
       if (effectEl) {
         const passivePart =
           tier.passiveBonus > 0
-            ? ' • +' + formatRupiahCompact(tier.passiveBonus) + '/dtk'
+            ? ' • +$' + formatCurrencyValue(tier.passiveBonus) + '/dtk'
             : '';
         effectEl.textContent =
-          '+' + formatRupiahCompact(tier.clickBonus) + ' per ketuk' + passivePart;
+          '+$' + formatCurrencyValue(tier.clickBonus) + ' per ketuk' + passivePart;
       }
       if (btn) {
-        btn.textContent = 'Beli ' + formatRupiahCompact(cost);
-        btn.title = 'Biaya: ' + formatRupiahFull(cost);
+        btn.textContent = 'Beli $ ' + formatCurrencyValue(cost);
+        btn.title = 'Biaya: $ ' + formatFullCurrencyValue(cost);
         btn.disabled = !canAfford;
       }
     });
@@ -2115,8 +2118,8 @@
       tier.name +
         ' naik ke tingkat ' +
         state.upgrades[tier.id] +
-        '. Saldo ' +
-        formatRupiahCompact(state.balance),
+        '. Saldo $ ' +
+        formatCurrencyValue(state.balance),
       true
     );
     return true;
@@ -2128,14 +2131,14 @@
   function renderStats() {
     if (!balanceDisplay || !previewBalanceDisplay || !perClickDisplay) return;
 
-    const formattedBalance = formatRupiahCompact(state.balance);
-    const fullBalance = formatRupiahFull(state.balance);
+    const formattedBalance = '$ ' + formatCurrencyValue(state.balance);
+    const fullBalance = '$ ' + formatFullCurrencyValue(state.balance);
     const passiveLabel =
-      state.perSecond > 0 ? ' • +' + formatRupiahCompact(state.perSecond) + '/dtk' : '';
+      state.perSecond > 0 ? ' • +$ ' + formatCurrencyValue(state.perSecond) + '/dtk' : '';
     const passiveFull =
-      state.perSecond > 0 ? ' dan +' + formatRupiahFull(state.perSecond) + ' per detik' : '';
-    const formattedPerClick = formatRupiahCompact(state.perClick) + ' per ketuk' + passiveLabel;
-    const fullPerClick = formatRupiahFull(state.perClick) + ' per ketuk' + passiveFull;
+      state.perSecond > 0 ? ' dan +$ ' + formatFullCurrencyValue(state.perSecond) + ' per detik' : '';
+    const formattedPerClick = '$ ' + formatCurrencyValue(state.perClick) + ' per ketuk' + passiveLabel;
+    const fullPerClick = '$ ' + formatFullCurrencyValue(state.perClick) + ' per ketuk' + passiveFull;
 
     balanceDisplay.textContent = formattedBalance;
     balanceDisplay.title = fullBalance;
@@ -2166,6 +2169,18 @@
     } else if (formattedBalance.length > CONFIG.BALANCE_COMPACT_LEN) {
       balanceDisplay.classList.add('bank-card__balance--compact');
     }
+  }
+
+  /**
+   * Memicu kilau spekular ringan pada kartu eksekutif tanpa memaksa reflow berat saat ketuk cepat.
+   */
+  function triggerCardGlint() {
+    if (!bankCard || prefersReducedMotion() || cardGlintTimer) return;
+    bankCard.classList.add('is-glinting');
+    cardGlintTimer = root.setTimeout(function () {
+      bankCard.classList.remove('is-glinting');
+      cardGlintTimer = null;
+    }, CONFIG.CARD_GLINT_DURATION_MS);
   }
 
   /**
@@ -2229,7 +2244,7 @@
 
     const floatEl = document.createElement('span');
     floatEl.className = 'floating-earning';
-    floatEl.textContent = '+' + formatRupiahCompact(amount);
+    floatEl.textContent = '+$' + formatCurrencyValue(amount);
     floatEl.style.left = (clampedX + jitterX) + 'px';
     floatEl.style.top = clampedY + 'px';
     floatEl.addEventListener('animationend', function () {
@@ -2255,6 +2270,7 @@
     }
     triggerHaptic();
     playCoinBlip();
+    triggerCardGlint();
     triggerHandPulse();
     spawnFloatingFeedback(clientX, clientY, state.perClick);
     checkMilestones();
@@ -2335,7 +2351,7 @@
           '"></use></svg>';
       }
       if (previewBalanceDisplay) {
-        previewBalanceDisplay.textContent = formatRupiahCompact(state.balance);
+        previewBalanceDisplay.textContent = '$ ' + formatCurrencyValue(state.balance);
       }
 
       if (previewProgressLabel && previewProgressFill && previewProgressbar) {
