@@ -1,0 +1,220 @@
+    <!-- ==================== LAYAR UTAMA: TAB EARNINGS ==================== -->
+    <main class="screen screen--active" id="earnings-screen" aria-label="Dasbor Pendapatan">
+
+      <!-- 1. BAGIAN ATAS: TOP HEADER CARD CONTAINER -->
+      <header class="top-header-container">
+        <!-- Kartu Saldo Utama: Executive Black-Gold Precious Card -->
+        <div class="bank-card" id="bank-card" aria-label="Kartu Saldo Utama">
+          <!-- Layer 0: Artwork Latar Dua-Rona Diagonal & Gelombang Filigri Emas -->
+          <svg class="bank-card__artwork" viewBox="0 0 380 228" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs>
+              <linearGradient id="obsidianBase" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#16181E" />
+                <stop offset="100%" stop-color="#0D0F13" />
+              </linearGradient>
+              <linearGradient id="gunmetalSplit" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#272B35" />
+                <stop offset="52%" stop-color="#1F222B" />
+                <stop offset="100%" stop-color="#2F3440" />
+              </linearGradient>
+              <radialGradient id="warmAmbientSheen" cx="76%" cy="24%" r="58%">
+                <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.09" />
+                <stop offset="100%" stop-color="#F59E0B" stop-opacity="0" />
+              </radialGradient>
+              <linearGradient id="copperRibbon" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#B84A24" />
+                <stop offset="50%" stop-color="#E06829" />
+                <stop offset="100%" stop-color="#9A3412" />
+              </linearGradient>
+              <linearGradient id="brassRibbon" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#9B741F" />
+                <stop offset="50%" stop-color="#D4A72C" />
+                <stop offset="100%" stop-color="#9E7822" />
+              </linearGradient>
+              <linearGradient id="goldStrand" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#F59E0B" />
+                <stop offset="52%" stop-color="#FDE047" />
+                <stop offset="100%" stop-color="#D97706" />
+              </linearGradient>
+            </defs>
+
+            <!-- Permukaan Dasar Dua-Rona Diagonal -->
+            <rect width="380" height="228" fill="url(#obsidianBase)" />
+            <polygon points="104,0 380,0 380,228 234,228" fill="url(#gunmetalSplit)" />
+            <line x1="104" y1="0" x2="234" y2="228" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
+            <rect width="380" height="228" fill="url(#warmAmbientSheen)" />
+
+            <!-- Ornamen Gelombang Pita Tembaga & Kuningan -->
+            <path
+              d="M -12 114 C 58 108, 126 150, 214 172 C 278 186, 334 164, 392 134"
+              stroke="url(#copperRibbon)"
+              stroke-width="3.8"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <path
+              d="M -12 136 C 52 104, 110 92, 170 112 C 236 134, 304 166, 392 158"
+              stroke="url(#brassRibbon)"
+              stroke-width="3.1"
+              fill="none"
+              stroke-linecap="round"
+            />
+
+            <!-- 8 Untai Filigri Emas-Amber Harmonik -->
+            <g stroke="url(#goldStrand)" fill="none" stroke-linecap="round">
+              <path d="M -12 122 C 56 118, 126 132, 176 114 C 218 99, 258 54, 314 96 C 346 120, 368 138, 392 146" stroke-width="1.45" opacity="0.95" />
+              <path d="M -12 132 C 58 126, 128 130, 178 112 C 220 97, 261 60, 316 101 C 348 124, 370 140, 392 148" stroke-width="1.36" opacity="0.90" />
+              <path d="M -12 142 C 60 134, 130 128, 179 110 C 222 94, 264 66, 318 106 C 350 128, 371 142, 392 150" stroke-width="1.28" opacity="0.86" />
+              <path d="M -12 152 C 62 142, 132 126, 181 108 C 224 92, 266 73, 320 111 C 351 131, 372 144, 392 151" stroke-width="1.20" opacity="0.81" />
+              <path d="M -12 162 C 64 150, 134 124, 182 107 C 226 91, 269 79, 322 116 C 352 134, 373 146, 392 153" stroke-width="1.14" opacity="0.76" />
+              <path d="M -12 172 C 66 158, 136 122, 184 105 C 228 89, 271 85, 324 121 C 354 137, 374 148, 392 155" stroke-width="1.08" opacity="0.72" />
+              <path d="M -12 182 C 68 166, 138 120, 185 104 C 230 88, 274 92, 326 125 C 355 140, 375 150, 392 156" stroke-width="1.01" opacity="0.67" />
+              <path d="M -12 192 C 70 174, 140 118, 186 102 C 232 86, 276 98, 328 130 C 356 143, 376 152, 392 158" stroke-width="0.95" opacity="0.62" />
+            </g>
+          </svg>
+
+          <!-- Zona 1: Header Kartu (Brand Geometris Perak & Tier) -->
+          <div class="bank-card__header">
+            <div class="bank-card__brand">
+              <svg class="bank-card__brand-wing" viewBox="0 0 76 12" aria-hidden="true">
+                <defs>
+                  <linearGradient id="brandSilverWing" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#E2E8F0" />
+                    <stop offset="65%" stop-color="#CBD5E1" />
+                    <stop offset="100%" stop-color="#94A3B8" />
+                  </linearGradient>
+                </defs>
+                <polygon points="0,2 54,2 76,10 10,10" fill="url(#brandSilverWing)" />
+                <polygon points="0,2 54,2 59,4 3,4" fill="#F8FAFC" opacity="0.55" />
+              </svg>
+              <span class="bank-card__issuer" lang="en">TYCOON</span>
+            </div>
+            <div class="bank-card__tier">
+              <span class="bank-card__tier-label" lang="en">PRECIOUS</span>
+            </div>
+          </div>
+
+          <!-- Zona 2: Baris Chip EMV Perak Metalik, Nomor Samar & Ikon Contactless NFC -->
+          <div class="bank-card__chip-row">
+            <div class="bank-card__chip-group">
+              <svg class="bank-card__chip" viewBox="0 0 44 32" aria-hidden="true">
+                <defs>
+                  <linearGradient id="emvSilverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#F8FAFC" />
+                    <stop offset="36%" stop-color="#CBD5E1" />
+                    <stop offset="72%" stop-color="#94A3B8" />
+                    <stop offset="100%" stop-color="#E2E8F0" />
+                  </linearGradient>
+                </defs>
+                <rect x="0.75" y="0.75" width="42.5" height="30.5" rx="5" fill="url(#emvSilverGrad)" stroke="#475569" stroke-width="0.9" />
+                <rect x="16.5" y="5.5" width="11" height="21" rx="5.5" fill="none" stroke="#475569" stroke-width="0.9" />
+                <line x1="22" y1="0.75" x2="22" y2="5.5" stroke="#475569" stroke-width="0.9" />
+                <line x1="22" y1="26.5" x2="22" y2="31.25" stroke="#475569" stroke-width="0.9" />
+                <line x1="0.75" y1="11" x2="16.5" y2="11" stroke="#475569" stroke-width="0.9" />
+                <line x1="0.75" y1="16" x2="16.5" y2="16" stroke="#475569" stroke-width="0.9" />
+                <line x1="0.75" y1="21" x2="16.5" y2="21" stroke="#475569" stroke-width="0.9" />
+                <line x1="27.5" y1="11" x2="43.25" y2="11" stroke="#475569" stroke-width="0.9" />
+                <line x1="27.5" y1="16" x2="43.25" y2="16" stroke="#475569" stroke-width="0.9" />
+                <line x1="27.5" y1="21" x2="43.25" y2="21" stroke="#475569" stroke-width="0.9" />
+              </svg>
+              <span class="bank-card__number">•••• •••• •••• 7439</span>
+            </div>
+
+            <div class="bank-card__nfc" aria-hidden="true">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M 4.4 7.7 A 3.8 3.8 0 0 1 4.4 12.3" stroke="#E2E8F0" stroke-width="1.8" stroke-linecap="round" />
+                <path d="M 7.7 5.8 A 6.5 6.5 0 0 1 7.7 14.2" stroke="#E2E8F0" stroke-width="1.8" stroke-linecap="round" />
+                <path d="M 11.0 4.0 A 9.2 9.2 0 0 1 11.0 16.0" stroke="#E2E8F0" stroke-width="1.8" stroke-linecap="round" />
+                <path d="M 14.3 2.2 A 11.9 11.9 0 0 1 14.3 17.8" stroke="#E2E8F0" stroke-width="1.8" stroke-linecap="round" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Zona 3: Fokus Saldo Utama HUD Game -->
+          <div class="bank-card__balance-section">
+            <span class="bank-card__label" lang="en">BALANCE</span>
+            <div class="bank-card__balance" id="balance-display" aria-live="polite">$ 0,00</div>
+          </div>
+
+          <!-- Zona 4: Footer Kartu (Nama Emboss, Valid Thru & Emblem 3-Pilar Perak TCB) -->
+          <div class="bank-card__footer">
+            <div class="bank-card__holder-group">
+              <span class="bank-card__holder" lang="en">TYCOON EXECUTIVE</span>
+              <span class="bank-card__valid"><span class="bank-card__valid-tag" lang="en">VALID<br>THRU</span>05/29</span>
+            </div>
+            <div class="bank-card__network" aria-hidden="true">
+              <svg viewBox="0 0 48 32" aria-hidden="true">
+                <defs>
+                  <linearGradient id="tcbPillarGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#E2E8F0" />
+                    <stop offset="100%" stop-color="#94A3B8" />
+                  </linearGradient>
+                </defs>
+                <path d="M 6.5 3 H 15 V 24 A 5 5 0 0 1 10 29 H 1.5 V 8 A 5 5 0 0 1 6.5 3 Z" fill="url(#tcbPillarGrad)" />
+                <path d="M 22.25 3 H 30.75 V 24 A 5 5 0 0 1 25.75 29 H 17.25 V 8 A 5 5 0 0 1 22.25 3 Z" fill="url(#tcbPillarGrad)" />
+                <path d="M 38 3 H 46.5 V 24 A 5 5 0 0 1 41.5 29 H 33 V 8 A 5 5 0 0 1 38 3 Z" fill="url(#tcbPillarGrad)" />
+                <text x="8.25" y="19.5" text-anchor="middle" fill="#14171F" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" font-weight="800">T</text>
+                <text x="24" y="19.5" text-anchor="middle" fill="#14171F" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" font-weight="800">C</text>
+                <text x="39.75" y="19.5" text-anchor="middle" fill="#14171F" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" font-weight="800">B</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kotak Pendapatan Per Ketukan -->
+        <div class="per-click-box" aria-label="Pendapatan per ketukan">
+          <span class="per-click-box__value" id="per-click-display">$ 1,00 per ketuk</span>
+        </div>
+      </header>
+
+      <!-- 2. BAGIAN TENGAH: INTERACTIVE TAP AREA -->
+      <section class="tap-area" id="tap-area" role="button" tabindex="0" aria-label="Area ketuk untuk mendapatkan uang">
+        <div class="tap-area__center" id="tap-prompt">
+          <!-- Ikon Inline SVG: Tangan Menunjuk Lingkaran Ketuk -->
+          <div class="tap-hand-wrapper" id="tap-hand-icon">
+            <svg class="tap-hand-svg" viewBox="0 0 80 88" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <!-- Busur Riak Ketuk Luar -->
+              <path class="tap-ring-outer" d="M 20.6 30.2 A 17 17 0 1 1 51.4 30.2" stroke="#D97706" stroke-opacity="0.38" stroke-width="2" stroke-linecap="round" />
+              <!-- Lingkaran Ketuk Dalam -->
+              <path class="tap-ring-inner" d="M 27 29.3 A 11 11 0 1 1 45 29.3" stroke="#D97706" stroke-width="2.3" stroke-linecap="round" />
+              <!-- Siluet Garis Tangan Menunjuk -->
+              <path
+                d="M 31 54.5 V 23 A 5 5 0 0 1 41 23 V 46.5
+                   M 41 38.5 A 4.25 4.25 0 0 1 49.5 38.5 V 48.5
+                   M 49.5 41.5 A 4.25 4.25 0 0 1 58 41.5 V 50.5
+                   M 58 44.5 A 4 4 0 0 1 66 44.5 V 56.5
+                   C 66 68.5 57.5 77 45.5 77
+                   H 36.5
+                   C 31.5 77 28.5 71 25 64.5
+                   L 18.2 53
+                   A 4.1 4.1 0 0 1 25.3 48.8
+                   L 31 54.5"
+                stroke="#1E2538"
+                stroke-width="2.3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <p class="tap-area__hint">Ketuk area ini untuk mendapatkan uang</p>
+        </div>
+
+        <!-- Layer Kontainer Angka Melayang & Efek Riak Sentuhan -->
+        <div class="tap-effects-layer" id="tap-effects-layer" aria-hidden="true"></div>
+      </section>
+
+
+    </main>
+
+    <!-- MODAL SAMBUTAN PENDAPATAN LURING (OFFLINE EARNINGS) -->
+    <div class="modal-backdrop" id="offline-modal" role="dialog" aria-modal="true" aria-labelledby="offline-modal-title" hidden>
+      <div class="modal-dialog">
+        <h2 class="modal-dialog__title" id="offline-modal-title">Selamat datang kembali, +$ 0,00</h2>
+        <p class="modal-dialog__body" id="offline-modal-desc">
+          Tim Otomatis Anda tetap bekerja selama Anda tidak aktif (efisiensi 50%, maksimal 2 jam).
+        </p>
+        <div class="modal-dialog__actions">
+          <button type="button" class="preview-card__btn" id="close-offline-modal-btn">Lanjutkan</button>
+        </div>
+      </div>
+    </div>

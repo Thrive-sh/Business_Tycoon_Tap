@@ -1,9 +1,10 @@
-'use strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { fileURLToPath } from 'node:url';
 
-const fs = require('node:fs');
-const path = require('node:path');
-const test = require('node:test');
-const assert = require('node:assert/strict');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Mock localStorage in-memory yang mencatat jumlah pemanggilan setItem
 function createMockStorage() {
@@ -36,7 +37,29 @@ function createMockStorage() {
 const mockStorage = createMockStorage();
 globalThis.localStorage = mockStorage;
 
-const game = require('../public/assets/js/game.js');
+// Impor dinamis SETELAH mock localStorage terpasang (impor statis dievaluasi lebih dulu)
+const [configMod, assetsMod, formatMod, stateMod, earningsMod, investingMod, profileMod, mainMod] =
+  await Promise.all([
+    import('../public/assets/core/config.js'),
+    import('../public/assets/core/assets.js'),
+    import('../public/assets/core/format.js'),
+    import('../public/assets/core/state.js'),
+    import('../public/assets/tabs/earnings/earnings.js'),
+    import('../public/assets/tabs/investing/investing.js'),
+    import('../public/assets/tabs/profile/profile.js'),
+    import('../public/assets/core/main.js')
+  ]);
+const game = Object.assign(
+  {},
+  configMod,
+  assetsMod,
+  formatMod,
+  stateMod,
+  earningsMod,
+  investingMod,
+  profileMod,
+  mainMod
+);
 
 test('formatCurrencyValue, formatRupiah*, dan formatSignedPercent anti-NaN/Infinity', function () {
   assert.equal(game.formatCurrencyValue(0), '0,00');
@@ -65,7 +88,9 @@ test('formatCurrencyValue, formatRupiah*, dan formatSignedPercent anti-NaN/Infin
 test('Executive Black-Gold Precious Card: struktur SVG, branding fiktif, dan bebas merek nyata', function () {
   const rootDir = path.resolve(__dirname, '..');
   const html = fs.readFileSync(path.join(rootDir, 'public/index.html'), 'utf8');
-  const css = fs.readFileSync(path.join(rootDir, 'public/assets/css/style.css'), 'utf8');
+  const baseCss = fs.readFileSync(path.join(rootDir, 'public/assets/core/base.css'), 'utf8');
+  const earningsCss = fs.readFileSync(path.join(rootDir, 'public/assets/tabs/earnings/earnings.css'), 'utf8');
+  const css = baseCss + '\n' + earningsCss;
 
   assert.equal(/\b(Danamon|JCB)\b/i.test(html), false, 'index.html harus bebas merek nyata');
   assert.ok(html.includes('content="#1B202C"'), 'meta theme-color harus #1B202C');
@@ -85,11 +110,11 @@ test('Executive Black-Gold Precious Card: struktur SVG, branding fiktif, dan beb
   assert.ok(css.includes('.bank-card__balance--ultra-compact'));
 });
 
-test('INV-02 & INV-03: 21 aset investasi valid, 60 titik riwayat awal, dan tick harga finite', function () {
+test('INV-02 & INV-03: 33 aset investasi valid, 60 titik riwayat awal, dan tick harga finite', function () {
   mockStorage.clear();
   game.resetAllData();
 
-  assert.equal(game.ASSETS.length, 21);
+  assert.equal(game.ASSETS.length, 33);
   const byCategory = { Saham: 0, Properti: 0, Kripto: 0, Forex: 0 };
   game.ASSETS.forEach(function (asset) {
     byCategory[asset.category] += 1;
@@ -101,7 +126,7 @@ test('INV-02 & INV-03: 21 aset investasi valid, 60 titik riwayat awal, dan tick 
     });
   });
 
-  assert.deepEqual(byCategory, { Saham: 8, Properti: 4, Kripto: 5, Forex: 4 });
+  assert.deepEqual(byCategory, { Saham: 20, Properti: 4, Kripto: 5, Forex: 4 });
 
   // Jalankan beberapa tick harga 3 detik dan pastikan semua tetap finite dan dibatasi 60 titik
   for (let i = 0; i < 5; i += 1) {

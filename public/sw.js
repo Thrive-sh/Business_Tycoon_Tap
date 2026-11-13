@@ -2,15 +2,35 @@
    BUSINESS TYCOON TAP - SERVICE WORKER (OFFLINE CACHE-FIRST)
    ========================================================================== */
 
-const CACHE_NAME = 'business-tycoon-tap-v15';
+const CACHE_NAME = 'business-tycoon-tap-v17';
 const CORE_ASSETS = [
   './',
   './index.html',
-  './assets/css/style.css',
-  './assets/js/game.js',
   './manifest.webmanifest',
   './assets/icons/icon-192.png',
-  './assets/icons/icon-512.png'
+  './assets/icons/icon-512.png',
+  './assets/core/base.css',
+  './assets/core/preview.css',
+  './assets/core/responsive.css',
+  './assets/core/dom.js',
+  './assets/core/config.js',
+  './assets/core/assets.js',
+  './assets/core/format.js',
+  './assets/core/state.js',
+  './assets/core/feedback.js',
+  './assets/core/badges.js',
+  './assets/core/milestones.js',
+  './assets/core/preview.js',
+  './assets/core/main.js',
+  './assets/tabs/earnings/earnings.css',
+  './assets/tabs/earnings/earnings.js',
+  './assets/tabs/investing/investing.css',
+  './assets/tabs/investing/investing.js',
+  './assets/tabs/business/business.css',
+  './assets/tabs/business/business.js',
+  './assets/tabs/items/items.js',
+  './assets/tabs/profile/profile.css',
+  './assets/tabs/profile/profile.js'
 ];
 
 self.addEventListener('install', function (event) {

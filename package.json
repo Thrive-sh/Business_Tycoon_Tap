@@ -4,10 +4,12 @@
   "description": "Simulasi bisnis ketuk layar mobile-first berbasis web (HTML, CSS, Vanilla JS, PWA).",
   "private": true,
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "dev": "python3 -m http.server 8080 --directory public",
-    "lint": "node --check public/assets/js/game.js && node --check public/sw.js && node scripts/lint.js",
-    "test": "node --test tests/smoke.test.js"
+    "lint": "node --check public/assets/core/main.js && node --check public/sw.js && node --check scripts/build.js && node scripts/lint.js",
+    "test": "node --test tests/smoke.test.js",
+    "build": "node scripts/build.js"
   },
   "engines": {
     "node": ">=18.0.0"
