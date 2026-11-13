@@ -1205,24 +1205,8 @@
         avatar.className = 'asset-card__avatar';
         if (asset.iconId) {
           avatar.classList.add('asset-card__avatar--logo');
-          const wideLogoViewBoxes = {
-            'icon-stock-amd': '0 0 120 40',
-            'icon-stock-tsmc': '0 0 120 40',
-            'icon-stock-jpmorgan': '0 0 160 40',
-            'icon-stock-berkshire': '0 0 160 40',
-            'icon-stock-walmart': '0 0 130 40',
-            'icon-stock-cocacola': '0 0 160 40',
-            'icon-stock-toyota': '0 0 120 40',
-            'icon-stock-samsung': '0 0 150 40',
-            'icon-stock-alibaba': '0 0 150 40',
-            'icon-stock-mcdonalds': '0 0 100 40',
-            'icon-stock-visa': '0 0 100 40',
-            'icon-stock-exxonmobil': '0 0 160 40'
-          };
-          const logoViewBox = wideLogoViewBoxes[asset.iconId];
-          if (logoViewBox) avatar.classList.add('asset-card__avatar--wordmark');
           avatar.innerHTML =
-            '<svg viewBox="' + (logoViewBox || '0 0 24 24') + '" aria-hidden="true"><use href="#' +
+            '<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#' +
             asset.iconId +
             '"></use></svg>';
         } else {
