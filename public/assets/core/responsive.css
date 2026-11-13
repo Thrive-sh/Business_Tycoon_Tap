@@ -1,0 +1,128 @@
+/* ==========================================================================
+   BUSINESS TYCOON TAP - RESPONSIVITAS LAYAR SEMPIT & PENDEK (dimuat terakhir)
+   ========================================================================== */
+
+/* ==========================================================================
+   7. RESPONSIVITAS LAYAR SEMPIT & LAYAR PENDEK (ANTI-OVERFLOW)
+   ========================================================================== */
+
+@media (max-width: 360px) {
+  .bank-card {
+    padding: 14px 16px;
+  }
+
+  .bank-card__number {
+    font-size: 10px;
+    letter-spacing: 0.07em;
+  }
+
+  .bank-card__balance {
+    font-size: 24px;
+  }
+
+  .bank-card__balance--compact {
+    font-size: 20px;
+  }
+
+  .bank-card__balance--ultra-compact {
+    font-size: 17px;
+  }
+
+  .bank-card__holder,
+  .bank-card__valid {
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+  }
+
+  .bank-card__holder-group {
+    gap: 10px;
+  }
+}
+
+@media (max-height: 660px) {
+  .top-header-container {
+    padding: 12px 16px 14px;
+  }
+
+  .bank-card {
+    aspect-ratio: auto;
+    min-height: 168px;
+    max-height: 178px;
+    padding: 12px 16px;
+  }
+
+  .bank-card__chip {
+    width: 34px;
+    height: 24px;
+  }
+
+  .bank-card__balance {
+    font-size: 24px;
+  }
+
+  .bank-card__balance--compact {
+    font-size: 20px;
+  }
+
+  .bank-card__balance--ultra-compact {
+    font-size: 17px;
+  }
+
+  .per-click-box {
+    margin-top: 8px;
+    padding: 8px 14px;
+  }
+
+  .tap-area {
+    min-height: 160px;
+  }
+
+  .tap-hand-wrapper {
+    width: 58px;
+    height: 64px;
+  }
+
+  .upgrades-panel {
+    max-height: 166px;
+    padding: 8px 12px 10px;
+  }
+}
+
+/* Hormati preferensi pengurangan gerak pengguna (WCAG AA 2.3.3) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .tap-ripple,
+  .floating-earning,
+  .bank-card.is-glinting::before {
+    display: none !important;
+  }
+}
+
+
+/* Ukuran ikon emiten dikembalikan ke ukuran awal yang proporsional. */
+.asset-card__avatar {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.asset-card__avatar--logo {
+  background-color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.16), inset 0 0 0 1px rgba(15, 23, 42, 0.06);
+}
+.asset-card__avatar--logo svg {
+  width: 62%;
+  height: 62%;
+  display: block;
+}
+
+

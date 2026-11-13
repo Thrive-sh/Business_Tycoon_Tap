@@ -1,0 +1,99 @@
+/* ==========================================================================
+   BUSINESS TYCOON TAP - TAB USAHA (Dashboard & Pemilih Kategori Bisnis)
+   ========================================================================== */
+
+/* ==========================================================================
+   BUSINESS DASHBOARD
+   ========================================================================== */
+.business-screen { background: #FFF7FC; color: #17151B; }
+.business-header { flex-shrink: 0; padding: 22px 20px 14px; background: #FFF7FC; }
+.business-header__title { font-size: 27px; line-height: 1.2; font-weight: 800; letter-spacing: -0.6px; }
+.business-dashboard-scroll { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; padding: 14px 0 28px; scrollbar-width: none; }
+.business-dashboard-scroll::-webkit-scrollbar { display: none; }
+.business-revenue-card { display: flex; flex-direction: column; justify-content: center; gap: 7px; min-height: 156px; margin: 0 10px; padding: 24px 25px; border-radius: 20px; color: #fff; background: linear-gradient(112deg, #743653 0%, #B65D7E 55%, #F080A6 100%); box-shadow: 0 12px 25px rgba(111, 43, 75, .14); }
+.business-revenue-card__value { font-size: clamp(30px, 8vw, 40px); line-height: 1.05; font-weight: 850; letter-spacing: -.7px; font-variant-numeric: tabular-nums; }
+.business-revenue-card__label { font-size: 17px; font-weight: 700; }
+.business-revenue-card__caption { margin-top: 3px; font-size: 11px; color: rgba(255,255,255,.72); }
+.business-market-ticker { overflow: hidden; white-space: nowrap; margin: 19px 0 16px; color: #38323A; }
+.business-market-ticker__track { display: flex; width: max-content; gap: 22px; padding-left: 16px; font-size: 14px; font-weight: 600; }
+.business-action-wrap { display: flex; justify-content: center; padding: 2px 16px 19px; }
+.business-start-btn { min-height: 52px; padding: 0 27px; border: 0; border-radius: 15px; color: #fff; background: #4D0929; box-shadow: 0 4px 9px rgba(58, 7, 31, .22); font-size: 16px; font-weight: 750; cursor: pointer; }
+.business-start-btn:active { transform: translateY(1px); }
+.business-sector-legend { display: flex; gap: 18px; overflow-x: auto; padding: 5px 18px 8px; scrollbar-width: none; white-space: nowrap; }
+.business-sector-legend::-webkit-scrollbar { display: none; }
+.business-sector-legend__item { display: inline-flex; align-items: center; gap: 7px; color: #5B5260; font-size: 13px; font-weight: 600; }
+.business-sector-dot { width: 11px; height: 11px; flex: 0 0 11px; border-radius: 50%; }
+.business-sector-dot--factory { background: #16A9C7; }
+.business-sector-dot--taxi { background: #6954C8; }
+.business-sector-dot--logistics { background: #3C7487; }
+.business-sector-dot--build { background: #EBAF17; }
+.business-sector-dot--tech { background: #C45B88; }
+.business-chart-section { padding: 6px 8px 12px; }
+.business-donut-wrap { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; max-width: 360px; min-height: 220px; margin: 0 auto; }
+.business-donut { width: 204px; height: 204px; overflow: visible; transform: rotate(-90deg); }
+.business-donut__track { fill: none; stroke: #F0E5EB; stroke-width: 29; }
+.business-donut__segment { fill: none; stroke-width: 29; stroke-linecap: butt; }
+.business-donut__segment--power { stroke: #E9577B; }
+.business-donut__segment--store { stroke: #2589E8; }
+.business-donut__segment--factory { stroke: #14A9C6; }
+.business-donut__center-value { fill: #26202A; font-size: 17px; font-weight: 800; text-anchor: middle; transform: rotate(90deg); transform-origin: 110px 110px; }
+.business-donut__center-label { fill: #776A78; font-size: 10px; font-weight: 600; text-anchor: middle; transform: rotate(90deg); transform-origin: 110px 110px; }
+.business-chart-label { position: absolute; display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: #2D2630; }
+.business-chart-label strong { font-size: 12px; }
+.business-chart-label--factory { top: 4px; left: 48%; transform: translateX(-50%); text-align: center; }
+.business-chart-label--store { top: 92px; right: 3%; text-align: center; }
+.business-chart-label--power { bottom: 4px; left: 2%; text-align: center; }
+.business-companies-section { padding: 12px 16px 24px; scroll-margin-top: 12px; }
+.business-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 0 0 15px; }
+.business-section-heading h2 { font-size: 22px; font-weight: 800; letter-spacing: -.5px; }
+.business-section-heading span { color: #A18E9A; font-size: 11px; font-weight: 600; }
+.business-company-list { display: flex; flex-direction: column; gap: 11px; }
+.business-company-card { padding: 17px 16px 15px; border-radius: 20px; background: #F0DFE5; }
+.business-company-card__top { display: flex; align-items: center; gap: 12px; min-height: 58px; }
+.business-company-card__icon { display: grid; place-items: center; width: 50px; height: 50px; flex: 0 0 50px; }
+.business-company-card__icon svg { width: 44px; height: 44px; }
+.business-company-card__identity { display: flex; flex: 1; flex-direction: column; gap: 4px; min-width: 0; }
+.business-company-card__identity h3 { font-size: 16px; font-weight: 800; }
+.business-company-card__identity span { color: #A8959E; font-size: 13px; }
+.business-company-card__chevron { color: #5A4C55; font-size: 38px; line-height: 1; font-weight: 300; }
+.business-company-card__income { display: flex; align-items: baseline; gap: 6px; margin-top: 13px; }
+.business-company-card__income strong { color: #211A20; font-size: 17px; font-weight: 850; font-variant-numeric: tabular-nums; }
+.business-company-card__income span { color: #A8959E; font-size: 12px; }
+@media (max-width: 360px) {
+  .business-chart-label { font-size: 10px; }
+  .business-chart-label--store { right: 0; }
+  .business-chart-label--power { left: 0; }
+  .business-donut { width: 184px; height: 184px; }
+  .business-sector-legend { gap: 14px; }
+}
+
+
+/* ==========================================================================
+   BUSINESS CATEGORY SELECTOR
+   ========================================================================== */
+.business-category-screen { background: #FFF7FC; color: #101014; }
+.business-category-topbar { display: flex; align-items: center; height: 112px; flex: 0 0 112px; padding: 0 22px; background: #BFCFD2; }
+.business-category-back { display: grid; place-items: center; width: 54px; height: 54px; margin-left: -8px; border: 0; border-radius: 50%; background: transparent; color: #15191D; cursor: pointer; }
+.business-category-back svg { width: 38px; height: 38px; }
+.business-category-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 39px 20px 34px; scrollbar-width: none; }
+.business-category-scroll::-webkit-scrollbar { display: none; }
+.business-category-title { margin: 0 0 46px; text-align: center; font-size: clamp(22px, 6vw, 29px); line-height: 1.2; font-weight: 800; letter-spacing: -.6px; }
+.business-category-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 16px; align-items: stretch; }
+.business-category-card { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; min-height: 185px; padding: 17px 17px 16px; border: 2px solid transparent; border-radius: 17px; background: #C1D2D4; color: #101418; text-align: left; cursor: pointer; transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+.business-category-card:active { transform: scale(.985); }
+.business-category-card.is-selected { border-color: #9B5B78; box-shadow: 0 0 0 3px rgba(155,91,120,.14); }
+.business-category-card__art { display: grid; place-items: center; align-self: center; width: 92px; height: 88px; margin: 0 auto 8px; }
+.business-category-card__art svg { width: 82px; height: 82px; overflow: visible; }
+.business-category-card__name { display: block; width: 100%; min-height: 24px; margin: 0 0 10px; font-size: 16px; line-height: 1.35; font-weight: 800; overflow-wrap: anywhere; }
+.business-category-card__price-label { display: block; margin-bottom: 3px; font-size: 14px; line-height: 1.35; font-weight: 500; }
+.business-category-card__price { display: block; width: 100%; font-size: 14px; line-height: 1.4; font-weight: 500; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+@media (max-width: 360px) {
+  .business-category-scroll { padding-left: 14px; padding-right: 14px; }
+  .business-category-grid { gap: 13px 11px; }
+  .business-category-card { min-height: 174px; padding: 14px 13px; }
+  .business-category-card__name { font-size: 15px; }
+  .business-category-card__price, .business-category-card__price-label { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .business-category-card { transition: none; }
+}

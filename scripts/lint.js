@@ -1,9 +1,8 @@
-'use strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const fs = require('node:fs');
-const path = require('node:path');
-
-const ROOT = path.resolve(__dirname, '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 function readText(relPath) {
   return fs.readFileSync(path.join(ROOT, relPath), 'utf8');
@@ -23,8 +22,11 @@ if (/\b(Danamon|JCB)\b/i.test(html) || html.includes('05/26')) {
 if (!html.includes('rel="manifest"')) {
   throw new Error('Tautan manifest PWA belum ada di public/index.html.');
 }
-if (!html.includes('assets/css/style.css') || !html.includes('assets/js/game.js')) {
-  throw new Error('Jalur aset CSS/JS terstruktur belum terpasang di public/index.html.');
+if (!html.includes('assets/core/base.css') || !html.includes('assets/main.js')) {
+  throw new Error('Jalur aset CSS inti/JS terstruktur belum terpasang di public/index.html.');
+}
+if (html.includes('assets/js/game.js') || html.includes('assets/css/style.css')) {
+  throw new Error('Referensi berkas lama (game.js/style.css) masih tersisa di public/index.html.');
 }
 
 const definedSymbols = new Set(
@@ -48,51 +50,70 @@ usedSymbols.forEach(function (symId) {
   }
 });
 
-// 4. Pastikan aksesibilitas dasar di public/assets/css/style.css
-const css = readText('public/assets/css/style.css');
-if (!css.includes('prefers-reduced-motion: reduce')) {
-  throw new Error('Aturan @media (prefers-reduced-motion: reduce) belum ada di style.css.');
+// 4. Pastikan aksesibilitas dasar tersedia pada gabungan berkas CSS (dipecah per folder)
+const cssFiles = [
+  'public/assets/core/base.css',
+  'public/assets/core/preview.css',
+  'public/assets/core/responsive.css',
+  'public/assets/tabs/earnings/earnings.css',
+  'public/assets/tabs/investing/investing.css',
+  'public/assets/tabs/business/business.css',
+  'public/assets/tabs/profile/profile.css'
+];
+const allCss = cssFiles.map(readText).join('\n');
+if (!allCss.includes('prefers-reduced-motion: reduce')) {
+  throw new Error('Aturan @media (prefers-reduced-motion: reduce) belum ada di berkas CSS.');
 }
-if (!css.includes(':focus-visible')) {
-  throw new Error('Aturan :focus-visible belum ada di style.css.');
-}
-
-// 5. Pastikan tidak ada magic number di luar blok deklarasi CONFIG/ASSETS pada game.js (kecuali 0, 1, 100)
-const gameLines = readText('public/assets/js/game.js').split('\n');
-let configEndIndex = -1;
-for (let i = 0; i < gameLines.length; i += 1) {
-  if (gameLines[i].trim() === '// END_CONFIG') {
-    configEndIndex = i;
-    break;
-  }
-}
-if (configEndIndex < 0) {
-  throw new Error('Penanda // END_CONFIG tidak ditemukan di public/assets/js/game.js.');
+if (!allCss.includes(':focus-visible')) {
+  throw new Error('Aturan :focus-visible belum ada di berkas CSS.');
 }
 
-let inBlockComment = false;
-for (let i = configEndIndex + 1; i < gameLines.length; i += 1) {
-  const line = gameLines[i];
-  if (line.includes('/*')) inBlockComment = true;
-  if (inBlockComment) {
-    if (line.includes('*/')) inBlockComment = false;
-    continue;
+// 5. Pastikan tidak ada magic number di luar blok deklarasi CONFIG/ASSETS (kecuali 0, 1, 100)
+//    CONFIG dan ASSETS sengaja dikecualikan karena seluruh konstanta tinggal di sana.
+const jsFiles = [
+  'public/assets/main.js',
+  'public/assets/core/dom.js',
+  'public/assets/core/format.js',
+  'public/assets/core/state.js',
+  'public/assets/core/feedback.js',
+  'public/assets/core/badges.js',
+  'public/assets/core/milestones.js',
+  'public/assets/core/preview.js',
+  'public/assets/tabs/earnings/earnings.js',
+  'public/assets/tabs/investing/investing.js',
+  'public/assets/tabs/business/business.js',
+  'public/assets/tabs/items/items.js',
+  'public/assets/tabs/profile/profile.js'
+];
+
+jsFiles.forEach(function (relPath) {
+  const gameLines = readText(relPath).split('\n');
+  let inBlockComment = false;
+  for (let i = 0; i < gameLines.length; i += 1) {
+    const line = gameLines[i];
+    if (line.includes('/*')) inBlockComment = true;
+    if (inBlockComment) {
+      if (line.includes('*/')) inBlockComment = false;
+      continue;
+    }
+    const stripped = line
+      .replace(/\/\/.*$/, '')
+      .replace(/'[^']*'|"[^"]*"/g, "''");
+    const matches = stripped.match(/\b\d+(?:\.\d+)?(?:e[+-]?\d+)?\b/g) || [];
+    const invalid = matches.filter(function (n) {
+      return n !== '0' && n !== '0.0' && n !== '1' && n !== '1.0' && n !== '100';
+    });
+    if (invalid.length > 0) {
+      throw new Error(
+        'Angka literal di luar CONFIG pada ' +
+          relPath +
+          ' baris ' +
+          (i + 1) +
+          ': ' +
+          invalid.join(', ')
+      );
+    }
   }
-  const stripped = line
-    .replace(/\/\/.*$/, '')
-    .replace(/'[^']*'|\"[^\"]*\"/g, "''");
-  const matches = stripped.match(/\b\d+(?:\.\d+)?(?:e[+-]?\d+)?\b/g) || [];
-  const invalid = matches.filter(function (n) {
-    return n !== '0' && n !== '0.0' && n !== '1' && n !== '1.0' && n !== '100';
-  });
-  if (invalid.length > 0) {
-    throw new Error(
-      'Angka literal di luar CONFIG pada game.js baris ' +
-        (i + 1) +
-        ': ' +
-        invalid.join(', ')
-    );
-  }
-}
+});
 
 console.log('Pemeriksaan statis (lint) lulus tanpa masalah.');
