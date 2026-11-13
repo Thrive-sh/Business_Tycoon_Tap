@@ -72,6 +72,59 @@ export function formatRupiahFull(amount) {
 }
 
 /**
+ * Memformat nominal USD penuh ("$1,234,567.89") dengan guard Number.isFinite.
+ */
+export function formatUsdFull(amount) {
+  const safe = Number.isFinite(amount) ? Math.abs(amount) : 0;
+  const prefix = Number.isFinite(amount) && amount < 0 ? '-$' : '$';
+  const fixed = safe.toFixed(CONFIG.CURRENCY_DECIMALS);
+  const parts = fixed.split('.');
+  const integerWithCommas = parts[0].replace(CONFIG.USD_THOUSANDS_GROUP_REGEX, ',');
+  return prefix + integerWithCommas + '.' + parts[1];
+}
+
+/**
+ * Memformat nominal USD ringkas ("$999.50", "$1.6M", "$2.3B") dengan guard Number.isFinite.
+ */
+export function formatUsdCompact(amount) {
+  const safe = Number.isFinite(amount) ? Math.abs(amount) : 0;
+  const prefix = Number.isFinite(amount) && amount < 0 ? '-$' : '$';
+  if (safe < CONFIG.COMPACT_THRESHOLD) {
+    return prefix + safe.toFixed(CONFIG.CURRENCY_DECIMALS);
+  }
+  const units = CONFIG.COMPACT_UNITS_US;
+  for (let i = 0; i < units.length; i += 1) {
+    const unit = units[i];
+    if (safe >= unit.threshold) {
+      const scaled = safe / unit.threshold;
+      if (scaled >= CONFIG.COMPACT_THRESHOLD && i > 0) {
+        const upperUnit = units[i - 1];
+        const upperScaled = safe / upperUnit.threshold;
+        const upperFormatted = upperScaled
+          .toFixed(CONFIG.CURRENCY_DECIMALS)
+          .replace(/\.?0+$/, '');
+        return prefix + upperFormatted + ' ' + upperUnit.suffix;
+      }
+      const formatted = scaled
+        .toFixed(CONFIG.CURRENCY_DECIMALS)
+        .replace(/\.?0+$/, '');
+      return prefix + formatted + ' ' + unit.suffix;
+    }
+  }
+  return prefix + safe.toFixed(CONFIG.CURRENCY_DECIMALS);
+}
+
+/**
+ * Memformat persentase bertanda gaya en-US ("+1.25%" / "-0.40%") yang selalu finite 2 desimal.
+ */
+export function formatSignedPercentEn(pct) {
+  const safe = Number.isFinite(pct) ? pct : 0;
+  const sign = safe >= 0 ? '+' : '-';
+  const absStr = Math.abs(safe).toFixed(CONFIG.CURRENCY_DECIMALS);
+  return sign + absStr + '%';
+}
+
+/**
  * Memformat persentase bertanda ("+1,25%" / "-0,40%") yang selalu finite 2 desimal.
  */
 export function formatSignedPercent(pct) {

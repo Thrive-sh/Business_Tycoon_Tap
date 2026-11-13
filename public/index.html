@@ -337,67 +337,182 @@
         </div>
       </div>
     </div>
-    <!-- ==================== LAYAR INVESTASI (4 KATEGORI) ==================== -->
+    <!-- ==================== LAYAR INVESTASI (TERMINAL PORTOFOLIO) ==================== -->
     <section class="screen" id="investing-screen" aria-label="Dasbor Investasi" hidden>
-      <header class="invest-header">
-        <div class="invest-header__top">
-          <h1 class="invest-header__title">Investasi</h1>
+      <div class="term-bar">
+        <div class="term-bar__text">
+          <h1 class="term-bar__title">Investasi</h1>
+          <span class="term-bar__sub">TERMINAL PORTOFOLIO</span>
         </div>
-
-        <!-- 4 Sub-Tab Kategori Investasi -->
-        <div class="invest-subtabs" role="group" aria-label="Kategori Investasi">
-          <button
-            type="button"
-            class="invest-subtab invest-subtab--active"
-            data-invest-cat="Saham"
-            aria-pressed="true"
-            aria-current="true"
-          >
-            Saham
-          </button>
-          <button
-            type="button"
-            class="invest-subtab"
-            data-invest-cat="Properti"
-            aria-pressed="false"
-          >
-            Properti
-          </button>
-          <button
-            type="button"
-            class="invest-subtab"
-            data-invest-cat="Kripto"
-            aria-pressed="false"
-          >
-            Kripto
-          </button>
-          <button
-            type="button"
-            class="invest-subtab"
-            data-invest-cat="Forex"
-            aria-pressed="false"
-          >
-            Forex
-          </button>
-        </div>
-      </header>
+        <span class="term-bar__chip"><span class="term-bar__dot"></span>LIVE &middot; USD</span>
+      </div>
 
       <div class="invest-body">
-        <!-- Kartu Ringkasan Kategori -->
-        <div class="invest-summary-card" id="invest-summary-card" role="button" tabindex="0" aria-label="Buka portofolio investasi dan lihat aset yang dimiliki">
-          <span class="invest-summary-card__label" id="invest-summary-label">Total nilai saham</span>
-          <div class="invest-summary-card__total" id="invest-summary-total">Rp0,00</div>
-          <div class="invest-summary-card__pnl pnl--positive" id="invest-summary-pnl">
-            Rp0,00 (+0,00%) sepanjang waktu
+        <!-- PANEL 1 — TOTAL KEPEMILIKAN & PASIF PER JAM (gaya RDN, data asli game) -->
+        <section class="panel panel--hero" id="hero-portfolio" role="button" tabindex="0" aria-label="Buka portofolio investasi lengkap">
+          <span class="hero-deco" aria-hidden="true"></span>
+          <div class="hero-top">
+            <div class="hero-brand">
+              <span class="hero-emblem">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="5.2" y="10" width="3.4" height="6.5" rx="0.6"/>
+                  <path d="M6.9 7.4v2.6M6.9 16.5v2.4"/>
+                  <rect x="10.3" y="4.6" width="3.4" height="9" rx="0.6"/>
+                  <path d="M12 2.4v2.2M12 13.6v2.8"/>
+                  <rect x="15.4" y="12.2" width="3.4" height="5.2" rx="0.6"/>
+                  <path d="M17.1 9.8v2.4M17.1 17.4v2.1"/>
+                </svg>
+              </span>
+              <span class="hero-brand__text">
+                <strong>TOTAL KEPEMILIKAN</strong>
+                <small>SAHAM &middot; PROPERTI &middot; KRIPTO &middot; FOREX</small>
+              </span>
+            </div>
+            <span class="hero-live"><span class="hero-live__dot"></span>LIVE</span>
           </div>
-          <div class="invest-summary-card__yield" id="invest-summary-yield-row">
-            <span class="invest-summary-card__yield-label">Estimasi pendapatan per jam</span>
-            <strong class="invest-summary-card__yield-value" id="invest-summary-yield">Rp0,00</strong>
-          </div>
-        </div>
 
-        <!-- Daftar Aset per Kategori -->
-        <div class="invest-asset-list" id="invest-asset-list" aria-label="Daftar Aset Investasi"></div>
+          <div class="hero-main">
+            <span class="hero-caption">TOTAL PORTFOLIO VALUE</span>
+            <div class="hero-amount" id="hero-total-value">$0.00</div>
+            <div class="hero-pnl pnl--positive" id="hero-total-pnl">$0.00 (+0.00%) sepanjang waktu</div>
+          </div>
+
+          <div class="hero-divider"></div>
+
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <small>PASIF / JAM</small>
+              <strong class="hero-stat__gold" id="hero-hourly-yield">$0.00</strong>
+            </div>
+            <div class="hero-stat">
+              <small>DANA MENGANGGUR</small>
+              <strong id="hero-idle-cash">$0.00</strong>
+            </div>
+            <div class="hero-stat">
+              <small>POSISI TERBUKA</small>
+              <strong id="hero-open-positions">0 aset</strong>
+            </div>
+          </div>
+
+          <div class="hero-foot">
+            <span>CURRENCY &middot; USD</span>
+            <span class="hero-foot__action">LIHAT PORTOFOLIO
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+            </span>
+          </div>
+        </section>
+
+        <!-- PANEL 2 — ALOKASI ASET -->
+        <section class="panel alloc-panel" aria-label="Alokasi aset">
+          <header class="panel-header">
+            <div>
+              <h2 class="panel-title">Asset Allocation</h2>
+              <p class="panel-sub">Komposisi modal yang sedang bekerja</p>
+            </div>
+            <span class="panel-chip">ALOKASI SAAT INI</span>
+          </header>
+
+          <div class="alloc-summary">
+            <div class="alloc-summary__item">
+              <small>TOTAL PORTOFOLIO</small>
+              <strong id="alloc-total">$0.00</strong>
+              <span>Nilai pasar empat kelas aset</span>
+            </div>
+            <div class="alloc-summary__item">
+              <small>TOP ALLOCATION</small>
+              <strong id="alloc-top-name">&mdash;</strong>
+              <span id="alloc-top-share">Belum ada posisi</span>
+            </div>
+            <div class="alloc-summary__item">
+              <small>KELAS ASET</small>
+              <strong id="alloc-classes">0 / 4</strong>
+              <span>Kelas dengan posisi terbuka</span>
+            </div>
+          </div>
+
+          <div class="alloc-body">
+            <div class="alloc-chart">
+              <div class="donut-wrap">
+                <svg class="donut-svg" viewBox="0 0 220 220" role="img" aria-label="Diagram donat alokasi portofolio">
+                  <circle class="donut-track" cx="110" cy="110" r="79"/>
+                  <g id="donut-segments"></g>
+                </svg>
+                <div class="donut-center">
+                  <small>TOTAL VALUE</small>
+                  <strong id="alloc-center-total">$0.00</strong>
+                  <span>LIVE &middot; 3s</span>
+                </div>
+              </div>
+              <p class="donut-caption">DISTRIBUTION BY ASSET CLASS</p>
+            </div>
+
+            <div class="alloc-breakdown">
+              <div class="breakdown-title">
+                <strong>Allocation Breakdown</strong>
+                <span>WEIGHT / SHARE</span>
+              </div>
+              <div id="alloc-breakdown"></div>
+              <p class="alloc-empty" id="alloc-empty" hidden>Belum ada posisi terbuka. Beli aset dari rak di bawah untuk mulai membangun portofolio.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- RAK PER KATEGORI: KARTU ASET STRIP HORIZONTAL -->
+        <section class="shelf" data-shelf="Saham" aria-label="Rak aset Saham">
+          <header class="shelf__header">
+            <span class="shelf__icon shelf__icon--Saham">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg>
+            </span>
+            <span class="shelf__meta">
+              <strong>Saham</strong>
+              <small class="shelf__total" id="shelf-total-Saham">$0.00 &middot; 0.0%</small>
+            </span>
+            <span class="shelf__hint">GESER<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg></span>
+          </header>
+          <div class="shelf__track" id="shelf-track-Saham" role="list" aria-label="Daftar aset Saham, geser horizontal"></div>
+        </section>
+
+        <section class="shelf" data-shelf="Properti" aria-label="Rak aset Properti">
+          <header class="shelf__header">
+            <span class="shelf__icon shelf__icon--Properti">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="1.4"/><path d="M9.5 20.5v-4h5v4"/><path d="M8 7.6h1.6M11.2 7.6h1.6M14.4 7.6H16M8 11.3h1.6M11.2 11.3h1.6M14.4 11.3H16M8 15h1.6M14.4 15H16"/></svg>
+            </span>
+            <span class="shelf__meta">
+              <strong>Properti</strong>
+              <small class="shelf__total" id="shelf-total-Properti">$0.00 &middot; 0.0%</small>
+            </span>
+            <span class="shelf__hint">GESER<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg></span>
+          </header>
+          <div class="shelf__track" id="shelf-track-Properti" role="list" aria-label="Daftar aset Properti, geser horizontal"></div>
+        </section>
+
+        <section class="shelf" data-shelf="Kripto" aria-label="Rak aset Kripto">
+          <header class="shelf__header">
+            <span class="shelf__icon shelf__icon--Kripto">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6.4" rx="7.2" ry="2.9"/><path d="M4.8 6.4v11.2c0 1.6 3.2 2.9 7.2 2.9s7.2-1.3 7.2-2.9V6.4"/><path d="M4.8 12c0 1.6 3.2 2.9 7.2 2.9s7.2-1.3 7.2-2.9"/></svg>
+            </span>
+            <span class="shelf__meta">
+              <strong>Kripto</strong>
+              <small class="shelf__total" id="shelf-total-Kripto">$0.00 &middot; 0.0%</small>
+            </span>
+            <span class="shelf__hint">GESER<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg></span>
+          </header>
+          <div class="shelf__track" id="shelf-track-Kripto" role="list" aria-label="Daftar aset Kripto, geser horizontal"></div>
+        </section>
+
+        <section class="shelf" data-shelf="Forex" aria-label="Rak aset Forex">
+          <header class="shelf__header">
+            <span class="shelf__icon shelf__icon--Forex">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5h13.5"/><path d="M13.8 5l3.7 3.5-3.7 3.5"/><path d="M20 15.5H6.5"/><path d="M10.2 19 6.5 15.5 10.2 12"/></svg>
+            </span>
+            <span class="shelf__meta">
+              <strong>Forex</strong>
+              <small class="shelf__total" id="shelf-total-Forex">$0.00 &middot; 0.0%</small>
+            </span>
+            <span class="shelf__hint">GESER<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg></span>
+          </header>
+          <div class="shelf__track" id="shelf-track-Forex" role="list" aria-label="Daftar aset Forex, geser horizontal"></div>
+        </section>
       </div>
     </section>
 

@@ -32,6 +32,12 @@ export const CONFIG = Object.freeze({
   SPARKLINE_VIEWBOX_PADDING: 1,
   SPARKLINE_FLAT_RATIO: 0.5,
   SPARKLINE_MIN_POINTS: 2,
+  FULL_CIRCLE_TURNS: 2,
+  DONUT_RADIUS: 79,
+  ALLOC_DECIMALS: 1,
+  TILE_PRICE_COMPACT_THRESHOLD: 100000,
+  HERO_COMPACT_THRESHOLD: 1e9,
+  INVEST_CATEGORY_COUNT: 4,
   PLAYER_ID_PAD_LENGTH: 4,
   PLAYER_ID_MODULO: 10000,
   PLAYER_ID_HASH_PRIME: 2654435761,
@@ -83,11 +89,18 @@ export const CONFIG = Object.freeze({
     Kripto: 'Total nilai kriptocurrency',
     Forex: 'Total nilai forex'
   },
+  USD_THOUSANDS_GROUP_REGEX: /\B(?=(\d{3})+(?!\d))/g,
   COMPACT_UNITS: [
     { threshold: 1e12, suffix: 'T' },
     { threshold: 1e9, suffix: 'M' },
     { threshold: 1e6, suffix: 'jt' },
     { threshold: 1e3, suffix: 'rb' }
+  ],
+  COMPACT_UNITS_US: [
+    { threshold: 1e12, suffix: 'T' },
+    { threshold: 1e9, suffix: 'B' },
+    { threshold: 1e6, suffix: 'M' },
+    { threshold: 1e3, suffix: 'K' }
   ],
   UPGRADE_TIERS: [
     {

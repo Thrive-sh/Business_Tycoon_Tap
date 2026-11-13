@@ -14,11 +14,12 @@ import {
   saveMarketPricesThrottled
 } from '../../core/state.js';
 import {
-  formatCurrencyValue,
-  formatFullCurrencyValue,
   formatRupiahCompact,
   formatRupiahFull,
+  formatUsdFull,
+  formatUsdCompact,
   formatSignedPercent,
+  formatSignedPercentEn,
   formatIntegerID,
   formatTimeHHMM
 } from '../../core/format.js';
@@ -30,19 +31,33 @@ import { renderStats, renderUpgrades } from '../earnings/earnings.js';
 const investingScreen = getEl('investing-screen');
 const assetDetailScreen = getEl('asset-detail-screen');
 const portfolioScreen = getEl('portfolio-screen');
-const investWalletBalance = getEl('invest-wallet-balance');
-const investSummaryLabel = getEl('invest-summary-label');
-const investSummaryTotal = getEl('invest-summary-total');
-const investSummaryPnl = getEl('invest-summary-pnl');
-const investSummaryYield = getEl('invest-summary-yield');
-const investAssetList = getEl('invest-asset-list');
-const investSummaryCard = getEl('invest-summary-card');
+const heroPortfolioBtn = getEl('hero-portfolio');
+const heroTotalValue = getEl('hero-total-value');
+const heroTotalPnl = getEl('hero-total-pnl');
+const heroHourlyYield = getEl('hero-hourly-yield');
+const heroIdleCash = getEl('hero-idle-cash');
+const heroOpenPositions = getEl('hero-open-positions');
+const allocTotal = getEl('alloc-total');
+const allocTopName = getEl('alloc-top-name');
+const allocTopShare = getEl('alloc-top-share');
+const allocClasses = getEl('alloc-classes');
+const allocCenterTotal = getEl('alloc-center-total');
+const donutSegmentsGroup = getEl('donut-segments');
+const allocBreakdown = getEl('alloc-breakdown');
+const allocEmpty = getEl('alloc-empty');
+const shelfTotalSaham = getEl('shelf-total-Saham');
+const shelfTotalProperti = getEl('shelf-total-Properti');
+const shelfTotalKripto = getEl('shelf-total-Kripto');
+const shelfTotalForex = getEl('shelf-total-Forex');
+const shelfTrackSaham = getEl('shelf-track-Saham');
+const shelfTrackProperti = getEl('shelf-track-Properti');
+const shelfTrackKripto = getEl('shelf-track-Kripto');
+const shelfTrackForex = getEl('shelf-track-Forex');
 const portfolioBackBtn = getEl('portfolio-back-btn');
 const portfolioTotalValue = getEl('portfolio-total-value');
 const portfolioTotalPnl = getEl('portfolio-total-pnl');
 const portfolioHoldingsCount = getEl('portfolio-holdings-count');
 const portfolioHoldingsList = getEl('portfolio-holdings-list');
-const investSubtabs = hasDOM ? Array.from(document.querySelectorAll('.invest-subtab')) : [];
 const assetDetailBackBtn = getEl('asset-detail-back-btn');
 const detailAssetName = getEl('detail-asset-name');
 const detailAssetCategory = getEl('detail-asset-category');
@@ -304,10 +319,6 @@ export function renderPortfolio() {
   });
 }
 /**
- * Merender layar utama Investasi (4 sub-tab, kartu ringkasan, dan daftar aset).
- */
-
-/**
  * Membangun sparkline mini (SVG polyline + area fill) dari riwayat harga aset.
  * Mengembalikan null bila data belum cukup; seluruh angka dihitung saat runtime.
  */
@@ -354,80 +365,246 @@ function buildSparklineMarkup(assetId, isUp) {
   );
 }
 
-export function renderInvestingScreen() {
-  if (!investingScreen) return;
-  const cat = state.activeInvestCategory;
+const INVEST_CATEGORIES = ['Saham', 'Properti', 'Kripto', 'Forex'];
+const CATEGORY_META = {
+  Saham: { subtitle: 'Equities', color: '#2563EB' },
+  Properti: { subtitle: 'Real Estate', color: '#059669' },
+  Kripto: { subtitle: 'Digital Assets', color: '#EA580C' },
+  Forex: { subtitle: 'Currency', color: '#7C3AED' }
+};
+const SHELF_TRACKS = {
+  Saham: shelfTrackSaham,
+  Properti: shelfTrackProperti,
+  Kripto: shelfTrackKripto,
+  Forex: shelfTrackForex
+};
+const SHELF_TOTALS = {
+  Saham: shelfTotalSaham,
+  Properti: shelfTotalProperti,
+  Kripto: shelfTotalKripto,
+  Forex: shelfTotalForex
+};
 
-  if (investWalletBalance) {
-    investWalletBalance.textContent = formatRupiahCompact(state.balance);
-    investWalletBalance.title = formatRupiahFull(state.balance);
-  }
+/**
+ * Menghitung ringkasan portofolio lintas 4 kelas aset (nilai, P&L, alokasi,
+ * kelas aktif, dan kelas terbesar) dari kepemilikan pemain yang asli.
+ */
+export function getPortfolioAllocation() {
+  const byCategory = {};
+  let total = 0;
+  let pnlValue = 0;
+  let totalCost = 0;
 
-  investSubtabs.forEach(function (btn) {
-    const isSelected = btn.getAttribute('data-invest-cat') === cat;
-    btn.classList.toggle('invest-subtab--active', isSelected);
-    btn.setAttribute('aria-pressed', String(isSelected));
-    if (isSelected) {
-      btn.setAttribute('aria-current', 'true');
-    } else {
-      btn.removeAttribute('aria-current');
+  INVEST_CATEGORIES.forEach(function (cat) {
+    const summary = getCategorySummary(cat);
+    byCategory[cat] = summary;
+    total += summary.totalValue;
+    pnlValue += summary.pnlValue;
+    totalCost += summary.totalCost;
+  });
+
+  let openPositions = 0;
+  ASSETS.forEach(function (asset) {
+    const holding = state.holdings[asset.id];
+    const units = holding && Number.isFinite(Number(holding.units)) ? Number(holding.units) : 0;
+    if (units > 0) {
+      openPositions += 1;
     }
   });
 
-  const summary = getCategorySummary(cat);
-  if (investSummaryLabel) {
-    investSummaryLabel.textContent =
-      CONFIG.INVEST_SUMMARY_LABELS[cat] || CONFIG.INVEST_SUMMARY_LABELS.Saham;
-  }
-  if (investSummaryTotal) {
-    investSummaryTotal.textContent = formatRupiahCompact(summary.totalValue);
-    investSummaryTotal.title = formatRupiahFull(summary.totalValue);
-  }
-  if (investSummaryPnl) {
-    const isPositive = summary.pnlValue >= 0;
-    const pnlPrefix = summary.pnlValue > 0 ? '+' : '';
-    investSummaryPnl.textContent =
-      pnlPrefix +
-      formatRupiahCompact(summary.pnlValue) +
-      ' (' +
-      formatSignedPercent(summary.pnlPct) +
-      ') sepanjang waktu';
-    investSummaryPnl.classList.toggle('pnl--positive', isPositive);
-    investSummaryPnl.classList.toggle('pnl--negative', !isPositive);
-  }
-  if (investSummaryYield) {
-    if (cat === 'Saham' || cat === 'Properti') {
-      investSummaryYield.textContent = formatRupiahCompact(summary.hourlyYield) + '/jam';
-      investSummaryYield.title = formatRupiahFull(summary.hourlyYield) + ' per jam';
-    } else {
-      investSummaryYield.textContent = '—';
-      investSummaryYield.removeAttribute('title');
+  let classes = 0;
+  let top = null;
+  let topValue = 0;
+  INVEST_CATEGORIES.forEach(function (cat) {
+    const value = byCategory[cat].totalValue;
+    if (value > 0) {
+      classes += 1;
+      if (value > topValue) {
+        top = cat;
+        topValue = value;
+      }
     }
-  }
-
-  if (!investAssetList) return;
-  const categoryAssets = ASSETS.filter(function (a) {
-    return a.category === cat;
   });
 
-  if (
-    runtime.renderedListCategory !== cat ||
-    investAssetList.childElementCount !== categoryAssets.length
-  ) {
-    investAssetList.innerHTML = '';
+  const topShare = total > 0 && top ? (topValue / total) * 100 : 0;
+  const rawPnlPct = totalCost > 0 ? (pnlValue / totalCost) * 100 : 0;
+
+  return {
+    byCategory: byCategory,
+    total: Number.isFinite(total) ? total : 0,
+    pnlValue: Number.isFinite(pnlValue) ? pnlValue : 0,
+    pnlPct: Number.isFinite(rawPnlPct) ? rawPnlPct : 0,
+    classes: classes,
+    top: top,
+    topShare: Number.isFinite(topShare) ? topShare : 0,
+    openPositions: openPositions
+  };
+}
+
+/**
+ * Memformat bobot alokasi satu desimal, mis. "45.0%" (en-US).
+ */
+function formatSharePercent(share) {
+  const safe = Number.isFinite(share) ? share : 0;
+  return safe.toFixed(CONFIG.ALLOC_DECIMALS) + '%';
+}
+
+let donutBuilt = false;
+const donutSegmentEls = [];
+
+/**
+ * Membangun 4 segmen donat satu kali (urutan tetap: Saham, Properti, Kripto, Forex).
+ */
+function ensureDonutSkeleton() {
+  if (donutBuilt || !donutSegmentsGroup) return;
+  const circumference = Math.PI * CONFIG.FULL_CIRCLE_TURNS * CONFIG.DONUT_RADIUS;
+  INVEST_CATEGORIES.forEach(function (cat) {
+    const segment = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    segment.setAttribute('class', 'donut-segment');
+    segment.setAttribute('cx', '110');
+    segment.setAttribute('cy', '110');
+    segment.setAttribute('r', String(CONFIG.DONUT_RADIUS));
+    segment.setAttribute('stroke', CATEGORY_META[cat].color);
+    segment.setAttribute('stroke-dasharray', '0 ' + String(circumference));
+    segment.setAttribute('stroke-dashoffset', '0');
+    donutSegmentsGroup.appendChild(segment);
+    donutSegmentEls.push(segment);
+  });
+  donutBuilt = true;
+}
+
+/**
+ * Memperbarui segmen donat sesuai bobot portofolio terkini.
+ */
+function updateDonut(allocation) {
+  ensureDonutSkeleton();
+  if (!donutBuilt) return;
+  const circumference = Math.PI * CONFIG.FULL_CIRCLE_TURNS * CONFIG.DONUT_RADIUS;
+  let offset = 0;
+  INVEST_CATEGORIES.forEach(function (cat, idx) {
+    const segment = donutSegmentEls[idx];
+    if (!segment) return;
+    const value = allocation.byCategory[cat].totalValue;
+    const fraction = allocation.total > 0 ? value / allocation.total : 0;
+    const length = circumference * fraction;
+    segment.setAttribute(
+      'stroke-dasharray',
+      String(length) + ' ' + String(circumference - length)
+    );
+    segment.setAttribute('stroke-dashoffset', String(-offset));
+    offset += length;
+  });
+}
+
+let breakdownBuilt = false;
+const breakdownRows = {};
+
+/**
+ * Membangun 4 baris breakdown alokasi satu kali (nama, subjudul, bar, nilai).
+ */
+function ensureBreakdownSkeleton() {
+  if (breakdownBuilt || !allocBreakdown) return;
+  INVEST_CATEGORIES.forEach(function (cat) {
+    const meta = CATEGORY_META[cat];
+
+    const row = document.createElement('div');
+    row.className = 'alloc-row';
+
+    const top = document.createElement('div');
+    top.className = 'alloc-row__top';
+    const nameWrap = document.createElement('div');
+    nameWrap.className = 'alloc-row__name';
+    const dot = document.createElement('span');
+    dot.className = 'alloc-row__dot';
+    dot.style.backgroundColor = meta.color;
+    const name = document.createElement('span');
+    name.textContent = cat;
+    nameWrap.appendChild(dot);
+    nameWrap.appendChild(name);
+    const pct = document.createElement('strong');
+    pct.className = 'alloc-row__pct';
+    pct.textContent = formatSharePercent(0);
+    top.appendChild(nameWrap);
+    top.appendChild(pct);
+
+    const bottom = document.createElement('div');
+    bottom.className = 'alloc-row__bottom';
+    const subtitle = document.createElement('small');
+    subtitle.textContent = meta.subtitle;
+    const value = document.createElement('small');
+    value.className = 'alloc-row__value';
+    value.textContent = formatUsdCompact(0);
+    bottom.appendChild(subtitle);
+    bottom.appendChild(value);
+
+    const track = document.createElement('div');
+    track.className = 'alloc-track';
+    const fill = document.createElement('div');
+    fill.className = 'alloc-fill';
+    fill.style.backgroundColor = meta.color;
+    fill.style.width = '0%';
+    track.appendChild(fill);
+
+    row.appendChild(top);
+    row.appendChild(bottom);
+    row.appendChild(track);
+    allocBreakdown.appendChild(row);
+
+    breakdownRows[cat] = { pct: pct, value: value, fill: fill };
+  });
+  breakdownBuilt = true;
+}
+
+/**
+ * Memperbarui angka & lebar bar breakdown alokasi.
+ */
+function updateBreakdown(allocation) {
+  ensureBreakdownSkeleton();
+  if (!breakdownBuilt) return;
+  INVEST_CATEGORIES.forEach(function (cat) {
+    const row = breakdownRows[cat];
+    if (!row) return;
+    const value = allocation.byCategory[cat].totalValue;
+    const share = allocation.total > 0 ? (value / allocation.total) * 100 : 0;
+    row.pct.textContent = formatSharePercent(share);
+    row.value.textContent = formatUsdCompact(value);
+    row.fill.style.width = formatSharePercent(share);
+  });
+}
+
+let shelvesBuilt = false;
+const shelfTiles = [];
+
+/**
+ * Membangun strip kartu aset (tile) untuk keempat rak satu kali.
+ */
+function ensureShelvesBuilt() {
+  if (shelvesBuilt) return;
+  if (!hasDOM) return;
+
+  INVEST_CATEGORIES.forEach(function (cat) {
+    const track = SHELF_TRACKS[cat];
+    if (!track) return;
+
+    const categoryAssets = ASSETS.filter(function (asset) {
+      return asset.category === cat;
+    });
+
     categoryAssets.forEach(function (asset) {
-      const cardBtn = document.createElement('button');
-      cardBtn.type = 'button';
-      cardBtn.className = 'asset-card asset-card--cat-' + asset.category;
-      cardBtn.setAttribute('data-asset-id', asset.id);
+      const tile = document.createElement('button');
+      tile.type = 'button';
+      tile.className = 'tile';
+      tile.setAttribute('data-asset-id', asset.id);
+      tile.setAttribute('role', 'listitem');
+      tile.setAttribute('aria-label', 'Beli atau jual ' + asset.name);
 
-      const left = document.createElement('div');
-      left.className = 'asset-card__left';
+      const top = document.createElement('span');
+      top.className = 'tile__top';
 
       const avatar = document.createElement('span');
-      avatar.className = 'asset-card__avatar';
+      avatar.className = 'tile__avatar';
       if (asset.iconId) {
-        avatar.classList.add('asset-card__avatar--logo');
+        avatar.classList.add('tile__avatar--logo');
         avatar.innerHTML =
           '<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#' +
           asset.iconId +
@@ -437,100 +614,174 @@ export function renderInvestingScreen() {
         avatar.textContent = asset.symbol;
       }
 
-      const meta = document.createElement('div');
-      meta.className = 'asset-card__meta';
-
-      const nameEl = document.createElement('span');
-      nameEl.className = 'asset-card__name';
-      nameEl.textContent = asset.name;
-
-      const ownedRow = document.createElement('span');
-      ownedRow.className = 'asset-card__owned-row';
-
       const ownedBadge = document.createElement('span');
-      ownedBadge.className = 'asset-card__owned-badge';
-      ownedBadge.textContent = '✓ DIMILIKI';
+      ownedBadge.className = 'tile__owned';
+      ownedBadge.textContent = 'DIMILIKI';
       ownedBadge.hidden = true;
 
-      const ownedEl = document.createElement('span');
-      ownedEl.className = 'asset-card__owned';
+      top.appendChild(avatar);
+      top.appendChild(ownedBadge);
 
-      ownedRow.appendChild(ownedBadge);
-      ownedRow.appendChild(ownedEl);
+      const nameEl = document.createElement('span');
+      nameEl.className = 'tile__name';
+      nameEl.textContent = asset.name;
 
-      meta.appendChild(nameEl);
-      meta.appendChild(ownedRow);
-      left.appendChild(avatar);
-      left.appendChild(meta);
-
-      const right = document.createElement('div');
-      right.className = 'asset-card__right';
+      const sparkEl = document.createElement('span');
+      sparkEl.className = 'tile__spark';
+      sparkEl.setAttribute('aria-hidden', 'true');
 
       const priceEl = document.createElement('span');
-      priceEl.className = 'asset-card__price';
+      priceEl.className = 'tile__price';
 
       const changeEl = document.createElement('span');
-      changeEl.className = 'asset-card__change';
+      changeEl.className = 'tile__change tile__change--up';
 
-      right.appendChild(priceEl);
-      right.appendChild(changeEl);
+      tile.appendChild(top);
+      tile.appendChild(nameEl);
+      tile.appendChild(sparkEl);
+      tile.appendChild(priceEl);
+      tile.appendChild(changeEl);
+      track.appendChild(tile);
 
-      const chart = document.createElement('span');
-      chart.className = 'asset-card__spark';
-      chart.setAttribute('aria-hidden', 'true');
-
-      cardBtn.appendChild(left);
-      cardBtn.appendChild(chart);
-      cardBtn.appendChild(right);
-      investAssetList.appendChild(cardBtn);
+      shelfTiles.push({ asset: asset, tile: tile, ownedBadge: ownedBadge, sparkEl: sparkEl, priceEl: priceEl, changeEl: changeEl });
     });
-    runtime.renderedListCategory = cat;
-  }
+  });
+  shelvesBuilt = true;
+}
 
-  categoryAssets.forEach(function (asset, idx) {
-    const cardBtn = investAssetList.children[idx];
-    if (!cardBtn) return;
+/**
+ * Memformat harga per unit untuk tile: penuh di bawah threshold, ringkas di atasnya.
+ */
+function formatTilePrice(price) {
+  const safe = Number.isFinite(price) ? price : 0;
+  if (Math.abs(safe) >= CONFIG.TILE_PRICE_COMPACT_THRESHOLD) {
+    return formatUsdCompact(safe);
+  }
+  return formatUsdFull(safe);
+}
+
+/**
+ * Memperbarui tile aset (harga, perubahan, sparkline, badge kepemilikan, flash) & total per rak.
+ */
+function updateShelves(allocation) {
+  shelfTiles.forEach(function (entry) {
+    const asset = entry.asset;
     const holding = state.holdings[asset.id];
     const units = holding && Number.isFinite(Number(holding.units)) ? Number(holding.units) : 0;
     const currentPrice = getCurrentAssetPrice(asset.id);
     const changePct = getAssetChangePercent(asset.id);
     const isUp = changePct >= 0;
 
-    const ownedEl = cardBtn.querySelector('.asset-card__owned');
-    const ownedBadge = cardBtn.querySelector('.asset-card__owned-badge');
-    const priceEl = cardBtn.querySelector('.asset-card__price');
-    const changeEl = cardBtn.querySelector('.asset-card__change');
-    const sparkEl = cardBtn.querySelector('.asset-card__spark');
-
     const hasUnits = units > 0;
-    cardBtn.classList.toggle('asset-card--owned', hasUnits);
-    if (ownedBadge) {
-      ownedBadge.hidden = !hasUnits;
+    entry.tile.classList.toggle('tile--owned', hasUnits);
+    if (entry.ownedBadge) {
+      entry.ownedBadge.hidden = !hasUnits;
     }
-    if (ownedEl) {
-      ownedEl.textContent = formatIntegerID(units) + ' ' + asset.unitLabel;
+    if (entry.sparkEl) {
+      entry.sparkEl.innerHTML = buildSparklineMarkup(asset.id, isUp);
     }
-    if (sparkEl) {
-      sparkEl.innerHTML = buildSparklineMarkup(asset.id, isUp);
-    }
-    if (priceEl) {
-      const previousRaw = cardBtn.dataset.prevPrice;
+    if (entry.priceEl) {
+      const previousRaw = entry.tile.dataset.prevPrice;
       const previousPrice = previousRaw ? Number(previousRaw) : Number.NaN;
       if (Number.isFinite(previousPrice) && previousPrice > 0 && previousPrice !== currentPrice) {
-        cardBtn.classList.remove('asset-card--flash-up', 'asset-card--flash-down');
-        void cardBtn.offsetWidth;
-        cardBtn.classList.add(currentPrice > previousPrice ? 'asset-card--flash-up' : 'asset-card--flash-down');
+        entry.tile.classList.remove('tile--flash-up', 'tile--flash-down');
+        void entry.tile.offsetWidth;
+        entry.tile.classList.add(
+          currentPrice > previousPrice ? 'tile--flash-up' : 'tile--flash-down'
+        );
       }
-      cardBtn.dataset.prevPrice = String(currentPrice);
-      priceEl.textContent = formatRupiahCompact(currentPrice);
-      priceEl.title = formatRupiahFull(currentPrice);
+      entry.tile.dataset.prevPrice = String(currentPrice);
+      entry.priceEl.textContent = formatTilePrice(currentPrice);
+      entry.priceEl.title = formatUsdFull(currentPrice);
     }
-    if (changeEl) {
-      changeEl.className = 'asset-card__change ' + (isUp ? 'pnl--positive' : 'pnl--negative');
-      changeEl.textContent = (isUp ? '▲ ' : '▼ ') + formatSignedPercent(changePct);
+    if (entry.changeEl) {
+      entry.changeEl.className =
+        'tile__change ' + (isUp ? 'tile__change--up' : 'tile__change--down');
+      entry.changeEl.textContent =
+        (isUp ? '\u25B2 ' : '\u25BC ') + formatSignedPercentEn(changePct);
     }
   });
+
+  INVEST_CATEGORIES.forEach(function (cat) {
+    const target = SHELF_TOTALS[cat];
+    if (!target) return;
+    const value = allocation.byCategory[cat].totalValue;
+    const share = allocation.total > 0 ? (value / allocation.total) * 100 : 0;
+    target.textContent = formatUsdCompact(value) + ' \u00B7 ' + formatSharePercent(share);
+    target.title = formatUsdFull(value);
+  });
 }
+
+/**
+ * Merender layar utama Investasi: hero portofolio, alokasi aset, dan rak per kategori.
+ */
+export function renderInvestingScreen() {
+  if (!investingScreen) return;
+
+  const allocation = getPortfolioAllocation();
+  const total = allocation.total;
+  const hourlyYield = getTotalInvestmentHourlyYield();
+
+  if (heroTotalValue) {
+    const useCompactHero = Math.abs(total) >= CONFIG.HERO_COMPACT_THRESHOLD;
+    heroTotalValue.textContent = useCompactHero ? formatUsdCompact(total) : formatUsdFull(total);
+    heroTotalValue.title = formatUsdFull(total);
+  }
+  if (heroTotalPnl) {
+    const isPositive = allocation.pnlValue >= 0;
+    const sign = allocation.pnlValue >= 0 ? '+' : '-';
+    heroTotalPnl.textContent =
+      sign +
+      formatUsdCompact(Math.abs(allocation.pnlValue)) +
+      ' (' +
+      formatSignedPercentEn(allocation.pnlPct) +
+      ') sepanjang waktu';
+    heroTotalPnl.classList.toggle('pnl--positive', isPositive);
+    heroTotalPnl.classList.toggle('pnl--negative', !isPositive);
+  }
+  if (heroHourlyYield) {
+    heroHourlyYield.textContent = formatUsdCompact(hourlyYield);
+    heroHourlyYield.title = formatUsdFull(hourlyYield) + ' per jam';
+  }
+  if (heroIdleCash) {
+    heroIdleCash.textContent = formatUsdCompact(state.balance);
+    heroIdleCash.title = formatUsdFull(state.balance);
+  }
+  if (heroOpenPositions) {
+    heroOpenPositions.textContent = formatIntegerID(allocation.openPositions) + ' aset';
+  }
+
+  if (allocTotal) {
+    allocTotal.textContent = formatUsdCompact(total);
+    allocTotal.title = formatUsdFull(total);
+  }
+  if (allocTopName && allocTopShare) {
+    if (allocation.top) {
+      allocTopName.textContent = allocation.top;
+      allocTopShare.textContent =
+        formatSharePercent(allocation.topShare) + ' dari portofolio';
+    } else {
+      allocTopName.textContent = '\u2014';
+      allocTopShare.textContent = 'Belum ada posisi';
+    }
+  }
+  if (allocClasses) {
+    allocClasses.textContent =
+      formatIntegerID(allocation.classes) + ' / ' + formatIntegerID(CONFIG.INVEST_CATEGORY_COUNT);
+  }
+  if (allocCenterTotal) {
+    allocCenterTotal.textContent = formatUsdCompact(total);
+  }
+  updateDonut(allocation);
+  updateBreakdown(allocation);
+  if (allocEmpty) {
+    allocEmpty.hidden = total > 0;
+  }
+
+  ensureShelvesBuilt();
+  updateShelves(allocation);
+}
+
 export function resolveTradeQuantities(currentPrice, ownedUnits) {
   const safePrice = Number.isFinite(currentPrice) && currentPrice > 0 ? currentPrice : 0;
   const safeOwned = Number.isFinite(ownedUnits) && ownedUnits > 0 ? Math.floor(ownedUnits) : 0;
@@ -998,20 +1249,10 @@ export function closeAssetDetail() {
 export function bindInvestingEvents() {
   if (!hasDOM) return;
 
-  // Sub-tab kategori investasi (Saham, Properti, Kripto, Forex)
-  investSubtabs.forEach(function (subBtn) {
-    subBtn.addEventListener('click', function () {
-      const cat = subBtn.getAttribute('data-invest-cat');
-      if (cat) {
-        state.activeInvestCategory = cat;
-        renderInvestingScreen();
-      }
-    });
-  });
-
-  if (investSummaryCard) {
-    investSummaryCard.addEventListener('click', openPortfolio);
-    investSummaryCard.addEventListener('keydown', function (event) {
+  // Kartu hero (Total Kepemilikan) membuka layar portofolio lengkap
+  if (heroPortfolioBtn) {
+    heroPortfolioBtn.addEventListener('click', openPortfolio);
+    heroPortfolioBtn.addEventListener('keydown', function (event) {
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
         openPortfolio();
@@ -1033,9 +1274,10 @@ export function bindInvestingEvents() {
     });
   }
 
-  // Klik kartu aset pada daftar investasi -> buka layar detail
-  if (investAssetList) {
-    investAssetList.addEventListener('click', function (event) {
+  // Klik tile aset pada rak mana pun -> buka layar detail
+  [shelfTrackSaham, shelfTrackProperti, shelfTrackKripto, shelfTrackForex].forEach(function (track) {
+    if (!track) return;
+    track.addEventListener('click', function (event) {
       const card = event.target.closest('[data-asset-id]');
       if (!card) return;
       const assetId = card.getAttribute('data-asset-id');
@@ -1043,7 +1285,7 @@ export function bindInvestingEvents() {
         openAssetDetail(assetId);
       }
     });
-  }
+  });
 
   if (assetDetailBackBtn) {
     assetDetailBackBtn.addEventListener('click', function () {
